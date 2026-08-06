@@ -24,4 +24,5 @@ from recipe.sysroot import *
 
 # BinutilsRecipe().build(ctx)
 # GCCFirstPassRecipe().build(ctx)
-GlibCRecipe().build(ctx)
+# GlibCRecipe().build(ctx)
+LinuxHeadersRecipe().build(ctx)

@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 
 def rmtree(path: Path):
     """
@@ -7,9 +8,4 @@ def rmtree(path: Path):
     Args:
         path (Path): The root folder to delete.
     """
-    if path.is_file() or path.is_symlink():
-        path.unlink(missing_ok=True)
-    else:
-        for child in path.iterdir():
-            rmtree(child)
-        path.rmdir()
+    shutil.rmtree(path, ignore_errors=True)

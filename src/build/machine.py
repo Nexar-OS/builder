@@ -1,5 +1,12 @@
+import os
+import shutil
+import subprocess
+import platform
+
 from dataclasses import dataclass
 from enum import Enum
+
+from utils.logger import warn, info
 
 @dataclass
 class MachineSpec:
@@ -19,7 +26,6 @@ class MachineSpec:
     arch: str
     kernel_arch: str
     triple: str
-
 
 triple_suffix = "placeholder-linux-gnu"
 class Target(Enum):
@@ -42,4 +48,63 @@ class Target(Enum):
         arch="armv7",
         kernel_arch="arm",
         triple=f"arm-{triple_suffix}"
+    )
+
+
+
+def detect_triple() -> str:
+    """
+    Detect the triple of the current host system
+
+    Returns:
+        str: The host triple
+    """
+
+    gcc = shutil.which("gcc")
+    if gcc:
+        return subprocess.check_output(
+            [ gcc, "-dumpmachine" ],
+            text=True
+        ).strip()
+    
+    warn("Couldn't retrieve host triple from gcc. Falling back...")
+
+    # Fallback if gcc is available
+    arch = platform.machine().lower()
+    return f"{arch}-linux-gnu"
+
+def nproc() -> int:
+    """
+    Find the maximum num_jobs value
+    """
+    return os.cpu_count() or 1
+
+def detect_machine() -> MachineSpec:
+    """Detect the host machine architecture.
+
+    Returns:
+        MachineSpec: The host machine
+    """
+
+    assert platform.system().lower() == "linux", "Invalid host system!"
+
+    # Get arch and normalize
+    arch = platform.machine().lower()
+    normalized = {
+        "amd64": "x86_64",
+        "arm64": "aarch64"
+    }.get(arch, arch)
+
+    kernel_arch_map = {
+        "amd64": "x86_64",
+        "aarch64": "arm64",
+        "riscv64": "riscv",
+    }
+
+    info(f"Detected host architecture '{arch}'")
+
+    return MachineSpec(
+        arch=normalized,
+        kernel_arch=kernel_arch_map.get(arch, arch),
+        triple=detect_triple()
     )

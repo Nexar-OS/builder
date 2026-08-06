@@ -72,8 +72,6 @@ class BuildRecipe(ABC):
         """    
         raise NotImplementedError()
 
-
-    @abstractmethod
     def _config_args(self, ctx: BuildContext) -> list[str]:
         """
         Generate build-system configuration arguments for this recipe.

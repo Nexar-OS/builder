@@ -30,8 +30,28 @@ class Source(ABC):
         download_dir.mkdir(exist_ok=True, parents=True)
         dest_dir.mkdir(exist_ok=True, parents=True)
 
-        self.download(download_dir)
+        # Perform pre-validation
+        # If successful we can skip downloading time
+        if not self.validate(download_dir):
+            self.download(download_dir)
+
+        # Post-download validation
+        assert self.validate(download_dir) != False, "Post-download validation failed!"
+
         self.prepare(download_dir, dest_dir)
+
+    @abstractmethod
+    def validate(self, download_dir: Path) -> bool|None:
+        """Validate a downloaded source for correctness. 
+
+        Args:
+            download_dir (Path): The directory the source was downloaded into.
+
+        Returns:
+            bool|None: True if source is valid. None if no check was performed.
+        """
+
+        return None
 
     @abstractmethod
     def download(self, download_dir: Path):

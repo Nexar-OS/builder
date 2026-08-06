@@ -6,6 +6,7 @@ import tarfile
 import hashlib
 
 from utils.download import download_url
+from utils.logger import debug
 
 def _extract_flat_tar(tarball: Path, dest: Path):
     """
@@ -74,9 +75,12 @@ class TarballSource(Source):
         
         computed = md5.hexdigest().lower()
 
-        print(computed)
+        passed = computed == self.md5hash.lower()
 
-        return computed == self.md5hash.lower()
+        if not passed:
+            debug(f"Computed md5hash for '{self.name}': {computed}")
+
+        return passed
 
     def download(self, download_dir: Path):
         """Download the tarball into the download directory.

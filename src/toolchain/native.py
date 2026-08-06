@@ -1,6 +1,7 @@
 from pathlib import Path
 from .toolchain import Toolchain
 from build.machine import detect_machine
+from utils.logger import info
 
 class NativeToolchain(Toolchain):
     """
@@ -8,9 +9,12 @@ class NativeToolchain(Toolchain):
     """
 
     def __init__(self):
+        host = detect_machine()
+        info(f"Detected host architecture '{host.arch}'")
+
         super().__init__(
             name="native",
-            target=detect_machine(),
+            target=host,
             prefix=Path("/usr"),
             sysroot=Path("/")
         )

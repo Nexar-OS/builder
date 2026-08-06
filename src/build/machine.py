@@ -5,7 +5,7 @@ import platform
 
 from dataclasses import dataclass
 
-from utils.logger import warn, info
+from utils.logger import warn
 
 @dataclass
 class MachineSpec:
@@ -99,8 +99,6 @@ def detect_machine() -> MachineSpec:
         "aarch64": "arm64",
         "riscv64": "riscv",
     }
-
-    info(f"Detected host architecture '{arch}'")
 
     return MachineSpec(
         arch=normalized,

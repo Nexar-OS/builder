@@ -1,1 +1,6 @@
-from .recipe import BuildRecipe, ToolchainRecipe, SysrootRecipe
+from .recipe import (
+    BuildRecipe,
+    ToolchainRecipe,
+    SysrootRecipe,
+    BuildMethod
+)

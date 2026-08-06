@@ -1,10 +1,22 @@
 from pathlib import Path
 from abc import ABC, abstractmethod
+from enum import Enum, auto
 
 from source.source import Source
 from build.context import BuildContext
 from build.system import BuildSystem
 from utils.logger import info
+
+class BuildMethod(Enum):
+    """
+    Build will run inside of the source-tree.
+    """
+    IN_SOURCE = auto()
+
+    """
+    Build will run in a separate directory than the source-tree.
+    """
+    OUT_OF_SOURCE  = auto()
 
 class BuildRecipe(ABC):
     """
@@ -27,18 +39,33 @@ class BuildRecipe(ABC):
 
     sources: list[Source]
 
+    build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE  # most recipes are build out-of-source
+    
     build_system: BuildSystem
 
-    def _resolve_sources(self, source_dir: Path):
+    def _resolve_sources(self, source_dir: Path, build_dir: Path):
         """
         Resolve and install all configured sources into the working source directory.
 
         Args:
             source_dir (Path): The source directory for sources to be put into.
+            build_dir (Path): The build directory.
         """
         
         for source in self.sources:
-            source.install(source_dir, source_dir)
+            dest_dir = None
+
+            # If recipe is build in-source, we install the
+            # source into the build directory directly
+            if self.build_method == BuildMethod.IN_SOURCE:
+                dest_dir = build_dir
+
+            # If recipe is build out-of-source, we
+            # install the source into the source directory
+            elif self.build_method == BuildMethod.OUT_OF_SOURCE:
+                dest_dir = source_dir
+
+            source.install(source_dir, dest_dir)
 
     def work_dir(self, ctx: BuildContext) -> Path:
         """
@@ -82,7 +109,7 @@ class BuildRecipe(ABC):
         Returns:
             list[str]: List of configuration args passed to the build system.
         """
-        raise NotImplementedError()
+        return []
 
     def _install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path|None):
         """
@@ -121,7 +148,7 @@ class BuildRecipe(ABC):
 
         info(f"Building recipe '{self.name}-{self.version}' using \n{work_dir=}\n{build_dir=}\n{source_dir=}\n{dest_dir=}")
 
-        self._resolve_sources(source_dir)
+        self._resolve_sources(source_dir, build_dir)
 
         # Let recipes prepare their environment
         self.prepare(ctx, source_dir, build_dir)

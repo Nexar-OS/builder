@@ -1,9 +1,6 @@
 from pathlib import Path
-from toolchain import (
-    NativeToolchain,
-    build_cross_toolchain
-)
 
+from toolchain import NativeToolchain, load_or_build_cross_toolchain
 from build import (
     BuildContext,
     Target,
@@ -23,4 +20,4 @@ ctx = BuildContext(
     num_jobs=nproc()
 )
 
-ctx.toolchain = build_cross_toolchain(ctx)
+ctx.toolchain = load_or_build_cross_toolchain(ctx)

@@ -6,6 +6,7 @@ from source.source import Source
 from build.context import BuildContext
 from build.system import BuildSystem
 from utils.logger import info
+from utils.file import rmtree
 
 class BuildMethod(Enum):
     """
@@ -142,6 +143,10 @@ class BuildRecipe(ABC):
         build_dir = work_dir / "build"
         source_dir = work_dir / "sources"
         dest_dir = self._install_path(ctx)
+
+        # Ensure a fresh empty build directory
+        if build_dir.is_dir():
+            rmtree(build_dir)
 
         build_dir.mkdir(exist_ok=True, parents=True)
         source_dir.mkdir(exist_ok=True, parents=True)

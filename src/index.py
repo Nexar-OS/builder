@@ -1,0 +1,20 @@
+from pathlib import Path
+from toolchain import NativeToolchain
+from build import (
+    BuildContext,
+    Target,
+    detect_machine,
+    nproc
+)
+
+ctx = BuildContext(
+    Path("build").resolve(),
+    build_machine=detect_machine(),
+    target_machine=Target.X86_64,
+
+    toolchain=NativeToolchain(),
+    cross_toolchain_dir=Path("toolchain/binaries").resolve(),
+    cross_toolchain_sysroot=Path("toolchain/sysroot").resolve(),
+
+    num_jobs=nproc()
+)

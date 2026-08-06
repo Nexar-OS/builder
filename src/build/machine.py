@@ -4,7 +4,6 @@ import subprocess
 import platform
 
 from dataclasses import dataclass
-from enum import Enum
 
 from utils.logger import warn, info
 
@@ -28,7 +27,7 @@ class MachineSpec:
     triple: str
 
 triple_suffix = "placeholder-linux-gnu"
-class Target(Enum):
+class Target:
     """
     A collection of different target architectures.
     """

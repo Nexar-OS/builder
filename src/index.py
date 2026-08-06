@@ -19,5 +19,9 @@ ctx = BuildContext(
     num_jobs=nproc()
 )
 
-from recipe.toolchain.binutils import BinutilsRecipe
-BinutilsRecipe().build(ctx)
+from recipe.toolchain import *
+from recipe.sysroot import *
+
+# BinutilsRecipe().build(ctx)
+# GCCFirstPassRecipe().build(ctx)
+GlibCRecipe().build(ctx)

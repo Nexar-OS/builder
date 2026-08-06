@@ -1,13 +1,15 @@
 from pathlib import Path
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 
 from source.source import Source
 from build.context import BuildContext
 from build.system import BuildSystem
 from utils.logger import info
+from enum import Enum, auto
 
-@dataclass
+class RecipeType(Enum):
+    TOOLCHAIN_COMPONENT = auto()
+
 class BuildRecipe(ABC):
     """
     Abstract base class describing how a software package is built.
@@ -19,12 +21,14 @@ class BuildRecipe(ABC):
     Attributes:
         name (str): Human-readable name of the package or component.
         version (str): Version string of the package being built.
+        recipe_type (RecipeType): The type of recipe being built.
         sources (list[Source]): Collection of :class:`Source` objects required for the build.
         build_system (BuildSystem): Build system implementation responsible for configuring,
                                     compiling, and installing the package.
     """
     name: str
     version: str
+    recipe_type: RecipeType
 
     sources: list[Source]
 
@@ -39,7 +43,7 @@ class BuildRecipe(ABC):
         """
         
         for source in self.sources:
-            source.install(source_dir)
+            source.install(source_dir, source_dir)
 
     def work_dir(self, ctx: BuildContext) -> Path:
         """
@@ -58,7 +62,7 @@ class BuildRecipe(ABC):
 
         return work_dir.resolve()
 
-    @abstractmethod
+    # @abstractmethod
     def _install_path(self, ctx: BuildContext) -> Path:
         """
         Return the directory where the build should be installed.
@@ -71,7 +75,13 @@ class BuildRecipe(ABC):
         Returns:
             Path: The path for the final build to be installed into.
         """
-        raise NotImplementedError()
+        if self.recipe_type == RecipeType.TOOLCHAIN_COMPONENT:
+            return ctx.cross_toolchain_dir
+        
+        return self.work_dir(ctx) / "rootfs"
+    
+        # raise NotImplementedError()
+
 
     @abstractmethod
     def _config_args(self, ctx: BuildContext) -> list[str]:

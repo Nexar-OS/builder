@@ -186,3 +186,15 @@ class ToolchainRecipe(BuildRecipe):
     def _install_path(self, ctx: BuildContext) -> Path|None:
         # Binutils/GCC expect to be installed into --prefix directly
         return None
+    
+class SysrootRecipe(BuildRecipe):
+    """
+    Base class describing how packages installed into the cross
+    compilers toolchain should be built.
+
+    See Also:
+        :class:`BuildRecipe`: Base interface implementing core recipe workflow
+    """
+
+    def _install_path(self, ctx: BuildContext) -> Path | None:
+        return ctx.cross_toolchain_sysroot

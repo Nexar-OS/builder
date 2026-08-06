@@ -11,7 +11,7 @@ class BinutilsRecipe(ToolchainRecipe):
         TarballSource(
             name="binutils",
             url=f"https://ftp.gnu.org/gnu/binutils/binutils-2.47.tar.xz",
-            md5hash=""
+            md5hash="d772acfbd55a81644e9fe7b8189cd2a5"
         )
     ]
 

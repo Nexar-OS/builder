@@ -20,7 +20,7 @@ def _extract_flat_tar(tarball: Path, dest: Path):
         members = tar.getmembers()
 
         # Get a list of the top-level directory names
-        top_levels = set( m.name.split("/", 1)[0] for m in members if m.name and m.isdir() )
+        top_levels = set( m.name.split("/", 1)[0] for m in members if m.name )
 
         # If there is only one top-level component, strip it in extraction
         strip_prefix = None

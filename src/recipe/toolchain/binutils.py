@@ -1,7 +1,7 @@
-from build.context import BuildContext
-from ..recipe import ToolchainRecipe
-from source import TarballSource
+from build import BuildContext
 from build.system import Autotools
+from recipe import ToolchainRecipe
+from source import TarballSource
 
 class BinutilsRecipe(ToolchainRecipe):
     name = "binutils"
@@ -10,7 +10,7 @@ class BinutilsRecipe(ToolchainRecipe):
     sources = [
         TarballSource(
             name="binutils",
-            url=f"https://ftp.gnu.org/gnu/binutils/binutils-2.47.tar.xz",
+            url=f"https://ftp.gnu.org/gnu/binutils/binutils-{version}.tar.xz",
             md5hash="d772acfbd55a81644e9fe7b8189cd2a5"
         )
     ]

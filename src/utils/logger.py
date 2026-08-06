@@ -8,7 +8,7 @@ logging.basicConfig(
     ]
 )
 
-logger = logging.Logger("builder")
+logger = logging.getLogger("builder")
 
 warn      = logger.warning
 info      = logger.info

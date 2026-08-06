@@ -1,5 +1,9 @@
 from pathlib import Path
-from toolchain import NativeToolchain
+from toolchain import (
+    NativeToolchain,
+    build_cross_toolchain
+)
+
 from build import (
     BuildContext,
     Target,
@@ -19,17 +23,4 @@ ctx = BuildContext(
     num_jobs=nproc()
 )
 
-from recipe.toolchain import *
-from recipe.sysroot import *
-
-# Build cross toolchain
-
-BinutilsRecipe().build(ctx)
-
-GCCFirstPassRecipe().build(ctx)
-
-GlibCRecipe().build(ctx)
-
-LinuxHeadersRecipe().build(ctx)
-
-GCCSecondPassRecipe().build(ctx)
+ctx.toolchain = build_cross_toolchain(ctx)

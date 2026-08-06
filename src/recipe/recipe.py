@@ -4,19 +4,35 @@ from dataclasses import dataclass
 
 from source.source import Source
 from build.context import BuildContext
+from build.system import BuildSystem
 from utils.logger import info
 
 @dataclass
 class BuildRecipe(ABC):
+    """
+    Abstract base class describing how a software package is built.
+
+    A ``BuildRecipe`` encapsulates all information required to fetch sources,
+    configure a build system, compile a project, and install the resulting
+    artifacts into a destination directory.
+
+    Attributes:
+        name (str): Human-readable name of the package or component.
+        version (str): Version string of the package being built.
+        sources (list[Source]): Collection of :class:`Source` objects required for the build.
+        build_system (BuildSystem): Build system implementation responsible for configuring,
+                                    compiling, and installing the package.
+    """
     name: str
     version: str
-        
+
     sources: list[Source]
 
+    build_system: BuildSystem
+
     def _resolve_sources(self, source_dir: Path):
-        """Prepare the sources for the build process.
-        
-        This step includes downloading and installing them into their respective destinations.
+        """
+        Resolve and install all configured sources into the working source directory.
 
         Args:
             source_dir (Path): The source directory for sources to be put into.
@@ -26,22 +42,28 @@ class BuildRecipe(ABC):
             source.install(source_dir)
 
     def work_dir(self, ctx: BuildContext) -> Path:
-        """Creates work directory for this recipe instance.
+        """
+        Create and return the working directory for this recipe.
+
+        The working directory is derived from ``ctx.build_dir`` and the recipe name and version.
 
         Args:
             ctx (BuildContext): Context used for the build.
 
         Returns:
-            Path: Path where the build takes place
+            Path: Absolute path where the build takes place
         """
-        work_dir = ctx.build_dir / self.name
+        work_dir = ctx.build_dir / (self.name + "-" + self.version)
         work_dir.mkdir(exist_ok=True, parents=True)
 
         return work_dir.resolve()
 
     @abstractmethod
     def _install_path(self, ctx: BuildContext) -> Path:
-        """Creates the path for the build to be generated into.
+        """
+        Return the directory where the build should be installed.
+
+        Subclasses must implement this method.
 
         Args:
             ctx (BuildContext): Context used for the build.
@@ -51,8 +73,30 @@ class BuildRecipe(ABC):
         """
         raise NotImplementedError()
 
+    @abstractmethod
+    def _config_args(self, ctx: BuildContext) -> list[str]:
+        """
+        Generate build-system configuration arguments for this recipe.
+
+        Args:
+            ctx (BuildContext): Build context.
+
+        Returns:
+            list[str]: List of configuration args passed to the build system.
+        """
+        raise NotImplementedError()
+
     def build(self, ctx: BuildContext) -> None:
-        """Build the recipe using the current BuildContext as configuration basis.
+        """
+        Executes the complete build lifecycle of the recipe.
+
+        The build process follows this order:
+        1. Create working, build, source, and destination directories
+        2. Resolve and install all configured sources into the source directory.
+        3. Run the optional :meth:`prepare` hook.
+        4. Run the optional :meth:`patch` hook.
+        5. Invoke the configured :class:`BuildSystem`.
+        6. Run the optional :meth:`post_install` hook.
 
         Args:
             ctx (BuildContext): Context used for the build.
@@ -77,15 +121,20 @@ class BuildRecipe(ABC):
         self.patch(ctx, source_dir)
 
         # Run installation
-        # TODO
-        ...
+        self.build_system.prepare(ctx, source_dir, build_dir)
+        self.build_system.configure(ctx, source_dir, build_dir, self._config_args(ctx))
+        self.build_system.build(ctx, build_dir)
+        self.build_system.install(ctx, build_dir, dest_dir)
 
         # Run post install hook
         self.post_install(ctx, source_dir, build_dir)
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """
-        Allow recipes to apply custom source-patches.
+        Apply recipe-specific modifications to the resolved sources.
+
+        This hook is called after all sources have been installed
+        into the source directory, but before the configuration step.
 
         Args:
             ctx (BuildContext): Context used for current build.
@@ -95,7 +144,10 @@ class BuildRecipe(ABC):
 
     def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
         """
-        Let recipes prepare their environment before installation starts.
+        Prepare the build environment before configuration begin.
+
+        This hook is invoked after sources have been resolved but before any
+        build-system preparation or configuration occurs.
 
         Args:
             ctx (BuildContext): Context used for current build.
@@ -105,6 +157,9 @@ class BuildRecipe(ABC):
         ...
 
     def post_install(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
-        """Post install hook.
+        """
+        Perform additional actions after the installation step has been completed.
+
+        This hook is called at the very end of the build process.
         """
         ...

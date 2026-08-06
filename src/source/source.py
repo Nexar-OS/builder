@@ -2,6 +2,8 @@ from pathlib import Path
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
+from utils.logger import info
+
 @dataclass
 class Source(ABC):
     """Abstract base class for build sources.
@@ -33,11 +35,15 @@ class Source(ABC):
         # Perform pre-validation
         # If successful we can skip downloading time
         if not self.validate(download_dir):
+            info(f"Downloading source '{self.name}' into {download_dir}")
             self.download(download_dir)
+        else:
+            info(f"Using cached download for source '{self.name}'")
 
         # Post-download validation
         assert self.validate(download_dir) != False, "Post-download validation failed!"
 
+        info(f"Installing source '{self.name}' into {dest_dir}")
         self.prepare(download_dir, dest_dir)
 
     @abstractmethod

@@ -77,8 +77,8 @@ class BuildContext:
 
         if check and result.returncode != 0:
             raise RuntimeError(
-                f"Command failed: {' '.join(cmd)}\n\n",
-                f"STDOUT: \n{result.stdout}\n\n\n",
+                f"Command failed: {' '.join(cmd)}\n\n"
+                f"STDOUT: \n{result.stdout}\n\n\n"
                 f"STDERR: \n{result.stderr}"
             )
         

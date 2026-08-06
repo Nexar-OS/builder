@@ -19,5 +19,5 @@ ctx = BuildContext(
     num_jobs=nproc()
 )
 
-from recipe.binutils import BinutilsRecipe
+from recipe.toolchain.binutils import BinutilsRecipe
 BinutilsRecipe().build(ctx)

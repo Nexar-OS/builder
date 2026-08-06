@@ -5,10 +5,6 @@ from source.source import Source
 from build.context import BuildContext
 from build.system import BuildSystem
 from utils.logger import info
-from enum import Enum, auto
-
-class RecipeType(Enum):
-    TOOLCHAIN_COMPONENT = auto()
 
 class BuildRecipe(ABC):
     """
@@ -28,7 +24,6 @@ class BuildRecipe(ABC):
     """
     name: str
     version: str
-    recipe_type: RecipeType
 
     sources: list[Source]
 
@@ -62,8 +57,8 @@ class BuildRecipe(ABC):
 
         return work_dir.resolve()
 
-    # @abstractmethod
-    def _install_path(self, ctx: BuildContext) -> Path:
+    @abstractmethod
+    def _install_path(self, ctx: BuildContext) -> Path|None:
         """
         Return the directory where the build should be installed.
 
@@ -74,13 +69,8 @@ class BuildRecipe(ABC):
 
         Returns:
             Path: The path for the final build to be installed into.
-        """
-        if self.recipe_type == RecipeType.TOOLCHAIN_COMPONENT:
-            return ctx.cross_toolchain_dir
-        
-        return self.work_dir(ctx) / "rootfs"
-    
-        # raise NotImplementedError()
+        """    
+        raise NotImplementedError()
 
 
     @abstractmethod
@@ -95,6 +85,17 @@ class BuildRecipe(ABC):
             list[str]: List of configuration args passed to the build system.
         """
         raise NotImplementedError()
+
+    def _install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path|None):
+        """
+        Invoke the install call to the build system.
+
+        Args:
+            ctx (BuildContext): Context used for current build.
+            build_dir (Path): Directory where the build system already build the binaries into.
+            dest_dir (Path): Destination directory to install the files into.
+        """
+        self.build_system.install(ctx, build_dir, dest_dir)
 
     def build(self, ctx: BuildContext) -> None:
         """
@@ -134,7 +135,7 @@ class BuildRecipe(ABC):
         self.build_system.prepare(ctx, source_dir, build_dir)
         self.build_system.configure(ctx, source_dir, build_dir, self._config_args(ctx))
         self.build_system.build(ctx, build_dir)
-        self.build_system.install(ctx, build_dir, dest_dir)
+        self._install(ctx, build_dir, dest_dir)
 
         # Run post install hook
         self.post_install(ctx, source_dir, build_dir)
@@ -173,3 +174,15 @@ class BuildRecipe(ABC):
         This hook is called at the very end of the build process.
         """
         ...
+
+class ToolchainRecipe(BuildRecipe):
+    """
+    Base class describing how a toolchain component is built.
+
+    See Also:
+        :class:`BuildRecipe`: Base interface implementing core recipe workflow
+    """
+
+    def _install_path(self, ctx: BuildContext) -> Path|None:
+        # Binutils/GCC expect to be installed into --prefix directly
+        return None

@@ -1,13 +1,11 @@
 from build.context import BuildContext
-from .recipe import BuildRecipe, RecipeType
+from .recipe import ToolchainRecipe
 from source import TarballSource
 from build.system import Autotools
 
-class BinutilsRecipe(BuildRecipe):
+class BinutilsRecipe(ToolchainRecipe):
     name = "binutils"
     version = "2.47"
-
-    recipe_type = RecipeType.TOOLCHAIN_COMPONENT
 
     sources = [
         TarballSource(
@@ -22,7 +20,7 @@ class BinutilsRecipe(BuildRecipe):
             "--disable-gdb"
         ]
     )
-
+    
     def _config_args(self, ctx: BuildContext) -> list[str]:
         return [
             f"--build={ctx.build_machine.triple}",

@@ -13,8 +13,11 @@ ctx = BuildContext(
     target_machine=Target.X86_64,
 
     toolchain=NativeToolchain(),
-    cross_toolchain_dir=Path("toolchain/binaries").resolve(),
-    cross_toolchain_sysroot=Path("toolchain/sysroot").resolve(),
+    cross_toolchain_dir=Path("env/binaries").resolve(),
+    cross_toolchain_sysroot=Path("env/sysroot").resolve(),
 
     num_jobs=nproc()
 )
+
+from recipe.binutils import BinutilsRecipe
+BinutilsRecipe().build(ctx)

@@ -1,0 +1,93 @@
+from pathlib import Path
+from .buildsystem import BuildSystem
+from build.context import BuildContext
+
+class Autotools(BuildSystem):
+    """Abstraction for the autotools build system.
+
+    Args:
+        BuildSystem (_type_): _description_
+    """
+
+    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+        # Not needed
+        pass
+
+    def configure(self,
+                  ctx: BuildContext,
+                  source_dir: Path,
+                  build_dir: Path,
+                  config_args: list[str] | None = None):
+        """
+        Configure the Autotools project for building.
+
+        The method locates the supported configuration script in ``source_dir``
+        and executes it with the passed arguments.
+
+        Args:
+            ctx (BuildContext): Build context.
+            source_dir (Path): Directory containing the projects source tree.
+            build_dir (Path): Directory where the build will be configured.
+            config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
+        """
+
+        build_dir.mkdir(exist_ok=True, parents=True)
+
+        # Find config script
+        # Different projects might use different names for the same config file
+        config_script = None
+        for name in [ "configure", "Configure", "config" ]:
+            config_script = source_dir / name
+
+            if config_script.is_file():
+                break
+
+        # Build argument list
+        args = list(self.config_args or [])
+        args += config_args or []
+
+        # Execute config script
+        ctx.run(
+            [
+                str(config_script),
+                *args
+            ],
+            cwd=build_dir
+        )
+        
+    def build(self, ctx: BuildContext, build_dir: Path):
+        """
+        Compile the project using ``make``
+
+        Args:
+            ctx (BuildContext): Build context.
+            build_dir (Path): Directory containing the configured build tree.
+        """
+        ctx.run(
+            [ctx.toolchain.make, *(self.build_args or []), f"-j{ctx.num_jobs}"],
+            cwd=build_dir
+        )
+
+    def install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path | None = None):
+        """
+        Install the compiled artifacts using ``make install``.
+
+        If ``dest_dir`` is provided, it is passed to ``make`` as a
+        ``DESTDIR`` override, allowing for staged or relocatable installations.
+
+        Args:
+            ctx (BuildContext): Build context.
+            build_dir (Path): Directory containing the build output.
+            dest_dir (Path | None, optional): Destination override. Defaults to None.
+        """
+        cmd = [ ctx.toolchain.make ]
+
+        if dest_dir:
+            cmd.append(f"DESTDIR={dest_dir}")
+        
+        if self.install_args:
+            cmd.extend(self.install_args)
+        
+        cmd.append("install")
+
+        ctx.run(cmd, cwd=build_dir)

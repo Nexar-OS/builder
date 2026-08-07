@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from utils.logger import warn
 
-@dataclass
+@dataclass(frozen=True)
 class MachineSpec:
     """
     Describes a machine architecture.
@@ -25,6 +25,17 @@ class MachineSpec:
     arch: str
     kernel_arch: str
     triple: str
+
+    @property
+    def libdir(self) -> str:
+        """
+        Returns the default library directory for the architecture
+        """
+
+        if self.arch in { "x86_64", "aarch64", "ppc64le", "s390x" }:
+            return "usr/lib64"
+        
+        return "usr/lib"
 
 triple_suffix = "placeholder-linux-gnu"
 class Target:

@@ -10,3 +10,4 @@ from .grep import GrepRecipe
 from .sed import SedRecipe
 from .gawk import GawkRecipe
 from .diffutils import DiffutilsRecipe
+from .patch import PatchRecipe

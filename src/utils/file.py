@@ -38,7 +38,7 @@ def merge_trees(source: Path, dest: Path, copy: bool = False):
         
         else:
             # Remove whatever is currently at the destination
-            if dst.exists():
+            if dst.exists() or dst.is_symlink():
                 dst.unlink()
             
             # Move or copy file or symlinks without dereferencing it

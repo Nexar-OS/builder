@@ -6,7 +6,7 @@ from source.source import Source
 from build.context import BuildContext
 from build.system import BuildSystem
 from utils.logger import info, warn
-from utils.file import rmtree
+from utils.file import rmtree, merge_trees
 
 class BuildMethod(Enum):
     """
@@ -238,6 +238,40 @@ class TargetRecipe(BuildRecipe):
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
 
+    copy_to_toolchain: bool = False
+
+    _export_to_toolchain: list[str] = [
+        "usr/lib",
+        "usr/lib64",
+        "usr/include",
+        "usr/lib/pkgconfig",
+        "usr/share/pkgconfig"
+    ]
+
+    def _export_to_sysroot(self, ctx: BuildContext) -> None:
+        """
+        Export the build package into sysroot for future packages
+        to be able to link against it.
+        """
+        root = self._install_path(ctx)
+
+        if not root:
+            return
+
+        for relative in self._export_to_toolchain:
+            source = root / relative
+            dest = ctx.cross_toolchain_sysroot / relative
+
+            if not source.exists():
+                continue
+
+            info(f"Merging '{relative}' from '{self.name}' into sysroot.")
+            merge_trees(
+                source,
+                dest,
+                copy=True
+            )
+
     def _install_path(self, ctx: BuildContext) -> Path | None:
         return self.work_dir(ctx) / "rootfs"
 
@@ -265,3 +299,6 @@ class TargetRecipe(BuildRecipe):
         self._clean_rootfs(ctx)
 
         super().build(ctx)
+
+        if self.copy_to_toolchain:
+            self._export_to_sysroot(ctx)

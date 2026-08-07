@@ -42,7 +42,7 @@ class BuildRecipe(ABC):
 
     build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE  # most recipes are build out-of-source
     
-    build_system: BuildSystem
+    build_system: BuildSystem|None = None
 
     def _resolve_sources(self, source_dir: Path, build_dir: Path):
         """
@@ -121,6 +121,8 @@ class BuildRecipe(ABC):
             build_dir (Path): Directory where the build system already build the binaries into.
             dest_dir (Path): Destination directory to install the files into.
         """
+        assert self.build_system, "No build system complete installation!"
+
         self.build_system.install(ctx, build_dir, dest_dir)
 
     def build(self, ctx: BuildContext) -> None:
@@ -162,10 +164,12 @@ class BuildRecipe(ABC):
         self.patch(ctx, source_dir)
 
         # Run installation
-        self.build_system.prepare(ctx, source_dir, build_dir)
-        self.build_system.configure(ctx, source_dir, build_dir, self._config_args(ctx))
-        self.build_system.build(ctx, build_dir)
-        self._install(ctx, build_dir, dest_dir)
+        if self.build_system:
+            self.build_system.prepare(ctx, source_dir, build_dir)
+            self.build_system.configure(ctx, source_dir, build_dir, self._config_args(ctx))
+            self.build_system.build(ctx, build_dir)
+        
+            self._install(ctx, build_dir, dest_dir)
 
         # Run post install hook
         self.post_install(ctx, dest_dir)

@@ -37,11 +37,11 @@ class Source(ABC):
         if not self.validate(download_dir):
             info(f"Downloading source '{self.name}' into {download_dir}")
             self.download(download_dir)
+
+            # Post-download validation
+            assert self.validate(download_dir) != False, "Post-download validation failed!"
         else:
             info(f"Using cached download for source '{self.name}'")
-
-        # Post-download validation
-        assert self.validate(download_dir) != False, "Post-download validation failed!"
 
         info(f"Installing source '{self.name}' into {dest_dir}")
         self.prepare(download_dir, dest_dir)

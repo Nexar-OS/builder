@@ -19,3 +19,4 @@ from .which import WhichRecipe
 from .file import FileRecipe
 from .procps import ProcpsRecipe
 from .psmisc import PsmiscRecipe
+from .glibc import GlibCRuntimeRecipe

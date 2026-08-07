@@ -23,5 +23,5 @@ ctx = BuildContext(
 
 ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
-
-BashRecipe().build(ctx)
+# BashRecipe().build(ctx)
+ZlibRecipe().build(ctx)

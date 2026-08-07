@@ -8,3 +8,4 @@ from .coreutils import CoreutilsRecipe
 from .findutils import FindutilsRecipe
 from .grep import GrepRecipe
 from .sed import SedRecipe
+from .gawk import GawkRecipe

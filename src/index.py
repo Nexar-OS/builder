@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from recipe.target import *
 from toolchain import NativeToolchain, load_or_build_cross_toolchain
 from build import (
     BuildContext,
@@ -21,3 +22,6 @@ ctx = BuildContext(
 )
 
 ctx.toolchain = load_or_build_cross_toolchain(ctx)
+
+
+BashRecipe().build(ctx)

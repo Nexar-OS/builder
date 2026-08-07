@@ -2,13 +2,16 @@ from pathlib import Path
 from .buildsystem import BuildSystem
 from build.context import BuildContext
 from utils.logger import error, info
+from dataclasses import dataclass
 
+@dataclass
 class Autotools(BuildSystem):
     """Abstraction for the autotools build system.
 
     Args:
         BuildSystem (_type_): _description_
     """
+    disable_fakeroot: bool = False
 
     def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
         # Not needed
@@ -63,7 +66,8 @@ class Autotools(BuildSystem):
                 str(config_script),
                 *args
             ],
-            cwd=build_dir
+            cwd=build_dir,
+            use_fakeroot=not self.disable_fakeroot
         )
         
     def build(self, ctx: BuildContext, build_dir: Path):
@@ -76,7 +80,8 @@ class Autotools(BuildSystem):
         """
         ctx.run(
             [ctx.toolchain.make, *(self.build_args or []), f"-j{ctx.num_jobs}"],
-            cwd=build_dir
+            cwd=build_dir,
+            use_fakeroot=not self.disable_fakeroot
         )
 
     def install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path | None = None):
@@ -101,4 +106,4 @@ class Autotools(BuildSystem):
         
         cmd.append("install")
 
-        ctx.run(cmd, cwd=build_dir)
+        ctx.run(cmd, cwd=build_dir, use_fakeroot=not self.disable_fakeroot)

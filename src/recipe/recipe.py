@@ -297,8 +297,24 @@ class TargetRecipe(BuildRecipe):
 
         # Delete old run
         rmtree(dest)
+    
+    def export(self, ctx: BuildContext, dest: Path):
+        """
+        Exports the final rootfs the package was installed into
+        to its final destination.
+        """
 
-    def build(self, ctx: BuildContext) -> None:
+        rootfs = self._install_path(ctx)
+        if not rootfs:
+            return
+        
+        merge_trees(
+            rootfs,
+            dest,
+            copy=False
+        )
+
+    def build(self, ctx: BuildContext):
         """
         Invokes default recipe build behavior after cleaning the
         installation destination.

@@ -2,6 +2,7 @@ from pathlib import Path
 
 from recipe.target import *
 from toolchain import NativeToolchain, load_or_build_cross_toolchain
+from stage import Stage
 from build import (
     BuildContext,
     Target,
@@ -10,41 +11,44 @@ from build import (
 )
 
 ctx = BuildContext(
-    Path("build").resolve(),
-    build_machine=detect_machine(),
-    target_machine=Target.X86_64,
-
-    toolchain=NativeToolchain(),
-    cross_toolchain_dir=Path("env/binaries").resolve(),
-    cross_toolchain_sysroot=Path("env/sysroot").resolve(),
-
-    num_jobs=nproc()
+    build_dir               = Path("build").resolve(),
+    staging_dir             = Path("build/staging").resolve(),
+    build_machine           = detect_machine(),
+    target_machine          = Target.X86_64,
+    toolchain               = NativeToolchain(),
+    cross_toolchain_dir     = Path("env/binaries").resolve(),
+    cross_toolchain_sysroot = Path("env/sysroot").resolve(),
+    num_jobs                = nproc()
 )
 
 ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
-RootfsRecipe().build(ctx)
-GlibCRuntimeRecipe().build(ctx)
-LibstdcxxRuntimeRecipe().build(ctx)
-LibgccRuntimeRecipe().build(ctx)
-ZlibRecipe().build(ctx)
-XZRecipe().build(ctx)
-BZip2Recipe().build(ctx)
-ZStdRecipe().build(ctx)
-TarRecipe().build(ctx)
-NcursesRecipe().build(ctx)
-BashRecipe().build(ctx)
-CoreutilsRecipe().build(ctx)
-FindutilsRecipe().build(ctx)
-GrepRecipe().build(ctx)
-SedRecipe().build(ctx)
-GawkRecipe().build(ctx)
-DiffutilsRecipe().build(ctx)
-PatchRecipe().build(ctx)
-UtilLinuxRecipe().build(ctx)
-GZipRecipe().build(ctx)
-LessRecipe().build(ctx)
-WhichRecipe().build(ctx)
-FileRecipe().build(ctx)
-ProcpsRecipe().build(ctx)
-PsmiscRecipe().build(ctx)
+Stage(name="base", recipes=[
+    RootfsRecipe(),
+    GlibCRuntimeRecipe(),
+    LibstdcxxRuntimeRecipe(),
+    LibgccRuntimeRecipe(),
+    ZlibRecipe(),
+    XZRecipe(),
+    BZip2Recipe(),
+    ZStdRecipe(),
+    TarRecipe(),
+    NcursesRecipe(),
+    BashRecipe(),
+    CoreutilsRecipe(),
+    FindutilsRecipe(),
+    GrepRecipe(),
+    SedRecipe(),
+    GawkRecipe(),
+    DiffutilsRecipe(),
+    PatchRecipe(),
+    UtilLinuxRecipe(),
+    GZipRecipe(),
+    LessRecipe(),
+    WhichRecipe(),
+    FileRecipe(),
+    ProcpsRecipe(),
+    PsmiscRecipe()
+]) \
+    .build(ctx) \
+    .export(ctx)

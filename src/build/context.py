@@ -17,7 +17,8 @@ class BuildContext:
 
     Attributes:
         build_dir (Path): The directory where recipes will be build in.
-        
+        staging_dir (Path): The directory where the final output stages will be placed in.
+
         build_machine (MachineSpec): The "host-machine" on which the building will be executed.
         target_machine (MachineSpec): The targeted architecture the final build should run on.
 
@@ -28,6 +29,7 @@ class BuildContext:
         num_jobs (int): The amount of concurrent build jobs.
     """
     build_dir: Path
+    staging_dir: Path
 
     build_machine: MachineSpec
     target_machine: MachineSpec

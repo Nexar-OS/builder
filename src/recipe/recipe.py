@@ -80,7 +80,7 @@ class BuildRecipe(ABC):
         Returns:
             Path: Absolute path where the build takes place
         """
-        work_dir = ctx.build_dir / (self.name + "-" + self.version)
+        work_dir = ctx.build_dir / "recipe" / (self.name + "-" + self.version)
         work_dir.mkdir(exist_ok=True, parents=True)
 
         return work_dir.resolve()

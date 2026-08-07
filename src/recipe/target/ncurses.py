@@ -3,6 +3,7 @@ from build import BuildContext
 from build.system import Autotools
 from recipe import TargetRecipe
 from source import TarballSource
+from utils.file import merge_trees
 
 class NcursesRecipe(TargetRecipe):
     name = "ncurses"
@@ -25,14 +26,17 @@ class NcursesRecipe(TargetRecipe):
             "--with-normal",
             "--enable-widec",
             "--enable-pc-files",
-            "--with-pkg-config-libdir=/usr/lib/pkgconfig"
+            "--with-pkg-config-libdir=/usr/lib/pkgconfig",
+            "--disable-static",
+            "--without-debug"
         ]
     )
 
     def _config_args(self, ctx: BuildContext) -> list[str]:
         return [
             f"--build={ctx.build_machine.triple}",
-            f"--host={ctx.target_machine.triple}"
+            f"--host={ctx.target_machine.triple}",
+            f"--libdir={ctx.target_machine.libdir}"
         ]
 
     def post_install(self, ctx: BuildContext, dest_dir: Path | None) -> None:

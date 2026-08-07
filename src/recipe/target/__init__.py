@@ -6,3 +6,4 @@ from .zstd import ZStdRecipe
 from .tar import TarRecipe
 from .coreutils import CoreutilsRecipe
 from .findutils import FindutilsRecipe
+from .grep import GrepRecipe

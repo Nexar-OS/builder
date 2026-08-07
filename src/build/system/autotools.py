@@ -1,6 +1,7 @@
 from pathlib import Path
 from .buildsystem import BuildSystem
 from build.context import BuildContext
+from utils.logger import error
 
 class Autotools(BuildSystem):
     """Abstraction for the autotools build system.
@@ -41,6 +42,11 @@ class Autotools(BuildSystem):
 
             if config_script.is_file():
                 break
+
+        # Edge case: if the last checked entry doesn't exist
+        if config_script and not config_script.is_file():
+            error(f"Autotools failed to find config script in '{source_dir}'")
+            return
 
         # Build argument list
         args = list(self.config_args or [])

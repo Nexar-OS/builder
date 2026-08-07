@@ -168,7 +168,7 @@ class BuildRecipe(ABC):
         self._install(ctx, build_dir, dest_dir)
 
         # Run post install hook
-        self.post_install(ctx, source_dir, build_dir)
+        self.post_install(ctx, dest_dir)
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """
@@ -197,11 +197,15 @@ class BuildRecipe(ABC):
         """
         ...
 
-    def post_install(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+    def post_install(self, ctx: BuildContext, dest_dir: Path|None) -> None:
         """
         Perform additional actions after the installation step has been completed.
 
         This hook is called at the very end of the build process.
+
+        Args:
+            ctx (BuildContext): Context used for current build.
+            dest_dir (Path): The directory to where the program was built into.
         """
         ...
 

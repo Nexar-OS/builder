@@ -33,7 +33,7 @@ def merge_trees(source: Path, dest: Path, copy: bool = False):
         dst = dest / item.name
 
         # Merge real directories recursively
-        if dest.is_dir() and not item.is_symlink():
+        if item.is_dir() and not item.is_symlink():
             merge_trees(item, dst, copy)
         
         else:

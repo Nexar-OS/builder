@@ -15,3 +15,4 @@ info      = logger.info
 debug     = logger.debug
 critical  = logger.critical
 exception = logger.exception
+error     = logger.error

@@ -5,7 +5,7 @@ from enum import Enum, auto
 from source.source import Source
 from build.context import BuildContext
 from build.system import BuildSystem
-from utils.logger import info
+from utils.logger import info, warn
 from utils.file import rmtree
 
 class BuildMethod(Enum):
@@ -240,3 +240,28 @@ class TargetRecipe(BuildRecipe):
 
     def _install_path(self, ctx: BuildContext) -> Path | None:
         return self.work_dir(ctx) / "rootfs"
+
+    def _clean_rootfs(self, ctx: BuildContext):
+        """
+        Cleans the root filesystem where the package will be installed into.
+        This prevents configuration contamination over multiple runs within
+        the same build directory.
+        """
+
+        dest = self._install_path(ctx)
+        if not dest:
+            warn(f"Dest of TargetRecipe '{self.name}' is None.")
+            return
+
+        # Delete old run
+        rmtree(dest)
+
+    def build(self, ctx: BuildContext) -> None:
+        """
+        Invokes default recipe build behavior after cleaning the
+        installation destination.
+        """
+
+        self._clean_rootfs(ctx)
+
+        super().build(ctx)

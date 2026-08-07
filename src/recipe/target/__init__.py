@@ -5,3 +5,4 @@ from .bzip2 import BZip2Recipe
 from .zstd import ZStdRecipe
 from .tar import TarRecipe
 from .coreutils import CoreutilsRecipe
+from .findutils import FindutilsRecipe

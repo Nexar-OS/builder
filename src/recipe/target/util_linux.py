@@ -18,7 +18,12 @@ class UtilLinuxRecipe(TargetRecipe):
     build_system = Autotools(
         config_args=[
             "--prefix=/usr"
-        ]
+        ],
+
+        # Autotools might end up finding the lib flags of the host system.
+        # This assumes that ncurses has already been built into the sysroot
+        # and will be available in the target root as well.
+        build_args=[ "LIBS=-lncursesw -ltinfow" ]
     )
 
     def _config_args(self, ctx: BuildContext) -> list[str]:

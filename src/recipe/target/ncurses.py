@@ -36,7 +36,7 @@ class NcursesRecipe(TargetRecipe):
         return [
             f"--build={ctx.build_machine.triple}",
             f"--host={ctx.target_machine.triple}",
-            f"--libdir={ctx.target_machine.libdir}"
+            f"--libdir=/{ctx.target_machine.libdir}"
         ]
 
     def post_install(self, ctx: BuildContext, dest_dir: Path | None) -> None:

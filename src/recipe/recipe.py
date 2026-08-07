@@ -228,3 +228,15 @@ class SysrootRecipe(BuildRecipe):
 
     def _install_path(self, ctx: BuildContext) -> Path | None:
         return ctx.cross_toolchain_sysroot
+    
+class TargetRecipe(BuildRecipe):
+    """
+    Base class describing how packages targeting the final operating
+    system should be built using the cross compiler toolchain.
+
+    See Also:
+        :class:`BuildRecipe`: Base interface implementing core recipe workflow
+    """
+
+    def _install_path(self, ctx: BuildContext) -> Path | None:
+        return self.work_dir(ctx) / "rootfs"

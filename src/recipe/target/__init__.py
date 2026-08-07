@@ -17,3 +17,4 @@ from .ncurses import NcursesRecipe
 from .less import LessRecipe
 from .which import WhichRecipe
 from .file import FileRecipe
+from .procps import ProcpsRecipe

@@ -111,5 +111,10 @@ class Toolchain(ABC):
             "NM": self.nm,
             "RANLIB": self.ranlib,
             "STRIP": self.strip,
-            "PKG_CONFIG": self.pkg_config
+            "PKG_CONFIG": self.pkg_config,
+            "PKG_CONFIG_SYSROOT_DIR": f"{self.sysroot}/sysroot",
+            "PKG_CONFIG_LIBDIR": ":".join([
+                str(self.sysroot / "usr/lib/pkgconfig"),
+                str(self.sysroot / "usr/share/pkgconfig")
+            ])
         }

@@ -68,6 +68,10 @@ class BuildContext:
         if use_toolchain_env:
             kwargs.setdefault("env", self.env)
 
+        # Prepend fakeroot if enabled
+        if use_fakeroot:
+            cmd = [ "fakeroot" ] + cmd
+
         result = subprocess.run(
             cmd,
             text=True,

@@ -12,3 +12,4 @@ from .gawk import GawkRecipe
 from .diffutils import DiffutilsRecipe
 from .patch import PatchRecipe
 from .util_linux import UtilLinuxRecipe
+from .gzip import GZipRecipe

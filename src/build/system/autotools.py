@@ -1,7 +1,7 @@
 from pathlib import Path
 from .buildsystem import BuildSystem
 from build.context import BuildContext
-from utils.logger import error
+from utils.logger import error, info
 
 class Autotools(BuildSystem):
     """Abstraction for the autotools build system.
@@ -34,6 +34,15 @@ class Autotools(BuildSystem):
 
         build_dir.mkdir(exist_ok=True, parents=True)
 
+        # Build argument list
+        args = list(self.config_args or [])
+        args += config_args or []
+
+        # No config args were passed means no configuration will be invoked
+        if not args:
+            info("No config args passed. Skipping configuration.")
+            return
+
         # Find config script
         # Different projects might use different names for the same config file
         config_script = None
@@ -47,10 +56,6 @@ class Autotools(BuildSystem):
         if config_script and not config_script.is_file():
             error(f"Autotools failed to find config script in '{source_dir}'")
             return
-
-        # Build argument list
-        args = list(self.config_args or [])
-        args += config_args or []
 
         # Execute config script
         ctx.run(

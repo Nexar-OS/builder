@@ -46,12 +46,15 @@ class Stage:
         
         return self
 
-    def export(self, ctx: BuildContext) -> None:
+    def export(self, ctx: BuildContext, copy: bool = False) -> None:
         """
         Export all built recipe outputs into this stage's staging directory.
 
         For each recipe the install path is retrieved and its contents
         are merged into the stage directory.
+
+        Args:
+            copy (bool): If true, separate root filesystems will be kept.
         """
         info(f"Exporting to stage '{self.name}': {', '.join([ r.name for r in self.recipes ])}.")
         stage_dir = self._stage_dir(ctx)
@@ -66,5 +69,5 @@ class Stage:
             merge_trees(
                 path,
                 stage_dir,
-                copy=False
+                copy=copy
             )

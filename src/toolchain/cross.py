@@ -30,6 +30,11 @@ def validate_toolchain(
         bool: True if the cross compiler is valid.
     """
 
+    # Fail early if toolchain dir doesn't exist
+    if not toolchain_dir.is_dir():
+        info(f"No toolchain at '{str(toolchain_dir)}'")
+        return False
+
     info(f"Testing toolchain '{triple}' at '{str(toolchain_dir)}'")
 
     # Check compiler binaries exist
@@ -47,6 +52,7 @@ def validate_toolchain(
 
     # Check required sysroot paths exist
     for path in [
+        sysroot,
         sysroot / "usr" / "include",
         sysroot / "usr" / "lib"
     ]:

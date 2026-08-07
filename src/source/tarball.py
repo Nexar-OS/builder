@@ -7,6 +7,7 @@ import hashlib
 
 from utils.download import download_url
 from utils.logger import debug
+from utils.file import rmtree
 
 def _extract_flat_tar(tarball: Path, dest: Path):
     """
@@ -31,6 +32,16 @@ def _extract_flat_tar(tarball: Path, dest: Path):
         for member in members:
             if strip_prefix and member.name.startswith(strip_prefix):
                 member.name = member.name.removeprefix(strip_prefix)
+            
+            # Handle already extracted files (e.g. from another run)
+            file = dest / member.name
+            if file.exists():
+                # Assume same file size == same file
+                if file.stat().st_size == member.size:
+                    continue
+
+                # Only extract if real file differs from the compressed
+                rmtree(file)
             
             tar.extract(member, dest)
 

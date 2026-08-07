@@ -22,6 +22,7 @@ class NcursesRecipe(TargetRecipe):
             "--prefix=/usr",
             "--with-termlib",
             "--with-shared",
+            "--with-normal",
             "--enable-widec",
             "--enable-pc-files",
             "--with-pkg-config-libdir=/usr/lib/pkgconfig"

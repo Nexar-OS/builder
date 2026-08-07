@@ -33,9 +33,9 @@ class MachineSpec:
         """
 
         if self.arch in { "x86_64", "aarch64", "ppc64le", "s390x" }:
-            return "usr/lib64"
+            return "/usr/lib64"
         
-        return "usr/lib"
+        return "/usr/lib"
 
 triple_suffix = "placeholder-linux-gnu"
 class Target:

@@ -14,3 +14,4 @@ from .patch import PatchRecipe
 from .util_linux import UtilLinuxRecipe
 from .gzip import GZipRecipe
 from .ncurses import NcursesRecipe
+from .less import LessRecipe

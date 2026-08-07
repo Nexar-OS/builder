@@ -25,6 +25,7 @@ ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
 GlibCRuntimeRecipe().build(ctx)
 LibstdcxxRuntimeRecipe().build(ctx)
+LibgccRuntimeRecipe().build(ctx)
 ZlibRecipe().build(ctx)
 XZRecipe().build(ctx)
 BZip2Recipe().build(ctx)

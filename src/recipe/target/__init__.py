@@ -15,3 +15,4 @@ from .util_linux import UtilLinuxRecipe
 from .gzip import GZipRecipe
 from .ncurses import NcursesRecipe
 from .less import LessRecipe
+from .which import WhichRecipe

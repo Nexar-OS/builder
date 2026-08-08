@@ -17,11 +17,16 @@ class DiffutilsRecipe(TargetRecipe):
 
     build_system = Autotools(
         config_args=[
-            "--prefix=/usr"
+            "--prefix=/usr",
+
+            # Skip a check that tries to invoke the produced binary
+            # This won't work if we're cross compiling to another architecture
+            "gl_cv_func_strcasecmp_works=yes"
         ]
     )
 
     def _config_args(self, ctx: BuildContext) -> list[str]:
         return [
+            f"--build={ctx.build_machine.triple}",
             f"--host={ctx.target_machine.triple}"
         ]

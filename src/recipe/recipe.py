@@ -1,12 +1,34 @@
 from pathlib import Path
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, asdict
 from enum import Enum, auto
+
+import json
+from hashlib import sha256
 
 from source.source import Source
 from build.context import BuildContext
 from build.system import BuildSystem
 from utils.logger import info, warn
 from utils.file import rmtree, merge_trees
+
+@dataclass(frozen=True)
+class RecipeMetadata:
+    """
+    A ``RecipeMetadata`` stores build specific metadata for the builder to
+    decide if a rebuild is necessary.
+    """
+
+    name: str
+    fingerprint: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, str]) -> "RecipeMetadata":
+        """Create metadata from a dictionary."""
+        return cls(
+            name=data["name"],
+            fingerprint=data["fingerprint"]
+        )
 
 class BuildMethod(Enum):
     """
@@ -43,6 +65,89 @@ class BuildRecipe(ABC):
     build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE  # most recipes are build out-of-source
     
     build_system: BuildSystem|None = None
+
+    def metadata(self, ctx: BuildContext) -> RecipeMetadata:
+        """
+        Return the recipes metadata.
+        """
+        return RecipeMetadata(
+            name=self.name,
+            fingerprint=self.fingerprint(ctx)
+        )
+
+    def fingerprint(self, ctx: BuildContext) -> str:
+        """
+        Compute a deterministic fingerprint for this recipe.
+
+        The fingerprint uniquely identifies the current build state of the
+        recipe by hashing:
+        - the recipe name
+        - the resolved build options
+
+        Returns:
+            str: A SHA-256 digest representing the recipe state.
+        """
+        h = sha256()
+
+        # Recipe identity
+        h.update(self.name.encode())
+
+        # Build system args
+        config_args = self._config_args(ctx)
+        build_args = None
+        install_args = None
+        if self.build_system:
+            if self.build_system.config_args:
+                config_args = config_args + self.build_system.config_args
+
+            build_args = self.build_system.build_args
+            install_args = self.build_system.install_args
+
+        h.update(f"{config_args}-{build_args}-{install_args}".encode())
+
+        return h.hexdigest()
+
+    def metadata_path(self, ctx: BuildContext) -> Path:
+        """
+        Return the path to the recipe's build metadata file.
+
+        Returns:
+            Path: Path to the JSON metadata file for this recipe.
+        """
+        path = ctx.metadata_dir / "recipes" / f"{self.name}.json"
+        path.parent.mkdir(exist_ok=True, parents=True)
+
+        return path
+
+    def needs_rebuild(self, ctx: BuildContext) -> bool:
+        """
+        Determine whether the recipe must be rebuilt.
+
+        A rebuild is required if no metadata from a previous build exists or 
+        if the stored fingerprint differs from the fingerprint computed from
+        the current recipe state.
+
+        Returns:
+            bool: True if the recipe should be rebuilt, otherwise False.
+        """
+        path = self.metadata_path(ctx)
+
+        if not path.exists():
+            return True
+        
+        old = json.loads(path.read_text())["fingerprint"]
+        return old != self.fingerprint(ctx)
+
+    def mark_built(self, ctx: BuildContext) -> None:
+        """
+        Record the current recipe fingerprint as successfully built.
+        """
+        path = self.metadata_path(ctx)
+        path.write_text(
+            json.dumps(
+                asdict(self.metadata(ctx))
+            )
+        )
 
     def _resolve_sources(self, source_dir: Path, build_dir: Path):
         """
@@ -173,6 +278,8 @@ class BuildRecipe(ABC):
 
         # Run post install hook
         self.post_install(ctx, dest_dir)
+
+        self.mark_built(ctx)
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """

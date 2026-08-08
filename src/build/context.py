@@ -18,6 +18,7 @@ class BuildContext:
     Attributes:
         build_dir (Path): The directory where recipes will be build in.
         staging_dir (Path): The directory where the final output stages will be placed in.
+        metadata_dir (Path): The directory where recipe metadata files will be stored.
 
         build_machine (MachineSpec): The "host-machine" on which the building will be executed.
         target_machine (MachineSpec): The targeted architecture the final build should run on.
@@ -30,6 +31,7 @@ class BuildContext:
     """
     build_dir: Path
     staging_dir: Path
+    metadata_dir: Path
 
     build_machine: MachineSpec
     target_machine: MachineSpec

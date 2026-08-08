@@ -275,6 +275,10 @@ class BuildRecipe(ABC):
 
         self._resolve_sources(source_dir, build_dir)
 
+        # Fix source directory passed to build system
+        if self.build_method == BuildMethod.IN_SOURCE:
+            source_dir = build_dir
+
         # Let recipes prepare their environment
         self.prepare(ctx, source_dir, build_dir)
 

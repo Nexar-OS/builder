@@ -13,6 +13,7 @@ from build import (
 ctx = BuildContext(
     build_dir               = Path("build").resolve(),
     staging_dir             = Path("build/staging").resolve(),
+    metadata_dir            = Path("build/.metadata").resolve(),
     build_machine           = detect_machine(),
     target_machine          = Target.X86_64,
     toolchain               = NativeToolchain(),

@@ -42,7 +42,12 @@ class Stage:
         """
 
         for recipe in self.recipes:
-            recipe.build(ctx)
+            if recipe.needs_rebuild(ctx):
+                info(f"Building '{recipe.name}'.")
+                recipe.build(ctx)
+            
+            else:
+                info(f"Skipping {recipe.name} (up to date).")
         
         return self
 

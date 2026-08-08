@@ -80,13 +80,20 @@ class Toolchain(ABC):
     @property
     def cflags(self) -> list[str]:
         return [
-
+            "-O2",
+            "-pipe",
+            f"--sysroot={self.sysroot}",
+            f"-I{self.sysroot}/usr/include",
         ]
     
     @property
     def ldflags(self) -> list[str]:
         return [
-
+            "-Wl,-z,relro",
+            "-Wl,-z,now",
+            f"--sysroot={self.sysroot}",
+            f"-L{self.sysroot}/usr/lib",
+            f"-L{self.prefix / self.target.triple}/lib"
         ]
     
     @property
@@ -111,10 +118,17 @@ class Toolchain(ABC):
             "NM": self.nm,
             "RANLIB": self.ranlib,
             "STRIP": self.strip,
+            "SYSROOT": str(self.sysroot),
+            
+            "CFLAGS": " ".join(self.cflags),
+            "CPPFLAGS": " ".join(self.cflags),
+            "CXXFLAGS": " ".join(self.cflags),
+            "LDFLAGS": " ".join(self.ldflags),
+
             "PKG_CONFIG": self.pkg_config,
-            "PKG_CONFIG_SYSROOT_DIR": f"{self.sysroot}/sysroot",
+            "PKG_CONFIG_SYSROOT_DIR": f"{self.sysroot}",
             "PKG_CONFIG_LIBDIR": ":".join([
                 str(self.sysroot / "usr/lib/pkgconfig"),
                 str(self.sysroot / "usr/share/pkgconfig")
-            ])
+            ]),
         }

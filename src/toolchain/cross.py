@@ -8,6 +8,7 @@ from toolchain import Toolchain
 
 from recipe.toolchain import *
 from recipe.sysroot import *
+from build import MachineSpec
 
 from utils.logger import info, warn, debug
 from utils.file import rmtree
@@ -134,14 +135,9 @@ def load_cross_toolchain(ctx: BuildContext) -> Toolchain | None:
         info("Tried to load invalid toolchain.")
         return None
 
-    return Toolchain(
-        "cross",
-        target=ctx.target_machine,
-        prefix=ctx.cross_toolchain_dir,
-        sysroot=ctx.cross_toolchain_sysroot
-    )
+    return CrossToolchain(ctx)
 
-def build_cross_toolchain(ctx: BuildContext) -> Toolchain:
+def build_cross_toolchain(ctx: BuildContext) -> "CrossToolchain":
     """
     Build a complete cross-compiler toolchain using a staged bootstrap process.
 
@@ -203,12 +199,7 @@ def build_cross_toolchain(ctx: BuildContext) -> Toolchain:
     GCCSecondPassRecipe().build(ctx)
 
     # Construct the final cross compiler
-    toolchain = Toolchain(
-        name="cross",
-        target=ctx.target_machine,
-        prefix=ctx.cross_toolchain_dir,
-        sysroot=ctx.cross_toolchain_sysroot
-    )
+    toolchain = CrossToolchain(ctx)
 
     # Validate toolchain
     info("Testing new toolchain.")
@@ -244,3 +235,30 @@ def load_or_build_cross_toolchain(ctx: BuildContext):
     toolchain = build_cross_toolchain(ctx)
 
     return toolchain
+
+class CrossToolchain(Toolchain):
+    """
+    Representation of a cross compiler toolchain and its build environment.
+
+    The resulting Toolchain object is the compiler used for building all future
+    target packages and root filesystem artifacts.
+    """
+    def __init__(self, ctx: BuildContext):
+        super().__init__(
+            name="cross",
+            target=ctx.target_machine,
+            prefix=ctx.cross_toolchain_dir,
+            sysroot=ctx.cross_toolchain_sysroot
+        )
+    
+    @property
+    def cflags(self) -> list[str]:
+        return super().cflags + [
+            f"--sysroot={self.sysroot}"
+        ]
+    
+    @property
+    def ldflags(self) -> list[str]:
+        return super().ldflags + [
+            f"--sysroot={self.sysroot}"
+        ]

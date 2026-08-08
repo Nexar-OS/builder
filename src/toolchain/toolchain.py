@@ -81,19 +81,14 @@ class Toolchain(ABC):
     def cflags(self) -> list[str]:
         return [
             "-O2",
-            "-pipe",
-            f"--sysroot={self.sysroot}",
-            f"-I{self.sysroot}/usr/include",
+            "-pipe"
         ]
     
     @property
     def ldflags(self) -> list[str]:
         return [
             "-Wl,-z,relro",
-            "-Wl,-z,now",
-            f"--sysroot={self.sysroot}",
-            f"-L{self.sysroot}/usr/lib",
-            f"-L{self.prefix / self.target.triple}/lib"
+            "-Wl,-z,now"
         ]
     
     @property

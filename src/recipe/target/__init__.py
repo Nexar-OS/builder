@@ -24,3 +24,4 @@ from .glibc import GlibCRuntimeRecipe
 from .libstdc import LibstdcxxRuntimeRecipe
 from .libgcc import LibgccRuntimeRecipe
 from .kmod import KmodRecipe
+from .pciutils import PciutilsRecipe

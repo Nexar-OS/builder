@@ -35,10 +35,15 @@ class RootfsRecipe(TargetRecipe):
         (dest_dir / "var/tmp").chmod(0o1777)
 
         # usr-merge compatibility symlinks
-        for name in list( { "bin", "sbin", "lib", ctx.target_machine.libdir.split("/")[-1] } ):
+        for name, target in {
+            "bin": "usr/bin",
+            "sbin": "usr/sbin",
+            "lib": "usr/lib",
+            ctx.target_machine.libdir.split("/")[-1]: "usr/lib"
+        }.items():
             link = dest_dir / name
 
             if link.exists() or link.is_symlink():
                 link.unlink()
             
-            link.symlink_to(f"usr/{name}")
+            link.symlink_to(target)

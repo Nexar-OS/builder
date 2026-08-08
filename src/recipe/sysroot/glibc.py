@@ -26,5 +26,6 @@ class GlibCRecipe(SysrootRecipe):
 
     def _config_args(self, ctx: BuildContext) -> list[str]:
         return [
-            f"--host={ctx.build_machine.triple}"
+            f"--build={ctx.build_machine.triple}",
+            f"--host={ctx.target_machine.triple}"
         ]

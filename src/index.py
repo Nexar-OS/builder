@@ -51,7 +51,8 @@ Stage(name="base", recipes=[
     ProcpsRecipe(),
     PsmiscRecipe(),
     KmodRecipe(),
-    PciutilsRecipe()
+    PciutilsRecipe(),
+    # USButilsRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx)

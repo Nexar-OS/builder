@@ -50,7 +50,7 @@ class Target:
 
     AARCH64 = MachineSpec(
         arch="aarch64",
-        kernel_arch="aarch64",
+        kernel_arch="arm64",
         triple=f"aarch64-{triple_suffix}"
     )
 

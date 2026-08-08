@@ -59,11 +59,10 @@ class NcursesRecipe(TargetRecipe):
             link.symlink_to(f"../{header}")
         
         # Create symlinks for wide-character libraries
+        libdir = dest_dir / ctx.target_machine.libdir
         for lib in [ "libform", "libmenu", "libncurses", "libpanel", "libtinfo" ]:
             wlib = f"{lib}w.so"
-            lib = f"{lib}.so"
-
-            link = dest_dir / "usr/lib" / lib
+            link = libdir / f"{lib}.so"
 
             if link.exists() or link.is_symlink():
                 link.unlink()

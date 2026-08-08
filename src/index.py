@@ -49,7 +49,8 @@ Stage(name="base", recipes=[
     WhichRecipe(),
     FileRecipe(),
     ProcpsRecipe(),
-    PsmiscRecipe()
+    PsmiscRecipe(),
+    KmodRecipe()
 ]) \
     .build(ctx) \
     .export(ctx)

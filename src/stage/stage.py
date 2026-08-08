@@ -1,3 +1,4 @@
+from typing import Callable
 from pathlib import Path
 from build import BuildContext
 from recipe import TargetRecipe
@@ -21,6 +22,10 @@ class Stage:
     name: str
     recipes: list[TargetRecipe]
 
+    # Optional lifecycle hooks
+    pre_build_hook: Callable | None = None
+    post_build_hook: Callable | None = None
+
     def _stage_dir(self, ctx: BuildContext) -> Path:
         """
         Return the directory used to store this stage's exported files
@@ -41,6 +46,9 @@ class Stage:
             ctx (BuildContext): Context used for the build.
         """
 
+        if self.pre_build_hook:
+            self.pre_build_hook(self, ctx)
+
         for recipe in self.recipes:
             if recipe.needs_rebuild(ctx):
                 info(f"Building '{recipe.name}'.")
@@ -49,6 +57,9 @@ class Stage:
             else:
                 info(f"Skipping {recipe.name} (up to date).")
         
+        if self.post_build_hook:
+            self.post_build_hook(self, ctx)
+
         return self
 
     def export(self, ctx: BuildContext, copy: bool = False) -> None:

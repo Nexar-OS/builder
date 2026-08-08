@@ -6,6 +6,7 @@ from source import TarballSource
 class ZlibRecipe(TargetRecipe):
     name = "zlib"
     version = "1.3.2"
+    copy_to_toolchain = True
 
     sources = [
         TarballSource(

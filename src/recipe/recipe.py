@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, asdict
 from enum import Enum, auto
 
+import time
 import json
 from hashlib import sha256
 
@@ -21,13 +22,30 @@ class RecipeMetadata:
 
     name: str
     fingerprint: str
+    last_build: str
 
     @classmethod
     def from_dict(cls, data: dict[str, str]) -> "RecipeMetadata":
         """Create metadata from a dictionary."""
         return cls(
             name=data["name"],
-            fingerprint=data["fingerprint"]
+            fingerprint=data["fingerprint"],
+            last_build=data["last_build"]
+        )
+
+    @classmethod
+    def load(cls, path: Path):
+        """Load a recipe's metadata from a savefile.
+
+        Returns:
+            "RecipeMetadata"|None: Returns None if passes file isn't a metadata file.
+                                   Otherwise the metadata object will be returned.
+        """
+        if not path.is_file():
+            return None
+        
+        return cls.from_dict(
+            json.loads(path.read_text())
         )
 
 class BuildMethod(Enum):
@@ -65,15 +83,6 @@ class BuildRecipe(ABC):
     build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE  # most recipes are build out-of-source
     
     build_system: BuildSystem|None = None
-
-    def metadata(self, ctx: BuildContext) -> RecipeMetadata:
-        """
-        Return the recipes metadata.
-        """
-        return RecipeMetadata(
-            name=self.name,
-            fingerprint=self.fingerprint(ctx)
-        )
 
     def fingerprint(self, ctx: BuildContext) -> str:
         """
@@ -145,7 +154,11 @@ class BuildRecipe(ABC):
         path = self.metadata_path(ctx)
         path.write_text(
             json.dumps(
-                asdict(self.metadata(ctx))
+                asdict(RecipeMetadata(
+                    name=self.name,
+                    fingerprint=self.fingerprint(ctx),
+                    last_build=str(time.time())
+                ))
             )
         )
 

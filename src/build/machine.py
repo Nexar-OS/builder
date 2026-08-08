@@ -57,7 +57,7 @@ class Target:
     ARMV7 = MachineSpec(
         arch="armv7",
         kernel_arch="arm",
-        triple=f"arm-{triple_suffix}"
+        triple=f"armv7-{triple_suffix}eabihf"
     )
 
 

@@ -27,3 +27,4 @@ from .kmod import KmodRecipe
 from .pciutils import PciutilsRecipe
 from .usbutils import USButilsRecipe
 from .kernel import KernelRecipe
+from .init import InitRecipe

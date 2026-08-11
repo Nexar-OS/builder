@@ -54,6 +54,7 @@ Stage(name="base", recipes=[
     PciutilsRecipe(),
     # USButilsRecipe(),
     KernelRecipe(),
+    InitRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx)

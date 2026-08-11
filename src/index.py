@@ -53,6 +53,7 @@ Stage(name="base", recipes=[
     KmodRecipe(),
     PciutilsRecipe(),
     # USButilsRecipe(),
+    KernelRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx)

@@ -44,7 +44,7 @@ class Target:
     """
     X86_64 = MachineSpec(
         arch="x86_64",
-        kernel_arch="x86_64",
+        kernel_arch="x86", # _64 will be determined by cross compiler
         triple=f"x86_64-{triple_suffix}"
     )
 

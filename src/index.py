@@ -59,6 +59,7 @@ Stage(name="base", recipes=[
     LinuxPamRecipe(),
     LibcapRecipe(),
     LibseccompRecipe(),
+    DbusRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx)

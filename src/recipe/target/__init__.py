@@ -31,5 +31,5 @@ from .init import InitRecipe
 from .libxcrypt import LibxcryptRecipe
 from .linux_pam import LinuxPamRecipe
 from .libcap import LibcapRecipe
-from ..sysroot.gperf import GperfRecipe
 from .libseccomp import LibseccompRecipe
+from .dbus import DbusRecipe

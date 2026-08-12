@@ -370,6 +370,8 @@ class TargetRecipe(BuildRecipe):
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
 
+    depends_on: list[BuildRecipe]|None = None
+
     copy_to_toolchain: bool = False
 
     _export_to_toolchain: list[str] = [
@@ -422,6 +424,25 @@ class TargetRecipe(BuildRecipe):
         # Delete old run
         rmtree(dest)
 
+    def _resolve_dependencies(self, ctx: BuildContext):
+        """
+        Tries to invoke the build of all required dependency recipes.
+
+        If the recipe is already marked as built in metadata-cache,
+        it will be skipped.
+        """
+        if not self.depends_on:
+            return
+        
+        for dependency in self.depends_on:
+            info(f"Resolving dependency '{dependency.name}' for '{self.name}'")
+            if not dependency.needs_rebuild(ctx):
+                info(f"Dependency '{dependency.name}' was already built!")
+                continue
+
+            dependency.build(ctx)
+
+
     def build(self, ctx: BuildContext):
         """
         Invokes default recipe build behavior after cleaning the
@@ -429,6 +450,7 @@ class TargetRecipe(BuildRecipe):
         """
 
         self._clean_rootfs(ctx)
+        self._resolve_dependencies(ctx)
 
         super().build(ctx)
 

@@ -87,7 +87,7 @@ class Meson(BuildSystem):
             build_dir (Path): Directory containing the configured build tree.
         """
         ctx.run(
-            [ctx.toolchain.ninja, "-C", "build"],
+            [ctx.toolchain.ninja, "-C", str(build_dir)],
             cwd=build_dir,
             use_fakeroot=not self.disable_fakeroot
         )
@@ -106,12 +106,20 @@ class Meson(BuildSystem):
         """
         cmd = [ ctx.toolchain.ninja ]
 
+        # Destdir must be passed as an environment variable
+        env = ctx.env
         if dest_dir:
-            cmd = [ f"DESTDIR={dest_dir}" ] + cmd
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            env["DESTDIR"] = str(dest_dir)
         
         if self.install_args:
             cmd.extend(self.install_args)
         
-        cmd += [ "-C", "build", "install" ]
+        cmd += [ "-C", str(build_dir), "install" ]
 
-        ctx.run(cmd, cwd=build_dir, use_fakeroot=not self.disable_fakeroot)
+        ctx.run(
+            cmd,
+            cwd=build_dir,
+            use_fakeroot=not self.disable_fakeroot,
+            env=env
+        )

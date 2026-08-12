@@ -55,6 +55,7 @@ Stage(name="base", recipes=[
     # USButilsRecipe(),
     KernelRecipe(),
     InitRecipe(),
+    LibxcryptRecipe(),
 ]) \
     .build(ctx) \
-    .export(ctx)
+    # .export(ctx)

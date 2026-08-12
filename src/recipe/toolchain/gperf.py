@@ -1,9 +1,9 @@
 from build.context import BuildContext
 from build.system import Autotools
-from recipe import SysrootRecipe
+from recipe import ToolchainRecipe
 from source import TarballSource
 
-class GperfRecipe(SysrootRecipe):
+class GperfRecipe(ToolchainRecipe):
     name = "gperf"
     version = "3.3"
 
@@ -15,12 +15,13 @@ class GperfRecipe(SysrootRecipe):
         )
     ]
 
-    build_system = Autotools([
-        "--prefix=/usr"
-    ])
+    build_system = Autotools()
 
     def _config_args(self, ctx: BuildContext) -> list[str]:
         return [
-            f"--host={ctx.target_machine.triple}",
-            f"--build={ctx.build_machine.triple}"
+            f"--build={ctx.build_machine.triple}",
+            f"--host={ctx.build_machine.triple}",
+            f"--target={ctx.target_machine.triple}",
+            f"--prefix={ctx.cross_toolchain_dir}",
+            f"--with-sysroot={ctx.cross_toolchain_sysroot}"
         ]

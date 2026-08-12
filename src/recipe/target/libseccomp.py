@@ -2,7 +2,7 @@ from build.context import BuildContext
 from build.system import Autotools
 from recipe import TargetRecipe, BuildMethod
 from source import TarballSource
-from recipe.sysroot import GperfRecipe
+from recipe.toolchain import GperfRecipe
 
 class LibseccompRecipe(TargetRecipe):
     name = "libseccomp"

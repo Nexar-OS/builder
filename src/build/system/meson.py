@@ -77,7 +77,6 @@ class Meson(BuildSystem):
             cwd=build_dir,
             use_fakeroot=not self.disable_fakeroot
         )
-        exit()
         
     def build(self, ctx: BuildContext, build_dir: Path):
         """

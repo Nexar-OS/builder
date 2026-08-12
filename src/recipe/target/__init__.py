@@ -30,3 +30,4 @@ from .kernel import KernelRecipe
 from .init import InitRecipe
 from .libxcrypt import LibxcryptRecipe
 from .linux_pam import LinuxPamRecipe
+from .libcap import LibcapRecipe

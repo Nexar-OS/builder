@@ -58,6 +58,7 @@ Stage(name="base", recipes=[
     LibxcryptRecipe(),
     LinuxPamRecipe(),
     LibcapRecipe(),
+    LibseccompRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx)

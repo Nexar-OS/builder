@@ -1,3 +1,4 @@
+from pathlib import Path
 from build import BuildContext
 from build.system import Autotools
 from recipe import TargetRecipe
@@ -27,3 +28,16 @@ class BashRecipe(TargetRecipe):
             f"--build={ctx.build_machine.triple}",
             f"--host={ctx.target_machine.triple}"
         ]
+    
+    def post_install(self, ctx: BuildContext, dest_dir: Path | None) -> None:
+        """
+        Creates a symlink from sh to bash.
+        """
+        if not dest_dir:
+            return
+
+        bin = dest_dir / "bin"
+        bin.mkdir(exist_ok=True, parents=True)
+
+
+        (bin / "sh").symlink_to("bash")

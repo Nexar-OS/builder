@@ -1,13 +1,17 @@
-from build import BuildContext
 from build.system import Meson
-from recipe import TargetRecipe, BuildMethod
+from recipe import TargetRecipe
 from source import TarballSource
+from recipe.target.libusb import LibusbRecipe
 
 # TODO:
 # USBUtils depends on libudev which is part of systemd
 class USButilsRecipe(TargetRecipe):
     name = "usb-utils"
     version = "018"
+
+    depends_on = [
+        LibusbRecipe()
+    ]
 
     sources = [
         TarballSource(

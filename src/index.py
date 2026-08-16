@@ -52,7 +52,6 @@ Stage(name="base", recipes=[
     PsmiscRecipe(),
     KmodRecipe(),
     PciutilsRecipe(),
-    # USButilsRecipe(),
     KernelRecipe(),
     InitRecipe(),
     LibxcryptRecipe(),
@@ -61,6 +60,7 @@ Stage(name="base", recipes=[
     LibseccompRecipe(),
     DbusRecipe(),
     SystemdRecipe(),
+    USButilsRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx)

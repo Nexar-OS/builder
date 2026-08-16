@@ -8,6 +8,8 @@ class SystemdRecipe(TargetRecipe):
     name = "systemd"
     version = "259.8"
 
+    copy_to_toolchain = True
+
     depends_on = [
         DbusRecipe(),
         GperfRecipe(),

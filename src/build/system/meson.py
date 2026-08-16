@@ -36,6 +36,10 @@ class Meson(BuildSystem):
             f.write(f"pkg_config_sysroot_dir = '{ctx.toolchain.env.get('PKG_CONFIG_SYSROOT_DIR', '')}'\n")
             f.write(f"pkg_config_libdir = '{ctx.toolchain.env.get('PKG_CONFIG_LIBDIR', '')}'\n")
 
+            f.write("[built-in options]\n")
+            f.write(f"default_library = 'shared'\n")
+            f.write(f"prefer_static = true\n")
+
     def configure(self,
                   ctx: BuildContext,
                   source_dir: Path,
@@ -72,7 +76,8 @@ class Meson(BuildSystem):
                 "setup", str(build_dir), str(source_dir),
                 *args,
                 "--cross-file",
-                str(self.cross_file)
+                str(self.cross_file),
+                "--prefer-static"
             ],
             cwd=build_dir,
             use_fakeroot=not self.disable_fakeroot
@@ -87,7 +92,7 @@ class Meson(BuildSystem):
             build_dir (Path): Directory containing the configured build tree.
         """
         ctx.run(
-            [ctx.toolchain.ninja, "-C", str(build_dir)],
+            [ctx.toolchain.ninja, *(self.build_args or []), "-C", str(build_dir)],
             cwd=build_dir,
             use_fakeroot=not self.disable_fakeroot
         )

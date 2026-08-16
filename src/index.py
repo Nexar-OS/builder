@@ -60,6 +60,7 @@ Stage(name="base", recipes=[
     LibcapRecipe(),
     LibseccompRecipe(),
     DbusRecipe(),
+    SystemdRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx)

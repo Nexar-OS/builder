@@ -20,7 +20,7 @@ class RootfsRecipe(TargetRecipe):
             "usr", "etc", "tmp", "var", "root", "dev", "proc", "sys", "run", "mnt", "opt",
 
             # /usr hierarchy
-            "usr/bin", "usr/sbin", "usr/include", "usr/lib", ctx.target_machine.libdir, "usr/share/man", "usr/share/info", "usr/share/doc",
+            "usr/bin", "usr/include", "usr/lib", ctx.target_machine.libdir, "usr/share/man", "usr/share/info", "usr/share/doc",
 
             # /var hierarchy
             "var/cache", "var/lib", "var/log", "var/tmp", "var/run",
@@ -37,7 +37,8 @@ class RootfsRecipe(TargetRecipe):
         # usr-merge compatibility symlinks
         for name, target in {
             "bin": "usr/bin",
-            "sbin": "usr/sbin",
+            "sbin": "usr/bin",
+            "usr/sbin": "bin",
             "lib": "usr/lib",
             ctx.target_machine.libdir.split("/")[-1]: "usr/lib"
         }.items():

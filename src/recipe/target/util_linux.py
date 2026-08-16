@@ -7,6 +7,8 @@ class UtilLinuxRecipe(TargetRecipe):
     name = "util-linux"
     version = "2.42.1"
 
+    copy_to_toolchain = True
+
     sources = [
         TarballSource(
             name="util-linux",
@@ -23,7 +25,7 @@ class UtilLinuxRecipe(TargetRecipe):
         # Autotools might end up finding the lib flags of the host system.
         # This assumes that ncurses has already been built into the sysroot
         # and will be available in the target root as well.
-        build_args=[ "LIBS=-lncursesw -ltinfow" ]
+        build_args=[ "LIBS=-lncursesw -ltinfow", "CFLAGS=-fPIC" ]
     )
 
     def _config_args(self, ctx: BuildContext) -> list[str]:

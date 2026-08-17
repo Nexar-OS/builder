@@ -124,6 +124,7 @@ class Toolchain(ABC):
             "PKG_CONFIG_SYSROOT_DIR": f"{self.sysroot}",
             "PKG_CONFIG_LIBDIR": ":".join([
                 str(self.sysroot / "usr/lib/pkgconfig"),
+                str(self.sysroot / "usr/lib64/pkgconfig"),
                 str(self.sysroot / "usr/share/pkgconfig")
             ]),
         }

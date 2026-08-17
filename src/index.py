@@ -65,6 +65,7 @@ Stage(name="base", recipes=[
     NFtablesRecipe(),
     IpUtilsRecipe(),
     OpenSSLRecipe(),
+    WgetRecipe(),
 ]) \
     .build(ctx) \
-    .export(ctx)
+    .export(ctx, copy=True)

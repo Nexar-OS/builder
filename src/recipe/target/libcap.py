@@ -1,3 +1,4 @@
+from build import BuildContext
 from build.system import Autotools
 from recipe import TargetRecipe, BuildMethod
 from source import TarballSource
@@ -23,3 +24,9 @@ class LibcapRecipe(TargetRecipe):
         ],
         disable_fakeroot=True
     )
+
+    def _config_args(self, ctx: BuildContext) -> list[str]:
+        return [
+            f"--host={ctx.target_machine.triple}",
+            f"--build={ctx.build_machine.triple}"
+        ]

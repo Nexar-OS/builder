@@ -19,7 +19,7 @@ class IpRoute2Recipe(TargetRecipe):
 
     build_system = Autotools(
         config_args=[
-            "--prefix=/usr/"
+            "--prefix=/usr"
         ]
     )
 

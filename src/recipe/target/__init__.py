@@ -35,3 +35,4 @@ from .libseccomp import LibseccompRecipe
 from .dbus import DbusRecipe
 from .systemd import SystemdRecipe
 from .libusb import LibusbRecipe
+from .iproute2 import IpRoute2Recipe

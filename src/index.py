@@ -61,6 +61,7 @@ Stage(name="base", recipes=[
     DbusRecipe(),
     SystemdRecipe(),
     USButilsRecipe(),
+    IpRoute2Recipe(),
 ]) \
     .build(ctx) \
     .export(ctx)

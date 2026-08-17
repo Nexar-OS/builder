@@ -62,6 +62,7 @@ Stage(name="base", recipes=[
     SystemdRecipe(),
     USButilsRecipe(),
     IpRoute2Recipe(),
+    NFtablesRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx)

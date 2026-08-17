@@ -370,7 +370,7 @@ class TargetRecipe(BuildRecipe):
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
 
-    depends_on: list[BuildRecipe]|None = None
+    depends_on: list["TargetRecipe"]|None = None
 
     copy_to_toolchain: bool = False
 
@@ -397,6 +397,10 @@ class TargetRecipe(BuildRecipe):
             dest = ctx.cross_toolchain_sysroot / relative
 
             if not source.exists():
+                continue
+
+            # Skip .la files
+            if source.name.lower().endswith(".la"):
                 continue
 
             info(f"Merging '{relative}' from '{self.name}' into sysroot.")

@@ -1,7 +1,7 @@
 from typing import Callable
 from pathlib import Path
 from build import BuildContext
-from recipe import TargetRecipe
+from recipe import TargetRecipe, BuildRecipe
 from dataclasses import dataclass
 from utils.logger import warn, info
 from utils.file import merge_trees
@@ -62,6 +62,33 @@ class Stage:
 
         return self
 
+    def _export_recipe(self, ctx: BuildContext, recipe: TargetRecipe, stage_dir: Path, copy: bool = False):
+        """
+        Exports a specific recipe to the target stage.
+        """
+        # Export dependencies
+        deps = getattr(recipe, "depends_on", [])
+        if deps:
+            info(f"Exporting dependencies of '{recipe.name}'")
+            
+            for dep in deps:
+                info(f" | Exporting '{dep.name}'")
+                self._export_recipe(ctx, dep, stage_dir, copy)
+
+        # Export package
+
+        path = recipe._install_path(ctx)
+        
+        if not path:
+            warn(f"Failed to export recipe '{recipe.name}': No install path.")
+            return
+
+        merge_trees(
+            path,
+            stage_dir,
+            copy=copy
+        )
+
     def export(self, ctx: BuildContext, copy: bool = False) -> None:
         """
         Export all built recipe outputs into this stage's staging directory.
@@ -76,14 +103,4 @@ class Stage:
         stage_dir = self._stage_dir(ctx)
 
         for recipe in self.recipes:
-            path = recipe._install_path(ctx)
-            
-            if not path:
-                warn(f"Failed to export recipe '{recipe.name}': No install path.")
-                continue
-            
-            merge_trees(
-                path,
-                stage_dir,
-                copy=copy
-            )
+            self._export_recipe(ctx, recipe, stage_dir, copy)

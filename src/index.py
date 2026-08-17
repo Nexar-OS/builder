@@ -24,6 +24,9 @@ ctx = BuildContext(
 
 ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
+LibcapRecipe().build(ctx)
+exit()
+
 Stage(name="base", recipes=[
     RootfsRecipe(),
     GlibCRuntimeRecipe(),
@@ -63,6 +66,7 @@ Stage(name="base", recipes=[
     USButilsRecipe(),
     IpRoute2Recipe(),
     NFtablesRecipe(),
+    IpUtilsRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx)

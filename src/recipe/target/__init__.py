@@ -37,3 +37,4 @@ from .systemd import SystemdRecipe
 from .libusb import LibusbRecipe
 from .iproute2 import IpRoute2Recipe
 from .nftables import NFtablesRecipe
+from .iputils import IpUtilsRecipe

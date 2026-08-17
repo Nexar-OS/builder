@@ -58,3 +58,17 @@ class NSS(BuildSystem):
             build_dir / "dist" / "Release",
             dest_dir / "usr"
         )
+
+        # For some stupid reason firefox doesn't think they should create this
+        # Seriously... th is this build system?
+        with (dest_dir / "usr" / "lib" / "pkgconfig" / "nss.pc").open("w") as f:
+            f.write("prefix=/usr\n")
+            f.write("exec_prefix=${prefix}\n")
+            f.write("libdir=${exec_prefix}/lib\n")
+            f.write("includedir=${prefix}/include/nss\n")
+            f.write("\n")
+            f.write("Name: NSS\n")
+            f.write("Description: NSS\n")
+            f.write("Version: 3.127\n")
+            f.write("Libs: -L${libdir} -lssl3 -lsmime3 -lnss3\n")
+            f.write("Cflags: -I${includedir}\n")

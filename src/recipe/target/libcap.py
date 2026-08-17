@@ -7,6 +7,13 @@ class LibcapRecipe(TargetRecipe):
     name = "libcap"
     version = "2.78"
     build_method = BuildMethod.IN_SOURCE
+
+    _export_to_toolchain = [
+        "lib",
+        "lib64",
+        "usr/include",
+    ]
+
     copy_to_toolchain = True
 
     sources = [

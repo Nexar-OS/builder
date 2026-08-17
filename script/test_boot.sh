@@ -38,4 +38,4 @@ sudo umount -R disk
 sudo losetup -d $LOOP
 rm -rf disk
 
-qemu-system-x86_64 -drive file=disk.img,format=raw
+qemu-system-x86_64 -drive file=disk.img,format=raw -nic user

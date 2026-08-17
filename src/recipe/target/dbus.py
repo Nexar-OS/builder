@@ -7,6 +7,8 @@ class DbusRecipe(TargetRecipe):
     name = "dbus"
     version = "1.16.2"
 
+    copy_to_toolchain = True
+
     sources = [
         TarballSource(
             name="dbus",

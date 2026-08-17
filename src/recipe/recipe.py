@@ -370,7 +370,7 @@ class TargetRecipe(BuildRecipe):
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
 
-    depends_on: list["TargetRecipe"]|None = None
+    depends_on: list[BuildRecipe]|None = None
 
     copy_to_toolchain: bool = False
 

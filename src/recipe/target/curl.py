@@ -1,0 +1,41 @@
+from build import BuildContext
+from build.system import Autotools
+from recipe import TargetRecipe
+from source import TarballSource
+from .libpsl import LibpslRecipe
+from .libunistring import LibunistringRecipe
+from .libidn2 import Libidn2Recipe
+
+class CurlRecipe(TargetRecipe):
+    name = "curl"
+    version = "8.21.0"
+
+    depends_on = [
+        LibunistringRecipe(),
+        Libidn2Recipe(),
+        LibpslRecipe(),
+    ]
+
+    copy_to_toolchain = True
+
+    sources = [
+        TarballSource(
+            name="curl",
+            url=f"https://github.com/curl/curl/releases/download/curl-{version.replace('.', '_')}/curl-{version}.tar.gz",
+            md5hash="6e50e38c398737269ec002749bcc5d0d"
+        )
+    ]
+
+    build_system = Autotools(
+        config_args=[
+            "--prefix=/usr",
+            "--with-openssl",
+            "--disable-shared"
+        ]
+    )
+
+    def _config_args(self, ctx: BuildContext) -> list[str]:
+        return [
+            f"--build={ctx.build_machine.triple}",
+            f"--host={ctx.target_machine.triple}"
+        ]

@@ -40,3 +40,4 @@ from .nftables import NFtablesRecipe
 from .iputils import IpUtilsRecipe
 from .openssl import OpenSSLRecipe
 from .wget import WgetRecipe
+from .curl import CurlRecipe

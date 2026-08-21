@@ -66,6 +66,7 @@ Stage(name="base", recipes=[
     IpUtilsRecipe(),
     OpenSSLRecipe(),
     WgetRecipe(),
+    CurlRecipe()
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

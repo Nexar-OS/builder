@@ -59,6 +59,16 @@ class NSS(BuildSystem):
             dest_dir / "usr"
         )
 
+        merge_trees(
+            build_dir / "dist" / "public" / "nss",
+            dest_dir / "usr" / "include" / "nss"
+        )
+
+        merge_trees(
+            build_dir / "dist" / "private" / "nss",
+            dest_dir / "usr" / "include" / "nss"
+        )
+
         # For some stupid reason firefox doesn't think they should create this
         # Seriously... th is this build system?
         with (dest_dir / "usr" / "lib" / "pkgconfig" / "nss.pc").open("w") as f:
@@ -70,5 +80,20 @@ class NSS(BuildSystem):
             f.write("Name: NSS\n")
             f.write("Description: NSS\n")
             f.write("Version: 3.127\n")
+            f.write("Requires: nspr\n")
             f.write("Libs: -L${libdir} -lssl3 -lsmime3 -lnss3\n")
             f.write("Cflags: -I${includedir}\n")
+        
+        # Again. The nspr build system is stupid and uses the wrong prefix.
+        # So we overwrite the generated nspr.pc file
+        with (dest_dir / "usr" / "lib" / "pkgconfig" / "nspr.pc").open("w") as f:
+            f.write("prefix=/usr\n")
+            f.write("exec_prefix=${prefix}\n")
+            f.write("libdir=${exec_prefix}/lib\n")
+            f.write("includedir=${prefix}/include/nspr\n")
+            f.write("\n")
+            f.write("Name: NSPR\n")
+            f.write("Description: The Netscape Portable Runtime\n")
+            f.write("Version: 4.39.0\n")
+            f.write("Libs: -L${exec_prefix}/lib -lplds4 -lplc4 -lnspr4\n")
+            f.write("Cflags: -I${prefix}/include/nspr\n")

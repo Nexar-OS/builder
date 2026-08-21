@@ -1,7 +1,9 @@
+from pathlib import Path
 from build import BuildContext
 from build.system import Autotools
 from recipe import TargetRecipe, BuildMethod
 from source import TarballSource
+from utils.file import merge_trees
 
 class LibcapRecipe(TargetRecipe):
     name = "libcap"
@@ -9,8 +11,8 @@ class LibcapRecipe(TargetRecipe):
     build_method = BuildMethod.IN_SOURCE
 
     _export_to_toolchain = [
-        "lib",
-        "lib64",
+        "usr/lib",
+        "usr/lib64",
         "usr/include",
     ]
 
@@ -37,3 +39,18 @@ class LibcapRecipe(TargetRecipe):
             f"--host={ctx.target_machine.triple}",
             f"--build={ctx.build_machine.triple}"
         ]
+    
+    def post_install(self, ctx: BuildContext, dest_dir: Path | None) -> None:
+        """
+        Moves the library from /lib(64) to /usr/lib(64)
+        """
+        if not dest_dir:
+            return
+
+        libdir = ctx.target_machine.libdir
+        libdir_name = libdir.split("/")[-1]
+
+        merge_trees(
+            dest_dir / libdir_name,
+            dest_dir / libdir
+        )

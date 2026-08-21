@@ -10,6 +10,13 @@ class GlibRecipe(TargetRecipe):
 
     copy_to_toolchain = True
 
+    _export_to_toolchain = [
+        "usr/bin",
+        "usr/include",
+        "usr/lib",
+        "usr/share"
+    ]
+
     sources = [
         TarballSource(
             name="glib",

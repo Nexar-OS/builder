@@ -58,6 +58,7 @@ Stage(name="base", recipes=[
     LinuxPamRecipe(),
     LibcapRecipe(),
     LibseccompRecipe(),
+    GlibRecipe(),
     DbusRecipe(),
     SystemdRecipe(),
     USButilsRecipe(),
@@ -66,7 +67,7 @@ Stage(name="base", recipes=[
     IpUtilsRecipe(),
     OpenSSLRecipe(),
     WgetRecipe(),
-    CurlRecipe()
+    CurlRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

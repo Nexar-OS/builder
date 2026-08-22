@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# PKG_CONFIG_SYSROOT_DIR is required for normal --cflags/--libs queries,
+# but pkg-config also applies it to --variable results.
+#
+# For --variable queries, only run the real pkg-config without
+# the PKG_CONFIG_SYSROOT_DIR environment variable provided by the toolchain env.
+#
+# All other queries retain normal sysroot behavior.
+
+set -eu
+
+# Ignore PKG_CONFIG_SYSROOT_DIR for --variable
+for arg in "$@"; do
+    case "$arg" in
+        --variable|--variable=*)
+            unset PKG_CONFIG_SYSROOT_DIR
+            break
+            ;;
+    esac
+done
+
+echo "$@" >> /home/owner/Documents/os/builder/log.txt
+
+exec pkg-config "$@"

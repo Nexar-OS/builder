@@ -42,3 +42,4 @@ from .openssl import OpenSSLRecipe
 from .wget import WgetRecipe
 from .curl import CurlRecipe
 from .glib import GlibRecipe
+from .networkmanager import NetworkManagerRecipe

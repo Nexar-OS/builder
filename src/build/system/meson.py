@@ -33,7 +33,6 @@ class Meson(BuildSystem):
 
             f.write("[properties]\n")
             f.write(f"sys_root = '{ctx.toolchain.sysroot}'\n")
-            f.write(f"pkg_config_sysroot_dir = '{ctx.toolchain.env.get('PKG_CONFIG_SYSROOT_DIR', '')}'\n")
             f.write(f"pkg_config_libdir = '{ctx.toolchain.env.get('PKG_CONFIG_LIBDIR', '')}'\n")
 
             f.write("[built-in options]\n")

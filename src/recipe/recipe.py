@@ -399,15 +399,14 @@ class TargetRecipe(BuildRecipe):
             if not source.exists():
                 continue
 
-            # Skip .la files
-            if source.name.lower().endswith(".la"):
-                continue
-
             info(f"Merging '{relative}' from '{self.name}' into sysroot.")
             merge_trees(
                 source,
                 dest,
-                copy=True
+                copy=True,
+                skip_extensions=[
+                    "la"
+                ]
             )
 
     def _install_path(self, ctx: BuildContext) -> Path | None:

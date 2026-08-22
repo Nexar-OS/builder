@@ -112,7 +112,7 @@ class Meson(BuildSystem):
         cmd = [ ctx.toolchain.ninja ]
 
         # Destdir must be passed as an environment variable
-        env = ctx.env
+        env = dict(ctx.env)
         if dest_dir:
             dest_dir.mkdir(parents=True, exist_ok=True)
             env["DESTDIR"] = str(dest_dir)

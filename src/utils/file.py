@@ -1,5 +1,6 @@
 from pathlib import Path
 import shutil
+from .logger import debug
 
 def rmtree(path: Path):
     """
@@ -10,7 +11,7 @@ def rmtree(path: Path):
     """
     shutil.rmtree(path, ignore_errors=True)
 
-def merge_trees(source: Path, dest: Path, copy: bool = False):
+def merge_trees(source: Path, dest: Path, copy: bool = False, skip_extensions: list[str]|None = None):
     """
     Merge the contents of one directory tree into another.
 
@@ -22,6 +23,7 @@ def merge_trees(source: Path, dest: Path, copy: bool = False):
         source (Path): Source tree to merge into destination.
         dest (Path): Destination tree to merge the source into.
         copy (bool): If True, content will be copied instead of being moved.
+        skip_extensions (list[str]|None): If passed, all files with an extension in the list will be skipped.
     """
 
     if not source.is_dir():
@@ -31,6 +33,12 @@ def merge_trees(source: Path, dest: Path, copy: bool = False):
 
     for item in source.iterdir():
         dst = dest / item.name
+
+        # Skip extensions
+        ext = item.name.split(".")[-1]
+        if skip_extensions and ext in skip_extensions:
+            debug(f"Skipping file '{item.name}' due to extension.")
+            continue
 
         # Merge real directories recursively
         if item.is_dir() and not item.is_symlink():

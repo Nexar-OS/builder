@@ -1,4 +1,3 @@
-from build import BuildContext
 from build.system import Meson
 from recipe import TargetRecipe
 from source import TarballSource
@@ -8,6 +7,12 @@ class DbusRecipe(TargetRecipe):
     version = "1.16.2"
 
     copy_to_toolchain = True
+
+    _export_to_toolchain = [
+        "usr/share",
+        "usr/lib",
+        "usr/include"
+    ]
 
     sources = [
         TarballSource(

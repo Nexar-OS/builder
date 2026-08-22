@@ -236,6 +236,9 @@ def load_or_build_cross_toolchain(ctx: BuildContext):
 
     return toolchain
 
+
+from utils.pkgconfig import load_pkgconfig_wrapper
+
 class CrossToolchain(Toolchain):
     """
     Representation of a cross compiler toolchain and its build environment.
@@ -250,3 +253,11 @@ class CrossToolchain(Toolchain):
             prefix=ctx.cross_toolchain_dir,
             sysroot=ctx.cross_toolchain_sysroot
         )
+
+        # Load pkg-config wrapper
+        self.pkg_config_wrapper = self.prefix / "pkg-config_wrapper"
+        load_pkgconfig_wrapper(self.pkg_config_wrapper)
+
+    @property
+    def pkg_config(self) -> str:
+        return str(self.pkg_config_wrapper)

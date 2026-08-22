@@ -250,15 +250,3 @@ class CrossToolchain(Toolchain):
             prefix=ctx.cross_toolchain_dir,
             sysroot=ctx.cross_toolchain_sysroot
         )
-    
-    @property
-    def cflags(self) -> list[str]:
-        return super().cflags + [
-            f"--sysroot={self.sysroot}"
-        ]
-    
-    @property
-    def ldflags(self) -> list[str]:
-        return super().ldflags + [
-            f"--sysroot={self.sysroot}"
-        ]

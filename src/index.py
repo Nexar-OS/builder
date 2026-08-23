@@ -69,6 +69,7 @@ Stage(name="base", recipes=[
     WgetRecipe(),
     CurlRecipe(),
     NetworkManagerRecipe(),
+    ShadowRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

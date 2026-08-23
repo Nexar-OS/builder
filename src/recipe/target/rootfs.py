@@ -1,4 +1,3 @@
-import shutil
 from pathlib import Path
 from build import BuildContext
 from recipe import TargetRecipe
@@ -17,13 +16,13 @@ class RootfsRecipe(TargetRecipe):
 
         for directory in [
             # Root-level directories
-            "usr", "etc", "tmp", "var", "root", "dev", "proc", "sys", "run", "mnt", "opt",
+            "usr", "etc", "tmp", "var", "root", "home", "dev", "proc", "sys", "run", "mnt", "opt",
 
             # /usr hierarchy
             "usr/bin", "usr/include", "usr/lib", ctx.target_machine.libdir, "usr/share/man", "usr/share/info", "usr/share/doc",
 
             # /var hierarchy
-            "var/cache", "var/lib", "var/log", "var/tmp", "var/run",
+            "var/cache", "var/lib", "var/log", "var/tmp", "var/run", "var/mail",
 
             # Runtime directories commonly required by init system
             "run/lock", "run/user"
@@ -32,6 +31,7 @@ class RootfsRecipe(TargetRecipe):
         
         # Set tradition permissions for temp directories
         (dest_dir / "tmp").chmod(0o1777)
+        (dest_dir / "var/mail").chmod(0o755)
         (dest_dir / "var/tmp").chmod(0o1777)
 
         # usr-merge compatibility symlinks
@@ -48,32 +48,55 @@ class RootfsRecipe(TargetRecipe):
                 link.unlink()
             
             link.symlink_to(target)
-        
 
-        # Create minimal /etc/passwd
-        with (dest_dir / "etc/passwd").open("w") as f:
-            f.write("root:x:0:0::/root:/usr/bin/bash\n")
-        
-        # Create minimal /etc/group
-        with (dest_dir / "etc/group").open("w") as f:
-            f.write("root:x:0:")
-        
-        # Create minimal /etc/shadow
-        with (dest_dir / "etc/shadow").open("w") as f:
-            # hash is for password "test"
-            f.write("root:$6$Qqy4FrIwYO/AYIuJ$ZrN10dVJ8p34.JIrsPVfZnO39h9ZRA8WTwAZEcNPKEUUR2Ju8O3zk0lvuXzydbRmduO7YWzi788zLWbxEBsCV/:2000:0:99999:7:::")
+        # Create /etc/passwd
+        (dest_dir / "etc/passwd").write_text(
+            "root:x:0:0::/root:/usr/bin/bash\n"
+        )
+        ctx.run([ "chown", "0:0", str(dest_dir / "etc/passwd") ])
+        (dest_dir / "etc/passwd").chmod(0o644)
 
-        # Create minimal /etc/nsswitch
-        with (dest_dir / "etc/nsswitch").open("w") as f:
-            f.write("passwd: files\n")
-            f.write("group: files\n")
-            f.write("shadow: files\n")
+        # Create /etc/group
+        (dest_dir / "etc/group").write_text(
+            "root:x:0:\n"
+            "mail:x:12:\n"
+        )
+        ctx.run([ "chown", "0:0", str(dest_dir / "etc/group") ])
+        (dest_dir / "etc/group").chmod(0o644)
         
-        # Create minimal /etc/pam.d/login
-        (dest_dir / "etc/pam.d/").mkdir(exist_ok=True, parents=True)
-        with (dest_dir / "etc/pam.d/login").open("w") as f:
-            # f.write("#%PAM-1.0\n\n")
+        # Create /etc/shadow
+        (dest_dir / "etc/shadow").write_text(
+            "root:$6$Qqy4FrIwYO/AYIuJ$ZrN10dVJ8p34.JIrsPVfZnO39h9ZRA8WTwAZEcNPKEUUR2Ju8O3zk0lvuXzydbRmduO7YWzi788zLWbxEBsCV/:2000:0:99999:7:::\n"
+        )
+        ctx.run([ "chown", "0:0", str(dest_dir / "etc/shadow") ])
+        (dest_dir / "etc/shadow").chmod(0o644)
 
-            f.write("auth       required      pam_unix.so\n")
-            f.write("account    required      pam_unix.so\n")
-            f.write("session    required      pam_unix.so\n")
+        # Create /etc/nsswitch.conf
+        (dest_dir / "etc/nsswitch.conf").write_text(
+            "passwd: files\n"
+            "group: files\n"
+            "shadow: files\n"
+        )
+        ctx.run([ "chown", "0:0", str(dest_dir / "etc/nsswitch.conf") ])
+        (dest_dir / "etc/nsswitch.conf").chmod(0o644)
+
+        # Create /etc/pam.d/login
+        pamd = dest_dir / "etc/pam.d"
+        pamd.mkdir(parents=True, exist_ok=True)
+
+        (pamd / "passwd").write_text(
+            "#%PAM-1.0\n"
+            "auth            required         pam_unix.so\n"
+            "account         required         pam_unix.so\n"
+            "password        required         pam_unix.so\n"
+        )
+
+        (pamd / "login").write_text(
+            "#%PAM-1.0\n"
+            "\n"
+            "auth       requisite    pam_nologin.so\n"
+            "auth       required      pam_unix.so\n"
+            "account    required      pam_unix.so\n"
+            "session    required      pam_unix.so\n"
+            "password   required      pam_unix.so\n"
+        )

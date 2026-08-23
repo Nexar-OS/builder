@@ -20,6 +20,4 @@ for arg in "$@"; do
     esac
 done
 
-echo "$@" >> /home/owner/Documents/os/builder/log.txt
-
 exec pkg-config "$@"

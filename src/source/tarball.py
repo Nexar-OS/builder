@@ -30,8 +30,13 @@ def _extract_flat_tar(tarball: Path, dest: Path):
             strip_prefix = next(iter(top_levels)) + "/"
         
         for member in members:
+            # Flatten member names
             if strip_prefix and member.name.startswith(strip_prefix):
                 member.name = member.name.removeprefix(strip_prefix)
+            
+            # Flatten symlink / hardlink targets
+            if strip_prefix and member.linkname.startswith(strip_prefix):
+                member.linkname = member.linkname.removeprefix(strip_prefix)
             
             # Handle already extracted files (e.g. from another run)
             file = dest / member.name

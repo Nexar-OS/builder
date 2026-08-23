@@ -100,3 +100,18 @@ class RootfsRecipe(TargetRecipe):
             "session    required      pam_unix.so\n"
             "password   required      pam_unix.so\n"
         )
+
+        # Create os-release
+        (dest_dir / "etc/os-release").write_text(
+            'NAME="NexarOS"\n'
+            'PRETTY_NAME="NexarOS"\n'
+            'ID=nexar\n'
+            'BUILD_ID=rolling\n'
+            'ANSI_COLOR="38;2;23;147;209"\n'
+            'HOME_URL=""\n'
+            'DOCUMENTATION_URL=""\n'
+            'SUPPORT_URL=""\n'
+            'BUG_REPORT_URL=""\n'
+            'PRIVACY_POLICY_URL=""\n'
+            'LOGO=archlinux-logo\n'
+        )

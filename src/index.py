@@ -70,6 +70,7 @@ Stage(name="base", recipes=[
     CurlRecipe(),
     NetworkManagerRecipe(),
     ShadowRecipe(),
+    StraceRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

@@ -1,12 +1,17 @@
 from build.system import Meson
 from recipe import TargetRecipe
 from source import TarballSource
+from .libexpat import LibexpatRecipe
 
 class DbusRecipe(TargetRecipe):
     name = "dbus"
     version = "1.16.2"
 
     copy_to_toolchain = True
+
+    depends_on = [
+        LibexpatRecipe()
+    ]
 
     _export_to_toolchain = [
         "usr/share",

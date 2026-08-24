@@ -51,3 +51,4 @@ from .kbd import KBDRecipe
 from .iana_etc import IanaEtcRecipe
 from .readline import ReadlineRecipe
 from .manpages import ManPagesRecipe
+from .mandb import ManDBRecipe

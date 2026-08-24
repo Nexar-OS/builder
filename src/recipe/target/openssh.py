@@ -23,18 +23,6 @@ class OpenSSHRecipe(TargetRecipe):
         ]
     )
 
-    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
-        """
-        Source tree of openssh is packaged in another top-level-directory called "ssh".
-        This function strips that top-level-directory.
-        """
-        return
-
-        merge_trees(
-            source_dir / "ssh",
-            source_dir
-        )
-
     def _config_args(self, ctx: BuildContext) -> list[str]:
         return [
             f"--build={ctx.build_machine.triple}",

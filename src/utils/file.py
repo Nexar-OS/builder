@@ -11,7 +11,7 @@ def rmtree(path: Path):
     """
     shutil.rmtree(path, ignore_errors=True)
 
-def merge_trees(source: Path, dest: Path, copy: bool = False, skip_extensions: list[str]|None = None):
+def merge_trees(source: Path, dest: Path, copy: bool = False, skip_extensions: list[str]|None = None, skip_names: list[str]|None = None):
     """
     Merge the contents of one directory tree into another.
 
@@ -38,6 +38,11 @@ def merge_trees(source: Path, dest: Path, copy: bool = False, skip_extensions: l
         ext = item.name.split(".")[-1]
         if skip_extensions and ext in skip_extensions:
             debug(f"Skipping file '{item.name}' due to extension.")
+            continue
+        
+        # Skip names
+        if skip_names and item.name in skip_names:
+            debug(f"Skipping file '{item.name}' due to name.")
             continue
 
         # Merge real directories recursively

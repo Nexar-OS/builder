@@ -85,6 +85,7 @@ Stage(name="base", recipes=[
     AttrRecipe(),
     ElfutilsRecipe(),
     BcRecipe(),
+    M4Recipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

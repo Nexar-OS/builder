@@ -60,3 +60,4 @@ from .gettext import GettextRecipe
 from .attr import AttrRecipe
 from .elfutils import ElfutilsRecipe
 from .bc import BcRecipe
+from .m4 import M4Recipe

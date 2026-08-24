@@ -83,6 +83,7 @@ Stage(name="base", recipes=[
     FirmwareRecipe(),
     GettextRecipe(),
     AttrRecipe(),
+    ElfutilsRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

@@ -58,3 +58,4 @@ from .wpa_supplicant import WPASupplicantRecipe
 from .firmware import FirmwareRecipe
 from .gettext import GettextRecipe
 from .attr import AttrRecipe
+from .elfutils import ElfutilsRecipe

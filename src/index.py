@@ -72,6 +72,7 @@ Stage(name="base", recipes=[
     NetworkManagerRecipe(),
     ShadowRecipe(),
     StraceRecipe(),
+    E2fsProgsRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

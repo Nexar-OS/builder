@@ -46,3 +46,4 @@ from .networkmanager import NetworkManagerRecipe
 from .shadow import ShadowRecipe
 from .strace import StraceRecipe
 from .cacertificate import CaCertificateRecipe
+from .e2fsprogs import E2fsProgsRecipe

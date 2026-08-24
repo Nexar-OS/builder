@@ -5,6 +5,7 @@ from source import TarballSource
 from .libpsl import LibpslRecipe
 from .libunistring import LibunistringRecipe
 from .libidn2 import Libidn2Recipe
+from .cacertificate import CaCertificateRecipe
 
 class CurlRecipe(TargetRecipe):
     name = "curl"
@@ -14,6 +15,7 @@ class CurlRecipe(TargetRecipe):
         LibunistringRecipe(),
         Libidn2Recipe(),
         LibpslRecipe(),
+        CaCertificateRecipe(),
     ]
 
     copy_to_toolchain = True
@@ -30,7 +32,9 @@ class CurlRecipe(TargetRecipe):
         config_args=[
             "--prefix=/usr",
             "--with-openssl",
-            "--disable-shared"
+            "--disable-shared",
+            "--with-ca-bundle=/etc/ssl/certs/ca-certificates.crt",
+            "--with-ca-path=/etc/ssl/certs"
         ]
     )
 

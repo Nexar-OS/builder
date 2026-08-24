@@ -67,6 +67,7 @@ Stage(name="base", recipes=[
     IpUtilsRecipe(),
     OpenSSLRecipe(),
     WgetRecipe(),
+    CaCertificateRecipe(),
     CurlRecipe(),
     NetworkManagerRecipe(),
     ShadowRecipe(),

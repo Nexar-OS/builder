@@ -54,3 +54,4 @@ from .manpages import ManPagesRecipe
 from .mandb import ManDBRecipe
 from .openssh import OpenSSHRecipe
 from .iw import IwRecipe
+from .wpa_supplicant import WPASupplicantRecipe

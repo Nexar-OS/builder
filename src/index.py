@@ -80,6 +80,7 @@ Stage(name="base", recipes=[
     ManDBRecipe(),
     OpenSSHRecipe(),
     IwRecipe(),
+    WPASupplicantRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

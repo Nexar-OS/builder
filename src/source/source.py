@@ -68,7 +68,6 @@ class Source(ABC):
         """
         raise NotImplementedError()
     
-    @abstractmethod
     def prepare(self, download_dir: Path, dest_dir: Path):
         """Install the source into the final directory
 
@@ -76,4 +75,4 @@ class Source(ABC):
             download_dir (Path): The download directory
             dest_dir (Path): The final destination for the source
         """
-        raise NotImplementedError()
+        ...

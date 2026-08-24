@@ -76,6 +76,7 @@ Stage(name="base", recipes=[
     KBDRecipe(),
     IanaEtcRecipe(),
     ReadlineRecipe(),
+    ManPagesRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

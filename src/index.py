@@ -75,6 +75,7 @@ Stage(name="base", recipes=[
     E2fsProgsRecipe(),
     KBDRecipe(),
     IanaEtcRecipe(),
+    ReadlineRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

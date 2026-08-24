@@ -11,6 +11,7 @@ class Autotools(BuildSystem):
     Args:
         BuildSystem (_type_): _description_
     """
+    skip_build: bool = False
     disable_fakeroot: bool = False
 
     def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
@@ -78,6 +79,9 @@ class Autotools(BuildSystem):
             ctx (BuildContext): Build context.
             build_dir (Path): Directory containing the configured build tree.
         """
+        if self.skip_build:
+            return
+        
         ctx.run(
             [ctx.toolchain.make, *(self.build_args or []), f"-j{ctx.num_jobs}"],
             cwd=build_dir,

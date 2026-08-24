@@ -57,3 +57,4 @@ from .iw import IwRecipe
 from .wpa_supplicant import WPASupplicantRecipe
 from .firmware import FirmwareRecipe
 from .gettext import GettextRecipe
+from .acl import AclRecipe

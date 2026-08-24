@@ -82,6 +82,7 @@ Stage(name="base", recipes=[
     WPASupplicantRecipe(),
     FirmwareRecipe(),
     GettextRecipe(),
+    AclRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

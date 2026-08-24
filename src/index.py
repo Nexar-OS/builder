@@ -79,6 +79,7 @@ Stage(name="base", recipes=[
     ManPagesRecipe(),
     ManDBRecipe(),
     OpenSSHRecipe(),
+    IwRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

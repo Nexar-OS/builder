@@ -53,7 +53,6 @@ Stage(name="base", recipes=[
     KmodRecipe(),
     PciutilsRecipe(),
     KernelRecipe(),
-    InitRecipe(),
     LibxcryptRecipe(),
     LinuxPamRecipe(),
     LibcapRecipe(),

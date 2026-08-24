@@ -86,6 +86,7 @@ Stage(name="base", recipes=[
     ElfutilsRecipe(),
     BcRecipe(),
     M4Recipe(),
+    PkgconfRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

@@ -48,3 +48,4 @@ from .strace import StraceRecipe
 from .cacertificate import CaCertificateRecipe
 from .e2fsprogs import E2fsProgsRecipe
 from .kbd import KBDRecipe
+from .iana_etc import IanaEtcRecipe

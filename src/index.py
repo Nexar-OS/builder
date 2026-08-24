@@ -74,6 +74,7 @@ Stage(name="base", recipes=[
     StraceRecipe(),
     E2fsProgsRecipe(),
     KBDRecipe(),
+    IanaEtcRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

@@ -80,7 +80,8 @@ Stage(name="base", recipes=[
     OpenSSHRecipe(),
     IwRecipe(),
     WPASupplicantRecipe(),
-    FirmwareRecipe()
+    FirmwareRecipe(),
+    GettextRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

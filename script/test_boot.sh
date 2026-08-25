@@ -50,7 +50,7 @@ set timeout=5
 set default=0
 
 menuentry "Linux" {
-    linux /boot/vmlinuz-6.18.42 root=/dev/vda2 init=/sbin/init rw console=tty0 console=ttyS0,115200
+    linux /boot/vmlinuz-6.18.42 root=/dev/vda2 rw console=ttyS0,115200
 }
 EOF
 

@@ -22,7 +22,7 @@ class InitRecipe(TargetRecipe):
         init = sbin / "init"
 
         with init.open("w") as f:
-            f.write("#!bin/bash\n")
+            f.write("#!/bin/bash\n")
             f.write("mount -t proc proc /proc\n")
             f.write("mount -t sysfs sysfs /sys\n")
             f.write("mount -t devtmpfs devtmpfs /dev\n")

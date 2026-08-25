@@ -17,4 +17,4 @@ class KernelRecipe(TargetRecipe):
         )
     ]
 
-    build_system = LinuxKernel()
+    build_system = LinuxKernel(version=version)

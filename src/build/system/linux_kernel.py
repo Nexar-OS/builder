@@ -2,11 +2,16 @@ import shutil
 from pathlib import Path
 from .buildsystem import BuildSystem
 from build.context import BuildContext
+from dataclasses import dataclass
 
+@dataclass
 class LinuxKernel(BuildSystem):
     """
     Abstraction for building the linux kernel modules and headers.
     """
+    def __init__(self, version: str) -> None:
+        super().__init__()
+        self.version = version
 
     def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
         # Not needed
@@ -106,5 +111,5 @@ class LinuxKernel(BuildSystem):
 
         shutil.copy2(
             str(build_dir / image[0]),
-            str(dest_dir / "boot" / image[1])
+            str(dest_dir / "boot" / f"{image[1]}-{self.version}")
         )

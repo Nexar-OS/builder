@@ -88,6 +88,7 @@ Stage(name="base", recipes=[
     M4Recipe(),
     PkgconfRecipe(),
     GrubRecipe(),
+    EfibootmgrRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

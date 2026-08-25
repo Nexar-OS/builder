@@ -13,6 +13,8 @@ class EfibootmgrRecipe(TargetRecipe):
         LibpoptRecipe(),
     ]
 
+    copy_to_toolchain = True
+
     build_method = BuildMethod.IN_SOURCE
 
     sources = [

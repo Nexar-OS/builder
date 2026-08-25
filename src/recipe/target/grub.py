@@ -2,10 +2,15 @@ from build import BuildContext
 from build.system import Autotools
 from recipe import TargetRecipe
 from source import TarballSource
+from .efibootmgr import EfibootmgrRecipe
 
 class GrubRecipe(TargetRecipe):
     name = "grub"
     version = "2.14"
+
+    depends_on = [
+        EfibootmgrRecipe(),
+    ]
 
     sources = [
         TarballSource(
@@ -17,10 +22,11 @@ class GrubRecipe(TargetRecipe):
 
     build_system = Autotools(
         config_args=[
-            "--prefix=/usr"
+            "--prefix=/usr",
+            "--with-platform=efi"
         ],
         build_args=[
-            'CFLAGS="-Wno-error=discarded-qualifiers"'
+            'CFLAGS="-Wno-error"'
         ]
     )
 

@@ -23,10 +23,18 @@ class GrubRecipe(TargetRecipe):
     build_system = Autotools(
         config_args=[
             "--prefix=/usr",
+            "--bindir=/usr/bin",
+            "--sbindir=/usr/bin",
+            "--mandir=/usr/share/man",
+            "--infodir=/usr/share/info",
+            "--datarootdir=/usr/share",
+            "--sysconfdir=/etc",
+            "--with-bootdir=/boot",
+            "--with-grubdir=grub",
             "--with-platform=efi"
         ],
         build_args=[
-            'CFLAGS="-Wno-error"'
+            "CFLAGS=-Wno-error"
         ]
     )
 

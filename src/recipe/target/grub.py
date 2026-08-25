@@ -20,7 +20,7 @@ class GrubRecipe(TargetRecipe):
             "--prefix=/usr"
         ],
         build_args=[
-            'CFLAGS="$CFLAGS -Wno-error=discarded-qualifiers"'
+            'CFLAGS="-Wno-error=discarded-qualifiers"'
         ]
     )
 

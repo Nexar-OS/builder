@@ -87,6 +87,7 @@ Stage(name="base", recipes=[
     BcRecipe(),
     M4Recipe(),
     PkgconfRecipe(),
+    GrubRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

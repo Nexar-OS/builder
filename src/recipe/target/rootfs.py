@@ -101,6 +101,23 @@ class RootfsRecipe(TargetRecipe):
             "password   required      pam_unix.so\n"
         )
 
+        (pamd / "sudo").write_text(
+            "#%PAM-1.0\n"
+            "auth            required         pam_unix.so\n"
+            "account         required         pam_unix.so\n"
+            "session         required         pam_unix.so\n"
+            "session         optional         pam_systemd.so class=none\n"
+        )
+
+        (pamd / "su").write_text(
+            "#%PAM-1.0\n"
+            "auth            sufficient      pam_rootok.so\n"
+            "auth            required        pam_unix.so\n"
+            "account         required        pam_unix.so\n"
+            "session         required        pam_unix.so\n"
+            "password        required        pam_unix.so\n"
+        )
+
         # Create os-release
         (dest_dir / "etc/os-release").write_text(
             'NAME="NexarOS"\n'

@@ -7,6 +7,8 @@ class ReadlineRecipe(TargetRecipe):
     name = "readline"
     version = "8.3"
 
+    copy_to_toolchain = True
+
     sources = [
         TarballSource(
             name="readline",

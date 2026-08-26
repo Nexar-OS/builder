@@ -69,3 +69,4 @@ from .sudo import SudoRecipe
 from .nano import NanoRecipe
 from .hwdata import HwdataRecipe
 from .parted import PartedRecipe
+from .ntfs_3g import Ntfs3gRecipe

@@ -75,3 +75,4 @@ from .cryptsetup import CryptsetupRecipe
 from .dosfstools import DosfstoolsRecipe
 from .screen import ScreenRecipe
 from .cpio import CpioRecipe
+from .bash_completion import BashCompletionRecipe

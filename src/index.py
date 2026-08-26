@@ -100,6 +100,7 @@ Stage(name="base", recipes=[
     DosfstoolsRecipe(),
     ScreenRecipe(),
     CpioRecipe(),
+    BashCompletionRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

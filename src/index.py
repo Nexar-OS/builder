@@ -96,6 +96,7 @@ Stage(name="base", recipes=[
     PartedRecipe(),
     Ntfs3gRecipe(),
     RfkillRecipe(),
+    CryptsetupRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

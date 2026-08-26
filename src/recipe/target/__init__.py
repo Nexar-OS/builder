@@ -64,3 +64,4 @@ from .m4 import M4Recipe
 from .pkgconf import PkgconfRecipe
 from .grub import GrubRecipe
 from .efibootmgr import EfibootmgrRecipe
+from .tzdb import TzdbRecipe

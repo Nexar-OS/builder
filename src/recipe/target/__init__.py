@@ -67,3 +67,4 @@ from .efibootmgr import EfibootmgrRecipe
 from .tzdb import TzdbRecipe
 from .sudo import SudoRecipe
 from .nano import NanoRecipe
+from .hwdata import HwdataRecipe

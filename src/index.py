@@ -92,6 +92,7 @@ Stage(name="base", recipes=[
     TzdbRecipe(),
     SudoRecipe(),
     NanoRecipe(),
+    HwdataRecipe()
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

@@ -95,6 +95,7 @@ Stage(name="base", recipes=[
     HwdataRecipe(),
     PartedRecipe(),
     Ntfs3gRecipe(),
+    RfkillRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

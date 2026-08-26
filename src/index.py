@@ -97,6 +97,7 @@ Stage(name="base", recipes=[
     Ntfs3gRecipe(),
     RfkillRecipe(),
     CryptsetupRecipe(),
+    DosfstoolsRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

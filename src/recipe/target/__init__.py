@@ -65,3 +65,5 @@ from .pkgconf import PkgconfRecipe
 from .grub import GrubRecipe
 from .efibootmgr import EfibootmgrRecipe
 from .tzdb import TzdbRecipe
+from .sudo import SudoRecipe
+from .nano import NanoRecipe

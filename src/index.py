@@ -90,6 +90,8 @@ Stage(name="base", recipes=[
     EfibootmgrRecipe(),
     GrubRecipe(),
     TzdbRecipe(),
+    SudoRecipe(),
+    NanoRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

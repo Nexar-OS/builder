@@ -99,6 +99,7 @@ Stage(name="base", recipes=[
     CryptsetupRecipe(),
     DosfstoolsRecipe(),
     ScreenRecipe(),
+    CpioRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

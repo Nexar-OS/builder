@@ -74,3 +74,4 @@ from .rfkill import RfkillRecipe
 from .cryptsetup import CryptsetupRecipe
 from .dosfstools import DosfstoolsRecipe
 from .screen import ScreenRecipe
+from .cpio import CpioRecipe

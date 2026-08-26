@@ -1,5 +1,6 @@
 #!/bin/bash
 
+DISK_SIZE=3072
 DISK_IMG="build/disk.img"
 MOUNT="build/disk"
 
@@ -10,7 +11,7 @@ rm -rf $MOUNT &> /dev/null
 
 # Create disk
 echo ">> Creating disk..."
-dd if=/dev/zero of=$DISK_IMG bs=1MiB count=3072
+dd if=/dev/zero of=$DISK_IMG bs=1MiB count=$DISK_SIZE &> /dev/null
 
 echo ">> Mounting disk..."
 LOOP="$(sudo losetup --find --show $DISK_IMG)"
@@ -25,8 +26,8 @@ sudo parted "$LOOP" --script \
     set 1 boot on
 
 echo "  | Formatting partitions..."
-sudo mkfs.fat -F 32 "$LOOP"p1
-sudo mkfs.ext4 "$LOOP"p2
+sudo mkfs.fat -F 32 "$LOOP"p1 &> /dev/null
+sudo mkfs.ext4 "$LOOP"p2 &> /dev/null
 
 # Mount partitions
 echo " | Mounting partitions..."

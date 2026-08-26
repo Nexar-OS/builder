@@ -5,8 +5,8 @@ MOUNT="build/disk"
 
 # Delete mount
 sudo umount -R $MOUNT/* &> /dev/null
-sudo umount -R $MOUNT
-rm -rf $MOUNT
+sudo umount -R $MOUNT &> /dev/null
+rm -rf $MOUNT &> /dev/null
 
 # Create disk
 echo ">> Creating disk..."

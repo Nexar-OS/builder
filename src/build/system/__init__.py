@@ -6,3 +6,4 @@ from .bzip2 import BZip2
 from .pciutils import Pciutils
 from .linux_kernel import LinuxKernel
 from .nss import NSS
+from .cmake import CMake

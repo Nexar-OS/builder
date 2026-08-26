@@ -98,6 +98,7 @@ Stage(name="base", recipes=[
     RfkillRecipe(),
     CryptsetupRecipe(),
     DosfstoolsRecipe(),
+    ScreenRecipe(),
 ]) \
     .build(ctx) \
     .export(ctx, copy=True)

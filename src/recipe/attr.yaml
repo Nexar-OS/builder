@@ -1,7 +1,7 @@
 name: attr
 homepage: https://savannah.nongnu.org/git/?group=attr
 license: GPL-2.0-or-later
-description: 
+description: A utility used to manage extended attributes on filesystem objects from shell scripts
 
 version: "2.6.0"
 

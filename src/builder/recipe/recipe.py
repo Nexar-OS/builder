@@ -446,9 +446,7 @@ class GenericRecipe(BuildRecipe):
             ctx.run(
                 [
                     "patch",
-                    "--batch",
-                    "--forward",
-                    "--strip=1",
+                    "-p0",
                     "--input",
                     str(patch)
                 ],

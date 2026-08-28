@@ -3,6 +3,7 @@ from collections.abc import Mapping
 from typing import Any, TypeVar
 from builder.utils.logger import warn
 from yaml import safe_load
+from yaml.parser import ParserError
 
 T = TypeVar("T")
 
@@ -57,7 +58,7 @@ def retrieve_nested(
     return current
 
 
-def load_yaml(path: Path) -> Any:
+def load_yaml(path: Path) -> Any | None:
     """
     Safe loads a yaml file.
 
@@ -69,4 +70,15 @@ def load_yaml(path: Path) -> Any:
     Returns:
         Any: The decoded content.
     """
-    return safe_load(path.open("r"))
+    if not path.is_file():
+        warn(f"Failed to load yaml from '{path}': File not found.")
+        return None
+
+    try:
+        return safe_load(path.open("r"))
+    except ParserError as e:
+        warn(
+            f"Failed to parse yaml from file '{path}':\n"
+            f"{e}"
+        )
+        return None

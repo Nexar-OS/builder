@@ -6,6 +6,6 @@ from builder.recipe import BuildRole
 
 file = Path(__file__).parent / "mockup_recipe.yaml"
 
-schema = load_schema(file)
-recipe = load_recipe_from_schema(BuildRole.TARGET, schema)
+recipe = load_recipe(file, BuildRole.TARGET)
+assert recipe
 print(recipe.build_system)

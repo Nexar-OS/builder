@@ -3,12 +3,31 @@ from pathlib import Path
 from builder.recipe.schema import *
 from builder.recipe import GenericRecipe, BuildRole
 from builder.utils.data import load_yaml
+from builder.utils.logger import warn
 from builder.source import *
 from builder.build.system import *
 
-def load_schema(path: Path) -> RecipeSchema:
+def load_schema(path: Path) -> RecipeSchema | None:
+    """
+    Loads a recipe schema from a file.
+
+    Args:
+        path (Path): The path to the schema file.
+
+    Returns:
+        RecipeSchema | None: The loaded schema or None if the file wasn't found or the schema was invalid.
+    """
+
     yaml = load_yaml(path)
-    return RecipeSchema.model_validate(yaml)
+
+    if not yaml:
+        return None
+
+    try:
+        return RecipeSchema.model_validate(yaml)
+    except:
+        warn(f"Failed to parse schema for '{path}'")
+        return None
 
 
 SchemaT = TypeVar("SchemaT", bound=Schema)
@@ -75,3 +94,20 @@ def load_recipe_from_schema(role: BuildRole, schema: RecipeSchema) -> GenericRec
         build_method=schema.build.method,
         build_system=load_build_system_from_schema(schema.build.build_system)
     )
+
+def load_recipe(recipe_path: Path, role: BuildRole) -> GenericRecipe | None:
+    """
+    Loads and parses a recipe from a schema file.
+
+    Args:
+        recipe_path (Path): The path to the recipe file.
+
+    Returns:
+        GenericRecipe | None: The loaded recipe or None if schema was invalid.
+    """
+    schema = load_schema(recipe_path)
+
+    if not schema:
+        return None
+
+    return load_recipe_from_schema(role, schema)

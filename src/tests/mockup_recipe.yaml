@@ -1,0 +1,43 @@
+name: name
+homepage: https://...
+license: something
+description: A very cool recipe
+
+version: "1.0.132"
+
+dependencies:
+  required:
+    - a
+  
+  optional:
+    - b
+  
+  build:
+    - c
+  
+sources:
+  - type: tarball
+    name: recipe
+    url: "https://..."
+    sha256: "hash"
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - "--prefix=/usr"
+      - "--without-bash-malloc"
+    
+    build_args:
+  
+    install_args:
+  
+  prepare: |
+    mkdir test
+    echo "hey" > test
+  
+  post_install: |
+    rm -rf test

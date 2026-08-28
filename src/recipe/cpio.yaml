@@ -1,0 +1,30 @@
+name: cpio
+homepage: https://www.gnu.org/software/cpio/
+license: GPL-3.0-or-later
+description: Copies files into or out of a cpio or tar archive
+
+version: "2.15"
+
+dependencies:
+  required:
+    - glibc
+  
+  build:
+    - rsync
+    - wget
+  
+sources:
+  - type: tarball
+    name: cpio
+    url: https://ftp.gnu.org/gnu/cpio/cpio-${version}.tar.gz
+    md5hash: 64130013fa9900f6b7de36de53573985
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - "--prefix=/usr"
+      - "CFLAGS=-std=gnu11"

@@ -1,13 +1,18 @@
-from typing import TypeVar
+from typing import TypeVar, Any
 from pathlib import Path
+import re
+
 from builder.recipe.schema import *
 from builder.recipe import GenericRecipe, BuildRole
-from builder.utils.data import load_yaml
+from builder.utils.data import (
+    load_yaml,
+    interpolate
+)
 from builder.utils.logger import warn
 from builder.source import *
 from builder.build.system import *
 
-def load_schema(path: Path) -> RecipeSchema | None:
+def load_schema(path: Path, variables: dict[str, str]|None = None) -> RecipeSchema | None:
     """
     Loads a recipe schema from a file.
 
@@ -24,6 +29,11 @@ def load_schema(path: Path) -> RecipeSchema | None:
         return None
 
     try:
+        yaml = interpolate(yaml, {
+            **yaml,
+            **(variables or {})
+        })
+
         return RecipeSchema.model_validate(yaml)
     except Exception as e:
         warn(
@@ -31,7 +41,6 @@ def load_schema(path: Path) -> RecipeSchema | None:
             f"{e}"
         )
         return None
-
 
 SchemaT = TypeVar("SchemaT", bound=Schema)
 ResultT = TypeVar("ResultT")

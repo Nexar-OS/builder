@@ -429,7 +429,7 @@ class GenericRecipe(BuildRecipe):
         self.patches = patches or []
         self.prepare_script = prepare_script
         self.post_install_script = post_install_script
-    
+
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """
         Apply recipe-specific modifications to the resolved sources.
@@ -456,6 +456,13 @@ class GenericRecipe(BuildRecipe):
                 check=True
             )
 
+    @property
+    def env(self) -> dict[str, str]:
+        return {
+            "NAME": self.name,
+            "VERSION": self.version
+        }
+
     def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
         """
         Prepare the build environment before configuration begin.
@@ -476,7 +483,13 @@ class GenericRecipe(BuildRecipe):
             [
                 "sh", "-c", self.prepare_script
             ],
-            cwd=build_dir
+            cwd=build_dir,
+            env={
+                **ctx.env,
+                **self.env,
+                "SOURCE": str(source_dir),
+                "BUILD": str(build_dir),
+            }
         )
     
     def post_install(self, ctx: BuildContext, dest_dir: Path|None) -> None:
@@ -498,7 +511,12 @@ class GenericRecipe(BuildRecipe):
             [
                 "sh", "-c", self.post_install_script
             ],
-            cwd=dest_dir
+            cwd=dest_dir,
+            env={
+                **ctx.env,
+                **self.env,
+                "DESTDIR": str(dest_dir)
+            }
         )
         
 

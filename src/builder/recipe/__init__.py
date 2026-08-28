@@ -7,3 +7,7 @@ from .recipe import (
     TargetRecipe,
     BuildMethod
 )
+
+from .dependencies import (
+    Dependencies
+)

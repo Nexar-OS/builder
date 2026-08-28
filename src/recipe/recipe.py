@@ -63,6 +63,37 @@ class BuildMethod(Enum):
     Build will run in a separate directory than the source-tree.
     """
 
+class BuildRole(Enum):
+    """
+    Describes where the output of a recipe is intended to be used.
+
+    Build roles distinguish recipes that run on the build machne
+    from those that belong onto the target os.
+    """
+
+    TOOLCHAIN = auto()
+    """
+    Component of the (cross-)compilation toolchain and added to path.
+
+    These components are used by the builder to produce
+    target binaries.
+    """
+
+    SYSROOT = auto()
+    """
+    Target development component installed into the (cross-)toolchain.
+
+    This includes target headers, libraries, ld files, etc.
+    """
+
+    TARGET = auto()
+    """
+    Runtime component installed into the target filesystem.
+
+    These files become part of the final os.
+    """
+
+
 class BuildRecipe(ABC):
     """
     Abstract base class describing how a software package is built.
@@ -79,6 +110,15 @@ class BuildRecipe(ABC):
         build_system (BuildSystem): Build system implementation responsible for configuring,
                                     compiling, and installing the package.
     """
+    def __init__(self, role: BuildRole) -> None:
+        super().__init__()
+
+        self.build_role = role
+
+    dependencies: list["BuildRecipe"] = []
+    opt_dependencies: list["BuildRecipe"] = []
+    build_dependencies: list["BuildRecipe"] = []
+
     name: str
     version: str
 
@@ -207,20 +247,35 @@ class BuildRecipe(ABC):
 
         return work_dir.resolve()
 
-    @abstractmethod
     def _install_path(self, ctx: BuildContext) -> Path|None:
         """
         Return the directory where the build should be installed.
 
-        Subclasses must implement this method.
+        Path is determined by the build role, this recipe was constructed with:
+
+        ``BuildRole.TOOLCHAIN``: $ctx.cross_toolchain_dir
+        ``BuildRole.SYSROOT``: $ctx.cross_toolchain_sysroot
+        ``BuildRole.TARGET``: $work_dir/rootfs
 
         Args:
             ctx (BuildContext): Context used for the build.
 
         Returns:
             Path: The path for the final build to be installed into.
-        """    
-        raise NotImplementedError()
+        """
+        match self.build_role:
+            case BuildRole.TOOLCHAIN:
+                return ctx.cross_toolchain_dir
+
+            case BuildRole.SYSROOT:
+                return ctx.cross_toolchain_sysroot
+            
+            case BuildRole.TARGET:
+                return self.work_dir(ctx) / "rootfs"
+
+        raise NotImplementedError(
+            f"Build role not supported: '{self.build_role}'"
+        )
 
     def _config_args(self, ctx: BuildContext) -> list[str]:
         """
@@ -348,10 +403,8 @@ class ToolchainRecipe(BuildRecipe):
     See Also:
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
-
-    def _install_path(self, ctx: BuildContext) -> Path|None:
-        # Binutils/GCC expect to be installed into --prefix directly
-        return None
+    def __init__(self) -> None:
+        super().__init__(BuildRole.TOOLCHAIN)
     
 class SysrootRecipe(BuildRecipe):
     """
@@ -361,9 +414,8 @@ class SysrootRecipe(BuildRecipe):
     See Also:
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
-
-    def _install_path(self, ctx: BuildContext) -> Path | None:
-        return ctx.cross_toolchain_sysroot
+    def __init__(self) -> None:
+        super().__init__(BuildRole.SYSROOT)
     
 class TargetRecipe(BuildRecipe):
     """
@@ -373,6 +425,8 @@ class TargetRecipe(BuildRecipe):
     See Also:
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
+    def __init__(self) -> None:
+        super().__init__(BuildRole.TARGET)
 
     depends_on: list[BuildRecipe]|None = None
 
@@ -412,9 +466,6 @@ class TargetRecipe(BuildRecipe):
                     "la"
                 ]
             )
-
-    def _install_path(self, ctx: BuildContext) -> Path | None:
-        return self.work_dir(ctx) / "rootfs"
 
     def _clean_rootfs(self, ctx: BuildContext):
         """

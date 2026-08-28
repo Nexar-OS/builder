@@ -1,0 +1,42 @@
+name: 
+homepage: 
+license: 
+description: 
+
+version: 
+
+dependencies:
+  required:
+    - 
+  
+  optional:
+    - 
+  
+  build:
+    - 
+  
+sources:
+  - type: 
+    name: 
+    url: 
+    md5hash: 
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - "--prefix=/usr"
+  
+    build_args:
+  
+    install_args:
+  
+  patches:
+    -
+
+  prepare: |
+  
+  post_install: |

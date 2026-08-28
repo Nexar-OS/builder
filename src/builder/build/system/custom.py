@@ -84,7 +84,10 @@ class CustomBuildSystem(BuildSystem):
             build_dir (Path): Directory containing the build output.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
-        self._invoke(ctx, self._install, build_dir, {
+        dest_dir = dest_dir or build_dir
+        dest_dir.mkdir(exist_ok=True, parents=True)
+        
+        self._invoke(ctx, self._install, dest_dir, {
             "BUILD": str(build_dir),
             "DESTDIR": str(dest_dir)
         })

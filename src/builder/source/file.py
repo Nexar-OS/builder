@@ -1,11 +1,13 @@
 from pathlib import Path
+import shutil
 from .source import Source
 from dataclasses import dataclass
 
 import hashlib
 
 from builder.utils.download import download_url
-from builder.utils.logger import debug
+from builder.utils.logger import debug, warn
+from builder.utils.file import merge_trees
 
 @dataclass
 class FileSource(Source):
@@ -61,4 +63,24 @@ class FileSource(Source):
             download_dir (Path): The directory for the file to be downloaded into.
         """
         file = self.local_file(download_dir)
-        download_url(self.url, file)
+
+        # Local file
+        if self.url.startswith("file://"):
+            path = Path(self.url.removeprefix("file://")).resolve()
+
+            if path.is_file():
+                shutil.copy2(path, download_dir)
+            
+            elif path.is_dir():
+                merge_trees(
+                    path,
+                    download_dir,
+                    copy=True
+                )
+            
+            else:
+                warn(f"Failed to find local file: '{path}'")
+
+        # File from web
+        else:
+            download_url(self.url, file)

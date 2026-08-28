@@ -1,6 +1,6 @@
 from pathlib import Path
 from .buildsystem import BuildSystem
-from builder.recipe import BuildRecipe
+from builder.recipe import BuildRecipe, BuildRole
 from builder.build.context import BuildContext
 from builder.utils.logger import error, info
 from dataclasses import dataclass
@@ -42,7 +42,23 @@ class Autotools(BuildSystem):
 
         # Build argument list
         args = list(self.config_args or [])
-        args += config_args or []
+        # args += config_args or []
+
+        match recipe.build_role:
+            case BuildRole.TARGET | BuildRole.SYSROOT:
+                args += [
+                    f"--host={recipe.ctx.target_machine.triple}",
+                    f"--build={recipe.ctx.build_machine.triple}"
+                ]
+            
+            case BuildRole.TOOLCHAIN:
+                args += [
+                    f"--build={recipe.ctx.build_machine.triple}",
+                    f"--host={recipe.ctx.build_machine.triple}",
+                    f"--target={recipe.ctx.target_machine.triple}",
+                    f"--prefix={recipe.ctx.cross_toolchain_dir}",
+                    f"--with-sysroot={recipe.ctx.cross_toolchain_sysroot}"
+                ]
 
         # No config args were passed means no configuration will be invoked
         if not args:

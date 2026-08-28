@@ -12,6 +12,7 @@ from builder.build.context import BuildContext
 from builder.build.system import BuildSystem
 from builder.utils.logger import info, warn
 from builder.utils.file import rmtree, merge_trees
+from .dependencies import Dependencies
 
 @dataclass(frozen=True)
 class RecipeMetadata:
@@ -114,9 +115,7 @@ class BuildRecipe(ABC):
 
         self.build_role = role
 
-    dependencies: list["BuildRecipe"] = []
-    opt_dependencies: list["BuildRecipe"] = []
-    build_dependencies: list["BuildRecipe"] = []
+    dependencies: Dependencies = Dependencies.none()
 
     name: str
     version: str
@@ -412,9 +411,7 @@ class GenericRecipe(BuildRecipe):
                  name: str,
                  version: str,
                  sources: list[Source],
-                 dependencies: list[BuildRecipe]|None = None,
-                 opt_dependencies: list[BuildRecipe]|None = None,
-                 build_dependencies: list[BuildRecipe]|None = None,
+                 dependencies: Dependencies|None = None,
                  build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE,
                  build_system: BuildSystem|None = None
                  ) -> None:
@@ -423,9 +420,7 @@ class GenericRecipe(BuildRecipe):
         self.name = name
         self.version = version
         self.sources = sources
-        self.dependencies = dependencies or []
-        self.opt_dependencies = opt_dependencies or []
-        self.build_dependencies = build_dependencies or []
+        self.dependencies = dependencies or Dependencies.none()
         self.build_method = build_method
         self.build_system = build_system
 

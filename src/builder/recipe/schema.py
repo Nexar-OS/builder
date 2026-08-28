@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from builder.recipe import BuildMethod
 
 class DependenciesSchema(BaseModel):
     required: list[str]
@@ -18,7 +19,7 @@ class BuildSystemSchema(BaseModel):
     install_args: list[str] | None
 
 class BuildSchema(BaseModel):
-    method: str
+    method: BuildMethod
     build_system: BuildSystemSchema
     prepare: str | None = None
     post_install: str | None = None

@@ -1,0 +1,28 @@
+name: coreutils
+homepage: https://www.gnu.org/software/coreutils/
+license: GPL-3.0-or-later
+description: Basic file, shell and text manipulation utilities
+
+version: "9.11"
+
+dependencies:
+  required:
+    - attr
+    - glibc
+    - libcap
+    - openssl
+  
+sources:
+  - type: tarball
+    name: coreutils
+    url: https://ftp.gnu.org/gnu/coreutils/coreutils-${version}.tar.gz
+    md5hash: b49641aa883b5a05cd6156d3cba82853
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - "--prefix=/usr"

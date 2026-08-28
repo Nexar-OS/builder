@@ -14,14 +14,6 @@ from builder.build import (
 
 recipe_dir = Path("src/recipe")
 
-def recipe(name: str, role: BuildRole|None = None):
-    recipe = load_recipe(recipe_dir / f"{name}.yaml", role or BuildRole.TARGET)
-
-    if not recipe:
-        raise RuntimeError(f"Failed to load recipe: '{name}'")
-
-    return recipe
-
 ctx = BuildContext(
     build_dir               = Path("build").resolve(),
     staging_dir             = Path("build/staging").resolve(),
@@ -36,5 +28,13 @@ ctx = BuildContext(
 
 ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
-recipe("bzip2") \
-    .build(ctx)
+def recipe(name: str, role: BuildRole|None = None):
+    recipe = load_recipe(recipe_dir / f"{name}.yaml", role or BuildRole.TARGET, ctx)
+
+    if not recipe:
+        raise RuntimeError(f"Failed to load recipe: '{name}'")
+
+    return recipe
+
+recipe("coreutils") \
+    .build()

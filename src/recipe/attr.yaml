@@ -1,0 +1,33 @@
+name: attr
+homepage: https://savannah.nongnu.org/git/?group=attr
+license: GPL-2.0-or-later
+description: 
+
+version: "2.6.0"
+
+dependencies:
+  required:
+    - glibc
+    - gettext
+  
+sources:
+  - type: tarball
+    name: bash-completion
+    url: "https://github.com/scop/bash-completion/releases/download/${version}/bash-completion-${version}.tar.xz"
+    md5hash: "c0516a99377b4938eeb7fb2699247e82"
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - "--prefix=/usr"
+    
+    build_args:
+    install_args:
+  
+  patches:
+  prepare: |
+  post_install: |

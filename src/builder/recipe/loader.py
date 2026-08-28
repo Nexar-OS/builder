@@ -82,7 +82,8 @@ def load_build_system_from_schema(schema: BuildSystemSchema) -> BuildSystem:
     return _load_class_from_schema(schema, {
         AutotoolsSchema: Autotools,
         CMakeSchema: CMake,
-        MesonSchema: Meson
+        MesonSchema: Meson,
+        CustomBuildSystemSchema: CustomBuildSystem
     })
 
 def load_recipe_from_schema(role: BuildRole, schema: RecipeSchema) -> GenericRecipe:

@@ -57,7 +57,7 @@ class CustomBuildSystem(BuildSystem):
             build_dir (Path): Directory where the build will be configured.
             config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
         """
-        self._invoke(ctx, self._prepare, build_dir, {
+        self._invoke(ctx, self._configure, build_dir, {
             "BUILD": str(build_dir),
             "SOURCE": str(source_dir)
         })
@@ -84,7 +84,7 @@ class CustomBuildSystem(BuildSystem):
             build_dir (Path): Directory containing the build output.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
-        self._invoke(ctx, self._build, build_dir, {
+        self._invoke(ctx, self._install, build_dir, {
             "BUILD": str(build_dir),
             "DESTDIR": str(dest_dir)
         })

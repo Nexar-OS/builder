@@ -1,0 +1,42 @@
+name: bash
+homepage: https://www.gnu.org/software/bash/
+license: GPL-3.0-or-later
+description: The GNU Bourne Again SHell
+
+version: "5.3"
+
+dependencies:
+  required:
+    - glibc
+    - readline
+    - ncurses
+  
+  optional:
+    - bash-completion
+  
+sources:
+  - type: tarball
+    name: bash
+    url: "https://ftp.gnu.org/gnu/bash/bash-${version}.tar.gz"
+    md5hash: "977c8c0c5ae6309191e7768e28ebc951"
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - "--prefix=/usr"
+      - "--without-bash-malloc"
+    
+    build_args:
+  
+    install_args:
+  
+  patches: []
+  prepare: |
+  
+  post_install: |
+    mkdir -p $DESTDIR / "bin"
+    ln -s bash bin/sh

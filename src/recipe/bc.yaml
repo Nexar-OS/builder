@@ -1,0 +1,33 @@
+name: bc
+homepage: https://savannah.nongnu.org/git/?group=attr
+license: GPL-3.0-only
+description: An arbitrary precision calculator language
+
+version: "7.0.3"
+
+dependencies:
+  required:
+    - glibc
+    - gettext
+  
+sources:
+  - type: tarball
+    name: bc
+    url: "https://github.com/gavinhoward/bc/releases/download/${version}/bc-${version}.tar.gz"
+    md5hash: "a020c36c383624119cce4d2cf5d13388"
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - "--prefix=/usr"
+    
+    build_args:
+    install_args:
+  
+  patches:
+  prepare: |
+  post_install: |

@@ -29,8 +29,16 @@ class MesonSchema(Schema):
     build_args: list[str] | None = None
     install_args: list[str] | None = None
 
+class CustomBuildSystemSchema(Schema):
+    type: Literal["custom"]
+    prepare: str | None = None
+    configure: str | None = None
+    build: str | None = None
+    install: str | None = None
+    disable_fakeroot: bool = False
+
 BuildSystemSchema = Annotated[
-    Union[AutotoolsSchema],
+    Union[AutotoolsSchema, CMakeSchema, MesonSchema, CustomBuildSystemSchema],
     Field(discriminator="type")
 ]
 

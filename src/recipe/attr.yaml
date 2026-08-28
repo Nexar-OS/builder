@@ -12,8 +12,8 @@ dependencies:
   
 sources:
   - type: tarball
-    name: bash-completion
-    url: "https://github.com/scop/bash-completion/releases/download/${version}/bash-completion-${version}.tar.xz"
+    name: attr
+    url: "http://download.savannah.gnu.org/releases/attr/attr-${version}.tar.xz"
     md5hash: "c0516a99377b4938eeb7fb2699247e82"
 
 build:

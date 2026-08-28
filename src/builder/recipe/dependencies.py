@@ -11,9 +11,9 @@ class Dependencies:
         build: Dependnecies required (only) during the build process.
     """
 
-    required: list[str]
-    optional: list[str]
-    build: list[str]
+    required: list[str] | None = None
+    optional: list[str] | None = None
+    build: list[str] | None = None
     
     @classmethod
     def none(cls):

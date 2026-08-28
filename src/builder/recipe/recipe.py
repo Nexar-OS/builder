@@ -413,7 +413,10 @@ class GenericRecipe(BuildRecipe):
                  sources: list[Source],
                  dependencies: Dependencies|None = None,
                  build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE,
-                 build_system: BuildSystem|None = None
+                 build_system: BuildSystem|None = None,
+                 patches: list[Path]|None = None,
+                 prepare_script: str|None = None,
+                 post_install_script: str|None = None,
                  ) -> None:
         super().__init__(role)
 
@@ -423,6 +426,81 @@ class GenericRecipe(BuildRecipe):
         self.dependencies = dependencies or Dependencies.none()
         self.build_method = build_method
         self.build_system = build_system
+        self.patches = patches or []
+        self.prepare_script = prepare_script
+        self.post_install_script = post_install_script
+    
+    def patch(self, ctx: BuildContext, source_dir: Path) -> None:
+        """
+        Apply recipe-specific modifications to the resolved sources.
+
+        This hook applies the patch files passed under ``patches``.
+
+        Args:
+            ctx (BuildContext): Context used for current build.
+            source_dir (Path): The directory to where the source was installed into.
+        """
+        for patch in self.patches:
+            info(f"Applying patch '{patch}' to recipe '{self.name}'")
+
+            ctx.run(
+                [
+                    "patch",
+                    "--batch",
+                    "--forward",
+                    "--strip=1",
+                    "--input",
+                    str(patch)
+                ],
+                cwd=source_dir,
+                check=True
+            )
+
+    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+        """
+        Prepare the build environment before configuration begin.
+
+        This hook runs the script passed under ``prepare_script`` inside
+        of a sandboxed shell environment.
+
+        Args:
+            ctx (BuildContext): Context used for current build.
+            source_dir (Path): The directory to where the source was installed into.
+            build_dir (Path): Directory where the recipe will be build in.
+        """
+        if not self.prepare_script:
+            info(f"No post install script for {self.name}.")
+            return
+
+        ctx.run(
+            [
+                "sh", "-c", self.prepare_script
+            ],
+            cwd=build_dir
+        )
+    
+    def post_install(self, ctx: BuildContext, dest_dir: Path|None) -> None:
+        """
+        Perform additional actions after the installation step has been completed.
+
+        This hook runs the script passed under ``post_install_script`` inside
+        of a sandboxed shell environment.
+
+        Args:
+            ctx (BuildContext): Context used for current build.
+            dest_dir (Path): The directory to where the program was built into.
+        """
+        if not self.post_install_script:
+            info(f"No post install script for {self.name}.")
+            return
+
+        ctx.run(
+            [
+                "sh", "-c", self.post_install_script
+            ],
+            cwd=dest_dir
+        )
+        
 
 class ToolchainRecipe(BuildRecipe):
     """

@@ -92,7 +92,10 @@ def load_recipe_from_schema(role: BuildRole, schema: RecipeSchema) -> GenericRec
                   for source_schema in schema.sources ],
         dependencies=schema.dependencies,
         build_method=schema.build.method,
-        build_system=load_build_system_from_schema(schema.build.build_system)
+        build_system=load_build_system_from_schema(schema.build.build_system),
+        patches=schema.build.patches,
+        prepare_script=schema.build.prepare,
+        post_install_script=schema.build.post_install
     )
 
 def load_recipe(recipe_path: Path, role: BuildRole) -> GenericRecipe | None:

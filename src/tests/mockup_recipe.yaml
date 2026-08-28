@@ -35,6 +35,9 @@ build:
   
     install_args:
   
+  patches:
+    - empty.patch
+
   prepare: |
     mkdir test
     echo "hey" > test

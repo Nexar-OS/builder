@@ -1,6 +1,5 @@
 from typing import TypeVar, Any
 from pathlib import Path
-import re
 
 from builder.recipe.schema import *
 from builder.recipe import GenericRecipe, BuildRole
@@ -11,6 +10,7 @@ from builder.utils.data import (
 from builder.utils.logger import warn
 from builder.source import *
 from builder.build.system import *
+from builder.build.context import BuildContext
 
 def load_schema(path: Path, variables: dict[str, str]|None = None) -> RecipeSchema | None:
     """
@@ -86,11 +86,13 @@ def load_build_system_from_schema(schema: BuildSystemSchema) -> BuildSystem:
         CustomBuildSystemSchema: CustomBuildSystem
     })
 
-def load_recipe_from_schema(role: BuildRole, schema: RecipeSchema) -> GenericRecipe:
+def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSchema) -> GenericRecipe:
     """
     Loads a ``GenericRecipe`` out of a ``RecipeSchema``
 
     Args:
+        ctx (BuildContext): The context for the build the recipe
+                            will be used in.
         role (BuildRole): The role the recipe should be built in.
         schema (RecipeSchema): The schema to load.
 
@@ -98,6 +100,7 @@ def load_recipe_from_schema(role: BuildRole, schema: RecipeSchema) -> GenericRec
         GenericRecipe: The loaded recipe
     """
     return GenericRecipe(
+        ctx=ctx,
         role=role,
         name=schema.name,
         version=schema.version,
@@ -111,12 +114,15 @@ def load_recipe_from_schema(role: BuildRole, schema: RecipeSchema) -> GenericRec
         post_install_script=schema.build.post_install
     )
 
-def load_recipe(recipe_path: Path, role: BuildRole) -> GenericRecipe | None:
+def load_recipe(recipe_path: Path, role: BuildRole, ctx: BuildContext) -> GenericRecipe | None:
     """
     Loads and parses a recipe from a schema file.
 
     Args:
         recipe_path (Path): The path to the recipe file.
+        role (BuildRole): The role of the recipe.
+        ctx (BuildContext): The context for the build the recipe
+                            will be used in.
 
     Returns:
         GenericRecipe | None: The loaded recipe or None if schema was invalid.
@@ -128,4 +134,4 @@ def load_recipe(recipe_path: Path, role: BuildRole) -> GenericRecipe | None:
     if not schema:
         return None
 
-    return load_recipe_from_schema(role, schema)
+    return load_recipe_from_schema(ctx, role, schema)

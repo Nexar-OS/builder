@@ -1,3 +1,4 @@
+from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import Literal, Annotated, Union
 from builder.recipe import BuildMethod
@@ -36,6 +37,7 @@ BuildSystemSchema = Annotated[
 class BuildSchema(Schema):
     method: BuildMethod
     build_system: BuildSystemSchema
+    patches: list[Path] | None = None
     prepare: str | None = None
     post_install: str | None = None
 

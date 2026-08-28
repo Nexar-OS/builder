@@ -1,4 +1,5 @@
 import shutil
+from builder.recipe import BuildRecipe
 from pathlib import Path
 from .buildsystem import BuildSystem
 from builder.build.context import BuildContext
@@ -8,19 +9,20 @@ class Pciutils(BuildSystem):
     Abstraction for building pciutils.
     """
 
-    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         # Not needed
         pass
 
     def configure(self,
-                  ctx: BuildContext,
-                  source_dir: Path,
+                  recipe: BuildRecipe,
+                  source_dir: Path, 
                   build_dir: Path,
-                  config_args: list[str] | None = None):
+                  dest_dir: Path|None = None,
+                  config_args: list[str]|None = None):
         # Not needed
         pass
 
-    def build(self, ctx: BuildContext, build_dir: Path):
+    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Builds pciutils using ``make``.
 
@@ -28,12 +30,12 @@ class Pciutils(BuildSystem):
         ``make PREFIX=/usr HOST=$target CROSS_COMPILE=$target all``
         """
 
-        ctx.run(
-            [ ctx.toolchain.make, "PREFIX=/usr", f"HOST={ctx.target_machine.triple}", f"CROSS_COMPILE={ctx.target_machine.triple}-", "all" ],
+        recipe.ctx.run(
+            [ recipe.ctx.toolchain.make, "PREFIX=/usr", f"HOST={recipe.ctx.target_machine.triple}", f"CROSS_COMPILE={recipe.ctx.target_machine.triple}-", "all" ],
             cwd=build_dir # build dir is source dir
         )
 
-    def install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path | None = None):
+    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install pciutils into the target destination.
 
@@ -43,7 +45,7 @@ class Pciutils(BuildSystem):
         
         assert dest_dir, "dest_dir argument is required for pciutils"
 
-        ctx.run(
-            [ ctx.toolchain.make, "PREFIX=/usr", f"DESTDIR={str(dest_dir)}", "install" ],
+        recipe.ctx.run(
+            [ recipe.ctx.toolchain.make, "PREFIX=/usr", f"DESTDIR={str(dest_dir)}", "install" ],
             cwd=build_dir # build dir is source dir
         )

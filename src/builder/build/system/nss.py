@@ -1,4 +1,5 @@
 from builder.utils.file import merge_trees
+from builder.recipe import BuildRecipe
 from pathlib import Path
 from .buildsystem import BuildSystem
 from builder.build.context import BuildContext
@@ -8,19 +9,20 @@ class NSS(BuildSystem):
     Abstraction for building nss.
     """
 
-    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         # Not needed
         pass
 
     def configure(self,
-                  ctx: BuildContext,
-                  source_dir: Path,
+                  recipe: BuildRecipe,
+                  source_dir: Path, 
                   build_dir: Path,
-                  config_args: list[str] | None = None):
+                  dest_dir: Path|None = None,
+                  config_args: list[str]|None = None):
         # Not needed
         pass
 
-    def build(self, ctx: BuildContext, build_dir: Path):
+    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Builds nss using ``./build``.
         """
@@ -28,9 +30,9 @@ class NSS(BuildSystem):
         nss_arch = {
             "x86_64": "x64",
             "amd64": "x64"
-        }.get(ctx.target_machine.arch, ctx.target_machine.arch)
+        }.get(recipe.ctx.target_machine.arch, recipe.ctx.target_machine.arch)
 
-        ctx.run(
+        recipe.ctx.run(
             [
                "./build.sh", 
                 "--disable-tests",
@@ -42,7 +44,7 @@ class NSS(BuildSystem):
             cwd=build_dir / "nss"
         )
 
-    def install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path | None = None):
+    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install nss into the target destination.
 

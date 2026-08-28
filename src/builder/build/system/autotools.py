@@ -1,5 +1,6 @@
 from pathlib import Path
 from .buildsystem import BuildSystem
+from builder.recipe import BuildRecipe
 from builder.build.context import BuildContext
 from builder.utils.logger import error, info
 from dataclasses import dataclass
@@ -14,15 +15,16 @@ class Autotools(BuildSystem):
     skip_build: bool = False
     disable_fakeroot: bool = False
 
-    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         # Not needed
         pass
 
     def configure(self,
-                  ctx: BuildContext,
-                  source_dir: Path,
+                  recipe: BuildRecipe,
+                  source_dir: Path, 
                   build_dir: Path,
-                  config_args: list[str] | None = None):
+                  dest_dir: Path|None = None,
+                  config_args: list[str]|None = None):
         """
         Configure the Autotools project for building.
 
@@ -30,7 +32,7 @@ class Autotools(BuildSystem):
         and executes it with the passed arguments.
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
             source_dir (Path): Directory containing the projects source tree.
             build_dir (Path): Directory where the build will be configured.
             config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
@@ -62,7 +64,7 @@ class Autotools(BuildSystem):
             return
 
         # Execute config script
-        ctx.run(
+        recipe.ctx.run(
             [
                 str(config_script),
                 *args
@@ -71,7 +73,7 @@ class Autotools(BuildSystem):
             use_fakeroot=not self.disable_fakeroot
         )
         
-    def build(self, ctx: BuildContext, build_dir: Path):
+    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Compile the project using ``make``
 
@@ -82,13 +84,13 @@ class Autotools(BuildSystem):
         if self.skip_build:
             return
         
-        ctx.run(
-            [ctx.toolchain.make, *(self.build_args or []), f"-j{ctx.num_jobs}"],
+        recipe.ctx.run(
+            [recipe.ctx.toolchain.make, *(self.build_args or []), f"-j{recipe.ctx.num_jobs}"],
             cwd=build_dir,
             use_fakeroot=not self.disable_fakeroot
         )
 
-    def install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path | None = None):
+    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install the compiled artifacts using ``make install``.
 
@@ -100,7 +102,7 @@ class Autotools(BuildSystem):
             build_dir (Path): Directory containing the build output.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
-        cmd = [ ctx.toolchain.make ]
+        cmd = [ recipe.ctx.toolchain.make ]
 
         if dest_dir:
             cmd.append(f"DESTDIR={dest_dir}")
@@ -110,4 +112,4 @@ class Autotools(BuildSystem):
         
         cmd.append("install")
 
-        ctx.run(cmd, cwd=build_dir, use_fakeroot=not self.disable_fakeroot)
+        recipe.ctx.run(cmd, cwd=build_dir, use_fakeroot=not self.disable_fakeroot)

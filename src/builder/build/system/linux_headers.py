@@ -1,4 +1,5 @@
 from pathlib import Path
+from builder.recipe import BuildRecipe
 from .buildsystem import BuildSystem
 from builder.build.context import BuildContext
 
@@ -7,37 +8,38 @@ class LinuxHeaders(BuildSystem):
     Abstraction for building the linux headers.
     """
 
-    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         # Not needed
         pass
 
     def configure(self,
-                  ctx: BuildContext,
-                  source_dir: Path,
+                  recipe: BuildRecipe,
+                  source_dir: Path, 
                   build_dir: Path,
-                  config_args: list[str] | None = None):
+                  dest_dir: Path|None = None,
+                  config_args: list[str]|None = None):
         # Not needed
         pass
 
-    def build(self, ctx: BuildContext, build_dir: Path):
+    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         # Not needed
         pass
 
-    def install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path | None = None):
+    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install the linux headers using ``make headers_install``.
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
         
         assert dest_dir, "dest_dir argument is required for LinuxHeaders"
 
-        ctx.run(
+        recipe.ctx.run(
             [
-                ctx.toolchain.make,
-                f"ARCH={ctx.target_machine.kernel_arch}",
+                recipe.ctx.toolchain.make,
+                f"ARCH={recipe.ctx.target_machine.kernel_arch}",
                 "headers_install",
                 f"INSTALL_HDR_PATH={dest_dir / 'usr'}"
             ],

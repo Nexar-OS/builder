@@ -293,19 +293,6 @@ class BuildRecipe(ABC):
         """
         return []
 
-    def _install(self, build_dir: Path, dest_dir: Path|None):
-        """
-        Invoke the install call to the build system.
-
-        Args:
-            ctx (BuildContext): Context used for current build.
-            build_dir (Path): Directory where the build system already build the binaries into.
-            dest_dir (Path): Destination directory to install the files into.
-        """
-        assert self.build_system, "No build system complete installation!"
-
-        self.build_system.install(self.ctx, build_dir, dest_dir)
-
     def build(self) -> None:
         """
         Executes the complete build lifecycle of the recipe.
@@ -350,11 +337,10 @@ class BuildRecipe(ABC):
 
         # Run installation
         if self.build_system:
-            self.build_system.prepare(self.ctx, source_dir, build_dir)
-            self.build_system.configure(self.ctx, source_dir, build_dir, self._config_args(self.ctx))
-            self.build_system.build(self.ctx, build_dir)
-        
-            self._install(build_dir, dest_dir)
+            self.build_system.prepare(self, source_dir, build_dir, dest_dir)
+            self.build_system.configure(self, source_dir, build_dir, dest_dir, self._config_args(self.ctx))
+            self.build_system.build(self, source_dir, build_dir, dest_dir)
+            self.build_system.install(self, source_dir, build_dir, dest_dir)
 
         # Run post install hook
         self.post_install(self.ctx, dest_dir)

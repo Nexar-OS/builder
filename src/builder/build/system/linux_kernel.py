@@ -1,4 +1,5 @@
 import shutil
+from builder.recipe import BuildRecipe
 from pathlib import Path
 from .buildsystem import BuildSystem
 from builder.build.context import BuildContext
@@ -13,15 +14,16 @@ class LinuxKernel(BuildSystem):
         super().__init__()
         self.version = version
 
-    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         # Not needed
         pass
 
     def configure(self,
-                  ctx: BuildContext,
-                  source_dir: Path,
+                  recipe: BuildRecipe,
+                  source_dir: Path, 
                   build_dir: Path,
-                  config_args: list[str] | None = None):
+                  dest_dir: Path|None = None,
+                  config_args: list[str]|None = None):
         """
         Configure the linux kernel using ``make defconfig``
 
@@ -33,11 +35,11 @@ class LinuxKernel(BuildSystem):
         args = list(self.config_args or [])
         args += config_args or []
 
-        ctx.run(
+        recipe.ctx.run(
             [
-                ctx.toolchain.make,
-                f"ARCH={ctx.target_machine.kernel_arch}",
-                f"CROSS_COMPILE={ctx.target_machine.triple}-",
+                recipe.ctx.toolchain.make,
+                f"ARCH={recipe.ctx.target_machine.kernel_arch}",
+                f"CROSS_COMPILE={recipe.ctx.target_machine.triple}-",
                 "defconfig",
                 *args
             ],
@@ -45,29 +47,29 @@ class LinuxKernel(BuildSystem):
         )
 
 
-    def build(self, ctx: BuildContext, build_dir: Path):
+    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Build the linux kernel modules and kernel image.
         This function invokes the ``make`` command.
 
         Args:
-            ctx (BuildContext): _description_
+            recipe (BuildRecipe): The recipe to build.
             build_dir (Path): _description_
         """
 
-        ctx.run(
+        recipe.ctx.run(
             [
-                ctx.toolchain.make,
-                f"ARCH={ctx.target_machine.kernel_arch}",
-                f"CROSS_COMPILE={ctx.target_machine.triple}-",
+                recipe.ctx.toolchain.make,
+                f"ARCH={recipe.ctx.target_machine.kernel_arch}",
+                f"CROSS_COMPILE={recipe.ctx.target_machine.triple}-",
                 *(self.build_args or []),
-                f"-j{ctx.num_jobs}"
+                f"-j{recipe.ctx.num_jobs}"
             ],
             cwd=build_dir,
             use_fakeroot=False
         )
 
-    def install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path | None = None):
+    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install the linux kernel modules and install them into a set destination directory.
 
@@ -76,18 +78,18 @@ class LinuxKernel(BuildSystem):
         - copies the architecture respective kernel image.
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
         
         assert dest_dir, "dest_dir argument is required for LinuxKernel"
 
         # Install kernel modules
-        ctx.run(
+        recipe.ctx.run(
             [
-                ctx.toolchain.make,
-                f"ARCH={ctx.target_machine.kernel_arch}",
-                f"CROSS_COMPILE={ctx.target_machine.triple}-",
+                recipe.ctx.toolchain.make,
+                f"ARCH={recipe.ctx.target_machine.kernel_arch}",
+                f"CROSS_COMPILE={recipe.ctx.target_machine.triple}-",
                 "modules_install",
                 f"INSTALL_MOD_PATH={dest_dir}",
                 *(self.install_args or [])
@@ -101,7 +103,7 @@ class LinuxKernel(BuildSystem):
             "arm64": ("arch/arm64/boot/Image", "Image"),
             "arm": ("arch/arm/boot/Image", "zImage"),
             "riscv": ("arch/riscv/boot/Image", "Image"),
-        }.get(ctx.target_machine.kernel_arch)
+        }.get(recipe.ctx.target_machine.kernel_arch)
 
         if not image:
             raise RuntimeError("Unsupported target kernel architecture!")

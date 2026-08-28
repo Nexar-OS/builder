@@ -1,4 +1,5 @@
 from pathlib import Path
+from builder.recipe import BuildRecipe
 from .buildsystem import BuildSystem
 from builder.build.context import BuildContext
 from builder.utils.logger import error, info
@@ -9,25 +10,26 @@ class CMake(BuildSystem):
     """Abstraction for the cmake build system."""
     generator: str | None = None
 
-    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         build_dir.mkdir(exist_ok=True, parents=True)
 
     def configure(self,
-                  ctx: BuildContext,
-                  source_dir: Path,
+                  recipe: BuildRecipe,
+                  source_dir: Path, 
                   build_dir: Path,
-                  config_args: list[str] | None = None):
+                  dest_dir: Path|None = None,
+                  config_args: list[str]|None = None):
         """
         Configure the cmake project for building.
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
             source_dir (Path): Directory containing the projects source tree.
             build_dir (Path): Directory where the build will be configured.
             config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
         """
         args = [
-            ctx.toolchain.cmake,
+            recipe.ctx.toolchain.cmake,
             "-S", str(source_dir),
             "-B", str(build_dir)
         ]
@@ -38,28 +40,28 @@ class CMake(BuildSystem):
         args.extend(self.config_args or [])
         args.extend(config_args or [])
 
-        ctx.run(args, cwd=build_dir)
+        recipe.ctx.run(args, cwd=build_dir)
         
-    def build(self, ctx: BuildContext, build_dir: Path):
+    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Compile the project using ``cmake``
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
             build_dir (Path): Directory containing the configured build tree.
         """
-        ctx.run(
+        recipe.ctx.run(
             [
                 "cmake",
                 "--build",
                 str(build_dir),
                 "--parallel",
-                str(ctx.num_jobs),
+                str(recipe.ctx.num_jobs),
                 *(self.build_args or [])
             ]
         )
 
-    def install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path | None = None):
+    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install the compiled artifacts using ``cmake --install``.
 
@@ -67,11 +69,11 @@ class CMake(BuildSystem):
         ``DESTDIR`` override, allowing for staged or relocatable installations.
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
             build_dir (Path): Directory containing the build output.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
-        cmd = [ ctx.toolchain.make ]
+        cmd = [ recipe.ctx.toolchain.make ]
 
         if dest_dir:
             cmd.append(f"DESTDIR={dest_dir}")
@@ -82,4 +84,4 @@ class CMake(BuildSystem):
         cmd.append("install")
 
 
-        ctx.run(cmd, cwd=build_dir)
+        recipe.ctx.run(cmd, cwd=build_dir)

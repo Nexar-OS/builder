@@ -1,4 +1,5 @@
 import shutil
+from builder.recipe import BuildRecipe
 from pathlib import Path
 from .buildsystem import BuildSystem
 from builder.build.context import BuildContext
@@ -8,19 +9,20 @@ class BZip2(BuildSystem):
     Abstraction for building bzip2.
     """
 
-    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         # Not needed
         pass
 
     def configure(self,
-                  ctx: BuildContext,
-                  source_dir: Path,
+                  recipe: BuildRecipe,
+                  source_dir: Path, 
                   build_dir: Path,
-                  config_args: list[str] | None = None):
+                  dest_dir: Path|None = None,
+                  config_args: list[str]|None = None):
         # Not needed
         pass
 
-    def build(self, ctx: BuildContext, build_dir: Path):
+    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Builds bzip2 using ``Makefile-libbz2_so``.
 
@@ -30,22 +32,22 @@ class BZip2(BuildSystem):
         - ``make``
         """
 
-        ctx.run(
-            [ ctx.toolchain.make, "-f", "Makefile-libbz2_so" ],
+        recipe.ctx.run(
+            [ recipe.ctx.toolchain.make, "-f", "Makefile-libbz2_so" ],
             cwd=build_dir # build dir is source dir
         )
 
-        ctx.run(
-            [ ctx.toolchain.make, "clean" ],
+        recipe.ctx.run(
+            [ recipe.ctx.toolchain.make, "clean" ],
             cwd=build_dir
         )
 
-        ctx.run(
-            [ ctx.toolchain.make, f"-j{ctx.num_jobs}" ],
+        recipe.ctx.run(
+            [ recipe.ctx.toolchain.make, f"-j{recipe.ctx.num_jobs}" ],
             cwd=build_dir
         )
 
-    def install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path | None = None):
+    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install the bzip2 library and binaries into the target destination.
 

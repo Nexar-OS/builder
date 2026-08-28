@@ -1,4 +1,5 @@
 from pathlib import Path
+from builder.recipe import BuildRecipe
 from .buildsystem import BuildSystem
 from builder.build.context import BuildContext
 from dataclasses import dataclass
@@ -31,63 +32,63 @@ class CustomBuildSystem(BuildSystem):
             env={ **ctx.env, **env}
         )
 
-    def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
+    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         """
         Prepare the cross config file for meson.
         """
-        self._invoke(ctx, self._prepare, source_dir, {
+        self._invoke(recipe.ctx, self._prepare, source_dir, {
             "BUILD": str(build_dir),
             "SOURCE": str(source_dir)
         })
-        
 
     def configure(self,
-                  ctx: BuildContext,
-                  source_dir: Path,
+                  recipe: BuildRecipe,
+                  source_dir: Path, 
                   build_dir: Path,
-                  config_args: list[str] | None = None):
+                  dest_dir: Path|None = None,
+                  config_args: list[str]|None = None):
         """
         Configure the project for building.
 
         This method invokes the ``_configure`` script.
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
             source_dir (Path): Directory containing the projects source tree.
             build_dir (Path): Directory where the build will be configured.
             config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
         """
-        self._invoke(ctx, self._configure, build_dir, {
+        self._invoke(recipe.ctx, self._configure, build_dir, {
             "BUILD": str(build_dir),
             "SOURCE": str(source_dir)
         })
         
         
-    def build(self, ctx: BuildContext, build_dir: Path):
+    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Compile the project using the ``_build`` script.
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
             build_dir (Path): Directory containing the configured build tree.
         """
-        self._invoke(ctx, self._build, build_dir, {
+        self._invoke(recipe.ctx, self._build, build_dir, {
             "BUILD": str(build_dir)
         })
 
-    def install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path | None = None):
+    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install the compiled artifacts using the passed ``_install`` script.
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
             build_dir (Path): Directory containing the build output.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
         dest_dir = dest_dir or build_dir
         dest_dir.mkdir(exist_ok=True, parents=True)
         
-        self._invoke(ctx, self._install, dest_dir, {
+        self._invoke(recipe.ctx, self._install, dest_dir, {
             "BUILD": str(build_dir),
             "DESTDIR": str(dest_dir)
         })

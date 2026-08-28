@@ -3,31 +3,55 @@ from typing import Literal, Annotated, Union
 from builder.recipe import BuildMethod
 from builder.recipe import Dependencies
 
-class BuildSystemSchema(BaseModel):
-    type: str
+class Schema(BaseModel):
+    ...
+
+class AutotoolsSchema(Schema):
+    type: Literal["autotools"]
+    disable_fakeroot: bool = False
+    skip_build: bool = False
     config_args: list[str] | None = None
     build_args: list[str] | None = None
     install_args: list[str] | None = None
 
-class BuildSchema(BaseModel):
+class CMakeSchema(Schema):
+    type: Literal["cmake"]
+    config_args: list[str] | None = None
+    build_args: list[str] | None = None
+    install_args: list[str] | None = None
+    generator: str | None = None
+
+class MesonSchema(Schema):
+    type: Literal["meson"]
+    disable_fakeroot: bool = False
+    config_args: list[str] | None = None
+    build_args: list[str] | None = None
+    install_args: list[str] | None = None
+
+BuildSystemSchema = Annotated[
+    Union[AutotoolsSchema],
+    Field(discriminator="type")
+]
+
+class BuildSchema(Schema):
     method: BuildMethod
     build_system: BuildSystemSchema
     prepare: str | None = None
     post_install: str | None = None
 
-class FileSourceSchema(BaseModel):
+class FileSourceSchema(Schema):
     type: Literal["file"]
     name: str
     url: str
-    filename: str|None = None
-    md5hash: str|None = None
+    filename: str | None = None
+    md5hash: str | None = None
 
-class TarballSourceSchema(BaseModel):
+class TarballSourceSchema(Schema):
     type: Literal["tarball"]
     name: str
     url: str
-    filename: str|None = None
-    md5hash: str|None = None
+    filename: str | None = None
+    md5hash: str | None = None
     strip_top_level: bool = True
 
 SourceSchema = Annotated[
@@ -35,7 +59,7 @@ SourceSchema = Annotated[
     Field(discriminator="type")
 ]
 
-class RecipeSchema(BaseModel):
+class RecipeSchema(Schema):
     name: str
     homepage: str
     license: str

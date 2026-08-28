@@ -1,12 +1,38 @@
+from typing import TypeVar
 from pathlib import Path
 from builder.recipe.schema import *
 from builder.recipe import GenericRecipe, BuildRole
 from builder.utils.data import load_yaml
 from builder.source import *
+from builder.build.system import *
 
 def load_schema(path: Path) -> RecipeSchema:
     yaml = load_yaml(path)
     return RecipeSchema.model_validate(yaml)
+
+
+SchemaT = TypeVar("SchemaT", bound=Schema)
+ResultT = TypeVar("ResultT")
+
+def _load_class_from_schema(schema: SchemaT, types: dict[type[SchemaT], type[ResultT]]) -> ResultT:
+    """
+    Create a domain object from a ``Schema``.
+
+    The schema's concrete type is used to select the corresponding domain
+    class from ``types``. The schema's ``type`` field is dropped before passing
+    it to the constructor.
+
+    Args:
+        schema (Schema): The schema to convert.
+        types (dict[type, type]): A mapping from schema types to their corresponding domain classes.
+
+    Returns:
+        An instance of the domain class.
+    """
+    source_class = types[type(schema)]
+    dump = schema.model_dump()
+    dump.pop("type")
+    return source_class(**dump)
 
 def load_source_from_schema(schema: SourceSchema) -> Source:
     """
@@ -14,20 +40,19 @@ def load_source_from_schema(schema: SourceSchema) -> Source:
 
     Args:
         schema (SourceSchema): The schema to load
-
-    Returns:
-        _type_: The loaded source class.
     """
-    
-    SOURCE_TYPES = {
+
+    return _load_class_from_schema(schema, {
         TarballSourceSchema: TarballSource,
         FileSourceSchema: FileSource
-    }
+    })
 
-    source_class = SOURCE_TYPES[type(schema)]
-    dump = schema.model_dump()
-    dump.pop("type")
-    return source_class(**dump)
+def load_build_system_from_schema(schema: BuildSystemSchema) -> BuildSystem:
+    return _load_class_from_schema(schema, {
+        AutotoolsSchema: Autotools,
+        CMakeSchema: CMake,
+        MesonSchema: Meson
+    })
 
 def load_recipe_from_schema(role: BuildRole, schema: RecipeSchema) -> GenericRecipe:
     """
@@ -48,5 +73,5 @@ def load_recipe_from_schema(role: BuildRole, schema: RecipeSchema) -> GenericRec
                   for source_schema in schema.sources ],
         dependencies=schema.dependencies,
         build_method=schema.build.method,
-        build_system=None
+        build_system=load_build_system_from_schema(schema.build.build_system)
     )

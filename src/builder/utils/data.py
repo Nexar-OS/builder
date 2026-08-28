@@ -4,6 +4,7 @@ from typing import Any, TypeVar
 from builder.utils.logger import warn
 from yaml import safe_load
 from yaml.parser import ParserError
+import re
 
 T = TypeVar("T")
 
@@ -57,6 +58,52 @@ def retrieve_nested(
     
     return current
 
+def interpolate(
+        value: Any,
+        variables: dict[str, str],
+        variable_format: re.Pattern[str] = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
+    ) -> Any:
+    """
+    Recursively interpolate variables in a YAML value.
+
+    Strings may contain variables in the passed format. Variables
+    are resolved from the provided mapping and replaced with their
+    string representation.
+
+    Lists and dictionaries are traversed recursively.
+
+    Args:
+        value (Any): The value to interpolate.
+        variables (dict[str, str]): A mapping of variable names to their values.
+        variable_format (re.Pattern[str]): The format of a variable to resolve.
+                                           Default: ${var_name}.
+
+    Returns:
+        Any: The interpolated object.
+    """
+
+    if isinstance(value, str):
+        def replace(match: re.Match[str]) -> str:
+            variable = match.group(1)
+            
+            if variable not in variables:
+                warn(f"Failed to resolve variable '{variable}'.")
+                return "${" + variable + "}"
+
+            return str(variables[variable])
+
+        return variable_format.sub(
+            replace,
+            value,
+        )
+    
+    if isinstance(value, list):
+        return [ interpolate(item, variables) for item in value ]
+    
+    if isinstance(value, dict):
+        return { key: interpolate(item, variables) for key, item in value.items() }
+    
+    return value
 
 def load_yaml(path: Path) -> Any | None:
     """

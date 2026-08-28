@@ -1,10 +1,6 @@
 from pydantic import BaseModel
 from builder.recipe import BuildMethod
-
-class DependenciesSchema(BaseModel):
-    required: list[str]
-    optional: list[str]
-    build: list[str]
+from builder.recipe import Dependencies
 
 class SourceSchema(BaseModel):
     type: str
@@ -30,6 +26,6 @@ class RecipeSchema(BaseModel):
     license: str
     description: str
     version: str
-    dependencies: DependenciesSchema
+    dependencies: Dependencies
     sources: list[SourceSchema]
     build: BuildSchema

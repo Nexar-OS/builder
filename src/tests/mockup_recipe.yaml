@@ -19,7 +19,7 @@ sources:
   - type: tarball
     name: recipe
     url: "https://..."
-    sha256: "hash"
+    md5hash: "hash"
 
 build:
   method: IN_SOURCE

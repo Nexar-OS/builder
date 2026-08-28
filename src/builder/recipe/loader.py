@@ -18,13 +18,16 @@ def load_source_from_schema(schema: SourceSchema) -> Source:
     Returns:
         _type_: The loaded source class.
     """
-    source_types = {
-        "tarball": TarballSource,
-        "file": FileSource
+    
+    SOURCE_TYPES = {
+        TarballSourceSchema: TarballSource,
+        FileSourceSchema: FileSource
     }
 
-    source_class = source_types[schema.type]
-    return source_class(**schema.model_dump())
+    source_class = SOURCE_TYPES[type(schema)]
+    dump = schema.model_dump()
+    dump.pop("type")
+    return source_class(**dump)
 
 def load_recipe_from_schema(role: BuildRole, schema: RecipeSchema) -> GenericRecipe:
     """

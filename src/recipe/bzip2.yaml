@@ -1,0 +1,44 @@
+name: bzip2
+homepage: https://sourceware.org/bzip2/
+license: BSD
+description: A high-quality data compressor
+
+version: 1.0.8 # or 'latest'
+
+dependencies:
+  required:
+    - glibc
+    - bash
+  
+sources:
+  - type: tarball
+    name: bzip2
+    url: https://sourceware.org/pub/bzip2/bzip2-${version}.tar.gz
+    md5hash: 67e051268d0c475ea773822f7500d0e5
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: custom
+    disable_fakeroot: true
+
+    build: |
+      make -f Makefile-libbz2_so
+      make clean
+      make
+    
+    install: |
+      mkdir -p usr/{bin,share/man/man1}
+
+      cp $BUILD/bzip2-shared usr/bin/bzip2
+      ln -s bzip2 usr/bin/bzcat
+      ln -s bzip2 usr/bin/bunzip2
+
+      cp -R $BUILD/bzip2.1 usr/share/man/man1/bzip2.1
+  
+  patches:
+
+  prepare: |
+  
+  post_install: |

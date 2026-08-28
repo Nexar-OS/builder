@@ -25,8 +25,11 @@ def load_schema(path: Path) -> RecipeSchema | None:
 
     try:
         return RecipeSchema.model_validate(yaml)
-    except:
-        warn(f"Failed to parse schema for '{path}'")
+    except Exception as e:
+        warn(
+            f"Failed to parse schema for '{path}':\n"
+            f"{e}"
+        )
         return None
 
 

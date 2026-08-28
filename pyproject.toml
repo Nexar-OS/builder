@@ -12,5 +12,4 @@ description = ""
 readme = "README.md"
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["src*"]
+where = ["src"]

@@ -50,14 +50,18 @@ class RecipeMetadata:
 
 class BuildMethod(Enum):
     """
+    Describes where the source and build tree should be located.
+    """
+
+    IN_SOURCE = auto()
+    """
     Build will run inside of the source-tree.
     """
-    IN_SOURCE = auto()
 
+    OUT_OF_SOURCE  = auto()
     """
     Build will run in a separate directory than the source-tree.
     """
-    OUT_OF_SOURCE  = auto()
 
 class BuildRecipe(ABC):
     """

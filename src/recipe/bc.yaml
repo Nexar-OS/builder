@@ -15,19 +15,26 @@ sources:
     name: bc
     url: "https://github.com/gavinhoward/bc/releases/download/${version}/bc-${version}.tar.gz"
     md5hash: "a020c36c383624119cce4d2cf5d13388"
+  
+  - type: file
+    name: gcc16.patch
+    url: "file://${patches}/bc/gcc16.patch"
 
 build:
-  method: IN_SOURCE
+  method: OUT_OF_SOURCE
 
   build_system:
     type: autotools
   
     config_args:
       - "--prefix=/usr"
+      - "--disable-dc"
     
     build_args:
     install_args:
   
   patches:
+    - gcc16.patch
+
   prepare: |
   post_install: |

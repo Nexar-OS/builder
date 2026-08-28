@@ -26,7 +26,7 @@ class BuildSchema(BaseModel):
 class RecipeSchema(BaseModel):
     name: str
     homepage: str
-    lisence: str
+    license: str
     description: str
     version: str
     dependencies: DependenciesSchema

@@ -25,7 +25,7 @@ sudo parted "$LOOP" --script \
     mkpart primary 41MiB 100% \
     set 1 boot on
 
-echo "  | Formatting partitions..."
+echo " | Formatting partitions..."
 sudo mkfs.fat -F 32 "$LOOP"p1 &> /dev/null
 sudo mkfs.ext4 "$LOOP"p2 &> /dev/null
 

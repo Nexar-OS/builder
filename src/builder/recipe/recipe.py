@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from pathlib import Path
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, asdict
@@ -9,7 +12,10 @@ from hashlib import sha256
 
 from builder.source.source import Source
 from builder.build.context import BuildContext
-from builder.build.system import BuildSystem
+
+if TYPE_CHECKING:
+    from builder.build.system import BuildSystem
+
 from builder.utils.logger import info, warn
 from builder.utils.file import rmtree, merge_trees
 from .dependencies import Dependencies

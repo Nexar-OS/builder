@@ -1,5 +1,6 @@
 from .recipe import (
     BuildRecipe,
+    BuildRole,
     GenericRecipe,
     ToolchainRecipe,
     SysrootRecipe,

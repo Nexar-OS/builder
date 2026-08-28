@@ -407,18 +407,27 @@ class GenericRecipe(BuildRecipe):
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
 
-    name: str
-    version: str
+    def __init__(self,
+                 role: BuildRole,
+                 name: str,
+                 version: str,
+                 sources: list[Source],
+                 dependencies: list[BuildRecipe]|None = None,
+                 opt_dependencies: list[BuildRecipe]|None = None,
+                 build_dependencies: list[BuildRecipe]|None = None,
+                 build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE,
+                 build_system: BuildSystem|None = None
+                 ) -> None:
+        super().__init__(role)
 
-    sources: list[Source]
-
-    dependencies: list["BuildRecipe"] = []
-    opt_dependencies: list["BuildRecipe"] = []
-    build_dependencies: list["BuildRecipe"] = []
-
-    build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE
-    
-    build_system: BuildSystem|None = None
+        self.name = name
+        self.version = version
+        self.sources = sources
+        self.dependencies = dependencies or []
+        self.opt_dependencies = opt_dependencies or []
+        self.build_dependencies = build_dependencies or []
+        self.build_method = build_method
+        self.build_system = build_system
 
 class ToolchainRecipe(BuildRecipe):
     """

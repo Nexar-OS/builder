@@ -476,7 +476,7 @@ class GenericRecipe(BuildRecipe):
             build_dir (Path): Directory where the recipe will be build in.
         """
         if not self.prepare_script:
-            info(f"No post install script for {self.name}.")
+            info(f"No prepare install script for {self.name}.")
             return
 
         ctx.run(

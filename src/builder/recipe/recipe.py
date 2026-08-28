@@ -1,7 +1,7 @@
 from pathlib import Path
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, asdict
-from enum import Enum, auto
+from enum import Enum, StrEnum, auto
 
 import time
 import json
@@ -48,17 +48,17 @@ class RecipeMetadata:
             json.loads(path.read_text())
         )
 
-class BuildMethod(Enum):
+class BuildMethod(StrEnum):
     """
     Describes where the source and build tree should be located.
     """
 
-    IN_SOURCE = auto()
+    IN_SOURCE = "IN_SOURCE"
     """
     Build will run inside of the source-tree.
     """
 
-    OUT_OF_SOURCE  = auto()
+    OUT_OF_SOURCE = "OUT_OF_SOURCE"
     """
     Build will run in a separate directory than the source-tree.
     """

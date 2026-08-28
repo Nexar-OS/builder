@@ -93,7 +93,6 @@ class BuildRole(Enum):
     These files become part of the final os.
     """
 
-
 class BuildRecipe(ABC):
     """
     Abstract base class describing how a software package is built.
@@ -407,6 +406,19 @@ class GenericRecipe(BuildRecipe):
     See Also:
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
+
+    name: str
+    version: str
+
+    sources: list[Source]
+
+    dependencies: list["BuildRecipe"] = []
+    opt_dependencies: list["BuildRecipe"] = []
+    build_dependencies: list["BuildRecipe"] = []
+
+    build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE
+    
+    build_system: BuildSystem|None = None
 
 class ToolchainRecipe(BuildRecipe):
     """

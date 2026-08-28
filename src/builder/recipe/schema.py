@@ -19,7 +19,7 @@ class BuildSystemSchema(BaseModel):
 
 class BuildSchema(BaseModel):
     method: str
-    build_system: BuildSystem
+    build_system: BuildSystemSchema
     prepare: str | None = None
     post_install: str | None = None
 
@@ -29,6 +29,6 @@ class RecipeSchema(BaseModel):
     lisence: str
     description: str
     version: str
-    dependencies: Dependencies
-    sources: list[Source]
-    build: Build
+    dependencies: DependenciesSchema
+    sources: list[SourceSchema]
+    build: BuildSchema

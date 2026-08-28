@@ -396,6 +396,18 @@ class BuildRecipe(ABC):
         """
         ...
 
+@dataclass
+class GenericRecipe(BuildRecipe):
+    """
+    Class for constructing a generic recipe just from arguments passed to it.
+
+    A ``GenericRecipe`` provides an interface to create a full ``BuildRecipe`` 
+    on the fly.
+
+    See Also:
+        :class:`BuildRecipe`: Base interface implementing core recipe workflow
+    """
+
 class ToolchainRecipe(BuildRecipe):
     """
     Base class describing how a toolchain component is built.

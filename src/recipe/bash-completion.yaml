@@ -1,0 +1,32 @@
+name: bash-completion
+homepage: https://github.com/scop/bash-completion
+license: GPL-2.0
+description: Programmable completion functions for bash
+
+version: "2.18.0"
+
+dependencies:
+  required:
+    - bash
+  
+sources:
+  - type: tarball
+    name: bash-completion
+    url: "https://github.com/scop/bash-completion/releases/download/${version}/bash-completion-${version}.tar.xz"
+    md5hash: "aa401f77054a83bd45171a2d628dccb0"
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - "--prefix=/usr"
+    
+    build_args:
+    install_args:
+  
+  patches:
+  prepare: |
+  post_install: |

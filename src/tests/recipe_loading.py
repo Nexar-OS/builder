@@ -36,5 +36,5 @@ ctx = BuildContext(
 
 ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
-recipe("bash") \
+recipe("bash-completion") \
     .build(ctx)

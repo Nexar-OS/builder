@@ -22,7 +22,7 @@ sources:
     md5hash: 
 
 build:
-  method: IN_SOURCE
+  method: OUT_OF_SOURCE
 
   build_system:
     type: autotools

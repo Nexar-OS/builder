@@ -120,7 +120,9 @@ def load_recipe(recipe_path: Path, role: BuildRole) -> GenericRecipe | None:
     Returns:
         GenericRecipe | None: The loaded recipe or None if schema was invalid.
     """
-    schema = load_schema(recipe_path)
+    schema = load_schema(recipe_path, {
+        "patches": "src/patches/"
+    })
 
     if not schema:
         return None

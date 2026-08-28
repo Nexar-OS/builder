@@ -10,9 +10,9 @@ class NetworkManagerRecipe(TargetRecipe):
     version = "1.58.0"
 
     depends_on = [
-        LibndpRecipe(),
-        NssRecipe(),
-        LibpslRecipe()
+        LibndpRecipe,
+        NssRecipe,
+        LibpslRecipe
     ]
 
     sources = [

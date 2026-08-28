@@ -9,7 +9,7 @@ class Lvm2Recipe(TargetRecipe):
     version = "2.03.42"
 
     depends_on = [
-        LibaioRecipe(),
+        LibaioRecipe,
     ]
 
 

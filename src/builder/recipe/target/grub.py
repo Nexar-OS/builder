@@ -9,7 +9,7 @@ class GrubRecipe(TargetRecipe):
     version = "2.14"
 
     depends_on = [
-        EfibootmgrRecipe(),
+        EfibootmgrRecipe,
     ]
 
     sources = [

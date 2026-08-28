@@ -10,7 +10,7 @@ class USButilsRecipe(TargetRecipe):
     version = "018"
 
     depends_on = [
-        LibusbRecipe()
+        LibusbRecipe
     ]
 
     sources = [

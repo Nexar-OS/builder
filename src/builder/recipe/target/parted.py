@@ -11,9 +11,9 @@ class PartedRecipe(TargetRecipe):
     version = "3.7"
 
     depends_on = [
-        UtilLinuxRecipe(),
-        Lvm2Recipe(),
-        ReadlineRecipe(),
+        UtilLinuxRecipe,
+        Lvm2Recipe,
+        ReadlineRecipe,
     ]
 
     sources = [

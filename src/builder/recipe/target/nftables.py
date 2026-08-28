@@ -12,10 +12,10 @@ class NFtablesRecipe(TargetRecipe):
     version = "1.1.6"
 
     depends_on = [
-        LibmnlRecipe(),
-        LibnftnlRecipe(),
-        GMPRecipe(),
-        LibeditRecipe()
+        LibmnlRecipe,
+        LibnftnlRecipe,
+        GMPRecipe,
+        LibeditRecipe
     ]
 
     sources = [

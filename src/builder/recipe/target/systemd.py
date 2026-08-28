@@ -11,9 +11,9 @@ class SystemdRecipe(TargetRecipe):
     copy_to_toolchain = True
 
     depends_on = [
-        DbusRecipe(),
-        GperfRecipe(),
-        BZip2Recipe()
+        DbusRecipe,
+        GperfRecipe,
+        BZip2Recipe
     ]
 
     sources = [

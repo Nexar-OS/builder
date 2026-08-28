@@ -9,7 +9,7 @@ class CryptsetupRecipe(TargetRecipe):
     version = "2.3.2"
 
     depends_on = [
-        JsonCRecipe(),
+        JsonCRecipe,
     ]
 
     sources = [

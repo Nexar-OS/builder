@@ -9,8 +9,8 @@ class EfibootmgrRecipe(TargetRecipe):
     version = "9.11"
 
     depends_on = [
-        EfivarRecipe(),
-        LibpoptRecipe(),
+        EfivarRecipe,
+        LibpoptRecipe,
     ]
 
     copy_to_toolchain = True

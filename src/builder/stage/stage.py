@@ -50,9 +50,9 @@ class Stage:
             self.pre_build_hook(self, ctx)
 
         for recipe in self.recipes:
-            if recipe.needs_rebuild(ctx):
+            if recipe.needs_rebuild:
                 info(f"Building '{recipe.name}'.")
-                recipe.build(ctx)
+                recipe.build()
             
             else:
                 info(f"Skipping {recipe.name} (up to date).")
@@ -77,7 +77,7 @@ class Stage:
 
         # Export package
 
-        path = recipe._install_path(ctx)
+        path = recipe._install_path
         
         if not path:
             warn(f"Failed to export recipe '{recipe.name}': No install path.")

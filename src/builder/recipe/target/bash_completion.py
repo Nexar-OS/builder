@@ -9,7 +9,7 @@ class BashCompletionRecipe(TargetRecipe):
     version = "2.18.0"
 
     depends_on = [
-        BashRecipe(),
+        BashRecipe,
     ]
 
     sources = [

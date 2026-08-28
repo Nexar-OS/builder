@@ -9,7 +9,7 @@ class IwRecipe(TargetRecipe):
     version = "6.17"
 
     depends_on = [
-        LibnlRecipe(),
+        LibnlRecipe,
     ]
 
     build_method = BuildMethod.IN_SOURCE

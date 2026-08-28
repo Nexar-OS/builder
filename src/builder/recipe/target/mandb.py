@@ -10,8 +10,8 @@ class ManDBRecipe(TargetRecipe):
     version = "6.19.0"
 
     depends_on = [
-        LibpipelineRecipe(),
-        GdbmRecipe(),
+        LibpipelineRecipe,
+        GdbmRecipe,
     ]
 
     sources = [

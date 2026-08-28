@@ -12,10 +12,10 @@ class CurlRecipe(TargetRecipe):
     version = "8.21.0"
 
     depends_on = [
-        LibunistringRecipe(),
-        Libidn2Recipe(),
-        LibpslRecipe(),
-        CaCertificateRecipe(),
+        LibunistringRecipe,
+        Libidn2Recipe,
+        LibpslRecipe,
+        CaCertificateRecipe,
     ]
 
     copy_to_toolchain = True

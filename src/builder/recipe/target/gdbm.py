@@ -11,7 +11,7 @@ class GdbmRecipe(TargetRecipe):
     copy_to_toolchain = True
 
     depends_on = [
-        LibpipelineRecipe()
+        LibpipelineRecipe
     ]
 
     sources = [

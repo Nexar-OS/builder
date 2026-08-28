@@ -110,10 +110,11 @@ class BuildRecipe(ABC):
         build_system (BuildSystem): Build system implementation responsible for configuring,
                                     compiling, and installing the package.
     """
-    def __init__(self, role: BuildRole) -> None:
+    def __init__(self, ctx: BuildContext, role: BuildRole) -> None:
         super().__init__()
 
         self.build_role = role
+        self.ctx = ctx
 
     dependencies: Dependencies = Dependencies.none()
 
@@ -126,7 +127,8 @@ class BuildRecipe(ABC):
     
     build_system: BuildSystem|None = None
 
-    def fingerprint(self, ctx: BuildContext) -> str:
+    @property
+    def fingerprint(self) -> str:
         """
         Compute a deterministic fingerprint for this recipe.
 
@@ -144,7 +146,7 @@ class BuildRecipe(ABC):
         h.update(self.name.encode())
 
         # Build system args
-        config_args = self._config_args(ctx)
+        config_args = self._config_args(self.ctx)
         build_args = None
         install_args = None
         if self.build_system:
@@ -158,19 +160,21 @@ class BuildRecipe(ABC):
 
         return h.hexdigest()
 
-    def metadata_path(self, ctx: BuildContext) -> Path:
+    @property
+    def metadata_path(self) -> Path:
         """
         Return the path to the recipe's build metadata file.
 
         Returns:
             Path: Path to the JSON metadata file for this recipe.
         """
-        path = ctx.metadata_dir / "recipes" / f"{self.name}.json"
+        path = self.ctx.metadata_dir / "recipes" / f"{self.name}.json"
         path.parent.mkdir(exist_ok=True, parents=True)
 
         return path
 
-    def needs_rebuild(self, ctx: BuildContext) -> bool:
+    @property
+    def needs_rebuild(self) -> bool:
         """
         Determine whether the recipe must be rebuilt.
 
@@ -181,24 +185,24 @@ class BuildRecipe(ABC):
         Returns:
             bool: True if the recipe should be rebuilt, otherwise False.
         """
-        path = self.metadata_path(ctx)
+        path = self.metadata_path
 
         if not path.exists():
             return True
         
         old = json.loads(path.read_text())["fingerprint"]
-        return old != self.fingerprint(ctx)
+        return old != self.fingerprint
 
-    def mark_built(self, ctx: BuildContext) -> None:
+    def mark_built(self) -> None:
         """
         Record the current recipe fingerprint as successfully built.
         """
-        path = self.metadata_path(ctx)
+        path = self.metadata_path
         path.write_text(
             json.dumps(
                 asdict(RecipeMetadata(
                     name=self.name,
-                    fingerprint=self.fingerprint(ctx),
+                    fingerprint=self.fingerprint,
                     last_build=str(time.time())
                 ))
             )
@@ -228,7 +232,8 @@ class BuildRecipe(ABC):
 
             source.install(source_dir, dest_dir)
 
-    def work_dir(self, ctx: BuildContext) -> Path:
+    @property
+    def work_dir(self) -> Path:
         """
         Create and return the working directory for this recipe.
 
@@ -240,12 +245,13 @@ class BuildRecipe(ABC):
         Returns:
             Path: Absolute path where the build takes place
         """
-        work_dir = ctx.build_dir / "recipe" / (self.name + "-" + self.version)
+        work_dir = self.ctx.build_dir / "recipe" / (self.name + "-" + self.version)
         work_dir.mkdir(exist_ok=True, parents=True)
 
         return work_dir.resolve()
 
-    def _install_path(self, ctx: BuildContext) -> Path|None:
+    @property
+    def _install_path(self) -> Path|None:
         """
         Return the directory where the build should be installed.
 
@@ -263,13 +269,13 @@ class BuildRecipe(ABC):
         """
         match self.build_role:
             case BuildRole.TOOLCHAIN:
-                return ctx.cross_toolchain_dir
+                return self.ctx.cross_toolchain_dir
 
             case BuildRole.SYSROOT:
-                return ctx.cross_toolchain_sysroot
+                return self.ctx.cross_toolchain_sysroot
             
             case BuildRole.TARGET:
-                return self.work_dir(ctx) / "rootfs"
+                return self.work_dir / "rootfs"
 
         raise NotImplementedError(
             f"Build role not supported: '{self.build_role}'"
@@ -287,7 +293,7 @@ class BuildRecipe(ABC):
         """
         return []
 
-    def _install(self, ctx: BuildContext, build_dir: Path, dest_dir: Path|None):
+    def _install(self, build_dir: Path, dest_dir: Path|None):
         """
         Invoke the install call to the build system.
 
@@ -298,9 +304,9 @@ class BuildRecipe(ABC):
         """
         assert self.build_system, "No build system complete installation!"
 
-        self.build_system.install(ctx, build_dir, dest_dir)
+        self.build_system.install(self.ctx, build_dir, dest_dir)
 
-    def build(self, ctx: BuildContext) -> None:
+    def build(self) -> None:
         """
         Executes the complete build lifecycle of the recipe.
 
@@ -316,10 +322,10 @@ class BuildRecipe(ABC):
             ctx (BuildContext): Context used for the build.
         """
 
-        work_dir = self.work_dir(ctx)
+        work_dir = self.work_dir
         build_dir = work_dir / "build"
         source_dir = work_dir / "sources"
-        dest_dir = self._install_path(ctx)
+        dest_dir = self._install_path
 
         # Ensure a fresh empty build directory
         if build_dir.is_dir():
@@ -337,23 +343,23 @@ class BuildRecipe(ABC):
             source_dir = build_dir
 
         # Let recipes prepare their environment
-        self.prepare(ctx, source_dir, build_dir)
+        self.prepare(self.ctx, source_dir, build_dir)
 
         # Let recipes apply custom patches
-        self.patch(ctx, source_dir)
+        self.patch(self.ctx, source_dir)
 
         # Run installation
         if self.build_system:
-            self.build_system.prepare(ctx, source_dir, build_dir)
-            self.build_system.configure(ctx, source_dir, build_dir, self._config_args(ctx))
-            self.build_system.build(ctx, build_dir)
+            self.build_system.prepare(self.ctx, source_dir, build_dir)
+            self.build_system.configure(self.ctx, source_dir, build_dir, self._config_args(self.ctx))
+            self.build_system.build(self.ctx, build_dir)
         
-            self._install(ctx, build_dir, dest_dir)
+            self._install(build_dir, dest_dir)
 
         # Run post install hook
-        self.post_install(ctx, dest_dir)
+        self.post_install(self.ctx, dest_dir)
 
-        self.mark_built(ctx)
+        self.mark_built()
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """
@@ -407,6 +413,7 @@ class GenericRecipe(BuildRecipe):
     """
 
     def __init__(self,
+                 ctx: BuildContext,
                  role: BuildRole,
                  name: str,
                  version: str,
@@ -418,7 +425,7 @@ class GenericRecipe(BuildRecipe):
                  prepare_script: str|None = None,
                  post_install_script: str|None = None,
                  ) -> None:
-        super().__init__(role)
+        super().__init__(ctx, role)
 
         self.name = name
         self.version = version
@@ -525,8 +532,8 @@ class ToolchainRecipe(BuildRecipe):
     See Also:
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
-    def __init__(self) -> None:
-        super().__init__(BuildRole.TOOLCHAIN)
+    def __init__(self, ctx: BuildContext) -> None:
+        super().__init__(ctx, BuildRole.TOOLCHAIN)
     
 class SysrootRecipe(BuildRecipe):
     """
@@ -536,8 +543,8 @@ class SysrootRecipe(BuildRecipe):
     See Also:
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
-    def __init__(self) -> None:
-        super().__init__(BuildRole.SYSROOT)
+    def __init__(self, ctx: BuildContext) -> None:
+        super().__init__(ctx, BuildRole.SYSROOT)
     
 class TargetRecipe(BuildRecipe):
     """
@@ -547,10 +554,10 @@ class TargetRecipe(BuildRecipe):
     See Also:
         :class:`BuildRecipe`: Base interface implementing core recipe workflow
     """
-    def __init__(self) -> None:
-        super().__init__(BuildRole.TARGET)
+    def __init__(self, ctx: BuildContext) -> None:
+        super().__init__(ctx, BuildRole.TARGET)
 
-    depends_on: list[BuildRecipe]|None = None
+    depends_on: list[type[BuildRecipe]]|None = None
 
     copy_to_toolchain: bool = False
 
@@ -562,19 +569,19 @@ class TargetRecipe(BuildRecipe):
         "usr/share/pkgconfig"
     ]
 
-    def _export_to_sysroot(self, ctx: BuildContext) -> None:
+    def _export_to_sysroot(self) -> None:
         """
         Export the build package into sysroot for future packages
         to be able to link against it.
         """
-        root = self._install_path(ctx)
+        root = self._install_path
 
         if not root:
             return
 
         for relative in self._export_to_toolchain:
             source = root / relative
-            dest = ctx.cross_toolchain_sysroot / relative
+            dest = self.ctx.cross_toolchain_sysroot / relative
 
             if not source.exists():
                 continue
@@ -589,14 +596,14 @@ class TargetRecipe(BuildRecipe):
                 ]
             )
 
-    def _clean_rootfs(self, ctx: BuildContext):
+    def _clean_rootfs(self):
         """
         Cleans the root filesystem where the package will be installed into.
         This prevents configuration contamination over multiple runs within
         the same build directory.
         """
 
-        dest = self._install_path(ctx)
+        dest = self._install_path
         if not dest:
             warn(f"Dest of TargetRecipe '{self.name}' is None.")
             return
@@ -604,7 +611,7 @@ class TargetRecipe(BuildRecipe):
         # Delete old run
         rmtree(dest)
 
-    def _resolve_dependencies(self, ctx: BuildContext):
+    def _resolve_dependencies(self):
         """
         Tries to invoke the build of all required dependency recipes.
 
@@ -616,23 +623,23 @@ class TargetRecipe(BuildRecipe):
         
         for dependency in self.depends_on:
             info(f"Resolving dependency '{dependency.name}' for '{self.name}'")
-            if not dependency.needs_rebuild(ctx):
+            if not dependency.needs_rebuild:
                 info(f"Dependency '{dependency.name}' was already built!")
                 continue
 
-            dependency.build(ctx)
+            dependency(self.ctx, BuildRole.TARGET).build()
 
 
-    def build(self, ctx: BuildContext):
+    def build(self):
         """
         Invokes default recipe build behavior after cleaning the
         installation destination.
         """
 
-        self._clean_rootfs(ctx)
-        self._resolve_dependencies(ctx)
+        self._clean_rootfs()
+        self._resolve_dependencies()
 
-        super().build(ctx)
+        super().build()
 
         if self.copy_to_toolchain:
-            self._export_to_sysroot(ctx)
+            self._export_to_sysroot()

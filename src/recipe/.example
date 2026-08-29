@@ -3,7 +3,7 @@ homepage: <homepage>
 license: <license>
 description: <description>
 
-version: <version>
+version: "<version>"
 
 dependencies:
   required:

@@ -36,9 +36,3 @@ build:
       ln -s bzip2 usr/bin/bunzip2
 
       cp -R $BUILD/bzip2.1 usr/share/man/man1/bzip2.1
-  
-  patches:
-
-  prepare: |
-  
-  post_install: |

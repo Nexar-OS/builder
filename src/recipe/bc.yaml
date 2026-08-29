@@ -29,12 +29,6 @@ build:
     config_args:
       - "--prefix=/usr"
       - "--disable-dc"
-    
-    build_args:
-    install_args:
   
   patches:
     - gcc16.patch
-
-  prepare: |
-  post_install: |

@@ -29,13 +29,6 @@ build:
     config_args:
       - "--prefix=/usr"
       - "--without-bash-malloc"
-    
-    build_args:
-  
-    install_args:
-  
-  patches: []
-  prepare: |
   
   post_install: |
     mkdir -p $DESTDIR / "bin"

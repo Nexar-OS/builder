@@ -1,0 +1,31 @@
+name: cryptsetup
+homepage: https://gitlab.com/cryptsetup/cryptsetup
+license: GPL-2.0-or-later
+description: Utility for conveniently setting up disk encryption based on the dm-crypt kernel module
+
+version: 2.3.2
+
+dependencies:
+  required:
+    - glibc
+    - openssl
+    - json-c
+    - popt
+  
+  build:
+    - util-linux
+  
+sources:
+  - type: tarball
+    name: cryptsetup
+    url: https://www.kernel.org/pub/linux/utils/cryptsetup/v${version.major}.${version.minor}/cryptsetup-${version}.tar.xz
+    md5hash: 6e4ffb6d35a73f7539a5d0c1354654cd
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

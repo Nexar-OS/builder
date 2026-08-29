@@ -24,10 +24,3 @@ build:
   
     config_args:
       - "--prefix=/usr"
-    
-    build_args:
-    install_args:
-  
-  patches:
-  prepare: |
-  post_install: |

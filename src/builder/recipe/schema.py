@@ -72,7 +72,7 @@ SourceSchema = Annotated[
 class RecipeSchema(Schema):
     name: str
     homepage: str
-    license: str
+    license: str | list[str]
     description: str
     version: str
     dependencies: Dependencies

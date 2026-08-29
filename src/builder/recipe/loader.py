@@ -9,8 +9,21 @@ from builder.utils.data import (
 )
 from builder.utils.logger import warn
 from builder.source import *
+from builder.build.version import Version
 from builder.build.system import *
 from builder.build.context import BuildContext
+
+def _get_version_vars(version_string: str | None) -> dict[str, str]:
+    if not version_string:
+        return {}
+
+    version = Version.from_version_string(version_string)
+
+    if not version:
+        warn(f"Unconventional version format: '{version_string}'")
+        return {}
+
+    return version.dict()
 
 def load_schema(path: Path, variables: dict[str, str]|None = None) -> RecipeSchema | None:
     """
@@ -27,11 +40,15 @@ def load_schema(path: Path, variables: dict[str, str]|None = None) -> RecipeSche
 
     if not yaml:
         return None
+    
+    if not isinstance(yaml, dict):
+        return None
 
     try:
         yaml = interpolate(yaml, {
             **yaml,
-            **(variables or {})
+            **(variables or {}),
+            **_get_version_vars(yaml.get("version")),
         })
 
         return RecipeSchema.model_validate(yaml)

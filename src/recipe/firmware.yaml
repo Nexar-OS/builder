@@ -1,0 +1,20 @@
+name: firmware
+homepage: https://gitlab.com/kernel-firmware/linux-firmware
+license: https://gitlab.com/kernel-firmware/linux-firmware/-/blob/main/LICENSE
+description: Collection of firmware binaries
+
+version: "20260810"
+
+dependencies:
+  
+sources:
+  - type: tarball
+    name: firmware
+    url: https://gitlab.com/kernel-firmware/linux-firmware/-/archive/${version}/linux-firmware-${version}.tar.gz
+    md5hash: 00c461b744f06359d1280c0fa73418ae
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools

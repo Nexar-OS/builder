@@ -1,0 +1,28 @@
+name: grep
+homepage: http://gnu.org/software/grep
+license: GPL3
+description: Grep searches one or more input files for lines containing a match to a specified pattern
+
+version: "3.12"
+
+dependencies:
+  required:
+    - glibc
+  
+  build:
+    - wget
+  
+sources:
+  - type: tarball
+    name: grep
+    url: https://ftp.gnu.org/gnu/grep/grep-${version}.tar.xz
+    md5hash: 5d9301ed9d209c4a88c8d3a6fd08b9ac
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

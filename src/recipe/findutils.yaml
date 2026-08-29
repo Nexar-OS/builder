@@ -1,0 +1,28 @@
+name: findutils
+homepage: https://www.gnu.org/software/findutils/
+license: GLP-3.0-or-later
+description: Basic directory searching utilities
+
+version: 4.11.0
+
+dependencies:
+  required:
+    - glibc
+  
+  build:
+    - wget
+  
+sources:
+  - type: tarball
+    name: findutils
+    url: https://ftp.gnu.org/gnu/findutils/findutils-${version}.tar.xz
+    md5hash: 512c6875ed84034dca240c4bc9380b96
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

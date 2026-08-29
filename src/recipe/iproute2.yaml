@@ -1,0 +1,25 @@
+name: iproute2
+homepage: https://git.kernel.org/pub/scm/network/iproute2/iproute2.git
+license: GPL-2.0-or-later
+description: Collection of command-line utilities for configuring and monitoring network interfaces
+
+version: 6.19.0
+
+dependencies:
+  required:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: iproute2
+    url: https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-${version}.tar.xz
+    md5hash: 90590c3c593a33d7d8eca997c2c18d1c
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

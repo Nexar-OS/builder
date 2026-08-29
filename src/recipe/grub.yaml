@@ -1,0 +1,46 @@
+name: grub
+homepage: https://www.gnu.org/software/grub/
+license: GLP-3.0-or-later
+description: GNU GRand Unified Bootloader
+
+version: "2.14"
+
+dependencies:
+  required:
+    - gettext
+    - xz
+    - bash
+  
+  optional:
+    - efibootmgr
+  
+  build:
+    - gettext
+    - xz
+  
+sources:
+  - type: tarball
+    name: grub
+    url: https://ftp.gnu.org/gnu/grub/grub-${version}.tar.xz
+    md5hash: 383f9effad01c235d2535357ff717543
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - --bindir=/usr/bin
+      - --sbindir=/usr/bin
+      - --mandir=/usr/share/man
+      - --infodir=/usr/share/info
+      - --datarootdir=/usr/share
+      - --sysconfdir=/etc
+      - --with-bootdir=/boot
+      - --with-grubdir=grub
+      - --with-platform=efi
+
+    build_args:
+      - CFLAGS=-Wno-error

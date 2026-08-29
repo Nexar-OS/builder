@@ -1,0 +1,32 @@
+name: gzip
+homepage: https://www.gnu.org/software/gzip/
+license: GPL-3.0-or-later
+description: Data compression program
+
+version: "1.14"
+
+dependencies:
+  required:
+    - bash
+    - coreutils
+    - grep
+    - sed
+    - glibc
+  
+  build:
+    - wget
+  
+sources:
+  - type: tarball
+    name: gzip
+    url: https://ftp.gnu.org/gnu/gzip/gzip-${version}.tar.xz
+    md5hash: 4bf5a10f287501ee8e8ebe00ef62b2c2
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

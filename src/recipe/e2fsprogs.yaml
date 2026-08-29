@@ -1,0 +1,33 @@
+name: e2fsprogs
+homepage: https://e2fsprogs.sourceforge.net/
+license: [ GPL, LGPL, MIT ]
+description: <description>
+
+version: 1.47.4
+
+dependencies:
+  required:
+    - bash
+    - util-linux
+  
+  optional:
+    - <optional_dependencies>
+  
+  build:
+    - systemd
+    - util-linux
+  
+sources:
+  - type: tarball
+    name: e2fsprogs
+    url: https://mirrors.edge.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v${version}/e2fsprogs-${version}.tar.gz
+    md5hash: 2c41cfdd6097c7731b35e88c59140c69
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

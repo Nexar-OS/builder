@@ -1,0 +1,41 @@
+name: file
+homepage: https://astron.com/
+license: BSD-2-Clause-Darwin
+description: Command for reporting the type of data contained in a file
+
+version: "5.48"
+
+dependencies:
+  required:
+    - glibc
+    - bzip2
+    - libseccomp
+    - xz
+    - zstd
+    - zlib
+  
+  # When compiling, file tries to use itself in order to generate the
+  # magic database file. This can cause crashes when the version of
+  # file installed on the build system doesn't match the one we are
+  # trying to build.
+  # 
+  # This creates a separate (host) version of file that the
+  # target file can later use to generate said database.
+  build:
+    - file
+  
+sources:
+  - type: tarball
+    name: file
+    url: https://astron.com/pub/file/file-${version}.tar.gz
+    md5hash: 423686e97f731d8c24e9cd1a22b03dec
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+    disable_fakeroot: True # `file -C -m magic` core dumps when using fakeroot
+  
+    config_args:
+      - --prefix=/usr

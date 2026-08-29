@@ -1,0 +1,29 @@
+name: glibc-runtime
+homepage: https://www.gnu.org/software/libc/
+license: GPL-2.0-or-later, LGPL-2.0-or-later
+description: GNU C library
+
+version: "2.44"
+
+dependencies:
+  required:
+    - tzdata
+    - linux-headers
+  
+sources:
+  - type: tarball
+    name: glibc
+    url: https://ftp.gnu.org/gnu/glibc/glibc-${version}.tar.xz
+    md5hash: 7677da43ef759c68e005f5d4c37986a6
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - --disable-nscd
+      - --enable-kernel=5.4
+      - libc_cv_slibdir=/usr/lib

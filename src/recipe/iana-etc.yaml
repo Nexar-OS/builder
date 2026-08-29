@@ -1,0 +1,26 @@
+name: iana-etc
+homepage: https://www.iana.org/protocols/
+license: 0BSD
+description: System files that map network services and protocols to their official numbers
+
+version: "20260817"
+
+dependencies:
+
+sources:
+  - type: tarball
+    name: iana-etc
+    url: https://github.com/Mic92/iana-etc/releases/download/${version}/iana-etc-${version}.tar.gz
+    md5hash: 351dce747398f9595c7b643820cec017
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: custom
+    disable_fakeroot: true
+
+    install: |
+      mkdir -p etc/
+      cp -r $SOURCE/protocols etc/
+      cp -r $SOURCE/services etc/

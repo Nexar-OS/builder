@@ -1,0 +1,25 @@
+name: dosfstools
+homepage: https://github.com/dosfstools/dosfstools
+license: GPL-3.0-or-later
+description: Programs like mkfs.fat, fsck.fat and fatlabel to create, check and label file systems of the FAT family
+
+version: "4.2"
+
+dependencies:
+  required:
+    - glibc
+
+sources:
+  - type: tarball
+    name: dosfstools
+    url: https://github.com/dosfstools/dosfstools/releases/download/v${version}/dosfstools-${version}.tar.gz
+    md5hash: 49c8e457327dc61efab5b115a27b087a
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

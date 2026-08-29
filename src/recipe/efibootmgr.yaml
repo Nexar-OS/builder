@@ -1,0 +1,33 @@
+name: efibootmgr
+homepage: https://github.com/rhboot/efibootmgr
+license: GPL-2.0-or-later
+description: User-space application to modify the Intel Extensible Firmware Interface (EFI) Boot Manager
+
+version: "9.11"
+
+dependencies:
+  required:
+    - efivar
+    - libpopt
+  
+  build:
+    - efivar
+    - libpopt
+  
+sources:
+  - type: tarball
+    name: efibootmgr
+    url: https://github.com/rhboot/efibootmgr/releases/download/18/efibootmgr-18.tar.bz2
+    md5hash: a92ce8fd2b282fa30f066797b14095ef
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+
+    build_args:
+      - EFIDIR=BOOT
+
+    install_args:
+      - EFIDIR=BOOT

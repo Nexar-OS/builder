@@ -1,0 +1,27 @@
+name: diffutils
+homepage: https://www.gnu.org/software/diffutils/
+license: GPL-3.0-or-later
+description: GNU Diffutils is a package of several programs related to finding differences between file
+
+version: "3.12"
+
+dependencies:
+  required:
+    - bash
+    - glibc
+  
+sources:
+  - type: tarball
+    name: diffutils
+    url: https://ftp.gnu.org/gnu/diffutils/diffutils-${version}.tar.xz
+    md5hash: d1b18b20868fb561f77861cd90b05de4
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - gl_cv_func_strcasecmp_works=yes

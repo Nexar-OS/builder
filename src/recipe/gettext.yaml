@@ -1,0 +1,31 @@
+name: gettext
+homepage: https://www.gnu.org/software/gettext/
+license: GFDL-1.2, GPL-2.0-or-later, LGPL-2.0
+description: GNU translation library
+
+version: "1.0"
+
+dependencies:
+  required:
+    - attr
+    - curl
+    - glibc
+    - json-c
+    - libstdc++
+    - ncurses
+    - bash
+
+sources:
+  - type: tarball
+    name: gettext
+    url: https://ftp.gnu.org/gnu/gettext/gettext-${version}.tar.xz
+    md5hash: dc8b2911535929cec1e263706b0a13a1
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

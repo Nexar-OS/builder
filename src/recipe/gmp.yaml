@@ -1,0 +1,28 @@
+name: gmp
+homepage: https://gmplib.org/
+license: [ GPL-2.0-or-later, LGPL-3.0-or-later ]
+description: Library for arbitrary precision arithmetic, operating on signed integers, rational numbers, and floating-point numbers
+
+version: 6.3.0
+
+dependencies:
+  required:
+    - glibc
+    - libstdc++
+  
+sources:
+  - type: tarball
+    name: gmp
+    url: https://ftp.gnu.org/gnu/gmp/gmp-${version}.tar.xz
+    md5hash: 956dc04e864001a9c22429f761f2c283
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+    disable_fakeroot: True
+  
+    config_args:
+      - --prefix=/usr
+      - CFLAGS=-std=c17

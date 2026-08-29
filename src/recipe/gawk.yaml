@@ -1,0 +1,26 @@
+name: gawk
+homepage: http://gnu.org/software/gawk/
+license: GPL-3.0-or-later
+description: GNU's awk
+
+version: 5.4.1
+
+dependencies:
+  required:
+    - glibc
+    - bash
+  
+sources:
+  - type: tarball
+    name: gawk
+    url: https://ftp.gnu.org/gnu/gawk/gawk-${version}.tar.xz
+    md5hash: d379c2110e7a3e15347dd5559a41ad64
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

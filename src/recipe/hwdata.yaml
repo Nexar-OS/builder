@@ -1,0 +1,23 @@
+name: hwdata
+homepage: https://github.com/vcrhonek/hwdata
+license: GPL-2.0-or-later
+description: Contains various hardware identification and configuration data
+
+version: "0.410"
+
+dependencies:
+  
+sources:
+  - type: tarball
+    name: hwdata
+    url: https://github.com/vcrhonek/hwdata/archive/refs/tags/v${version}.tar.gz
+    md5hash: 07f1de937ff5b830280f6157221164eb
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

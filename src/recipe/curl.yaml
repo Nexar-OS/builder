@@ -1,0 +1,38 @@
+name: curl
+homepage: https://curl.se/
+license: MIT
+description: Command line tool and library for transferring data with URLs
+
+version: 8.21.0
+
+dependencies:
+  required:
+    - ca-certificates
+    - openssl
+    - zlib
+    - zstd
+    - libpsl
+  
+  build:
+    - zlib
+    - zstd
+    - libpsl
+  
+sources:
+  - type: tarball
+    name: curl
+    url: https://github.com/curl/curl/releases/download/curl-${version.major}_${version.minor}_${version.patch}/curl-${version}.tar.gz
+    md5hash: 6e50e38c398737269ec002749bcc5d0d
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - --with-openssl
+      - --disable-shared
+      - --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt
+      - --with-ca-path=/etc/ssl/certs

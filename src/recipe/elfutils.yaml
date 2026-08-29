@@ -1,0 +1,38 @@
+name: elfutils
+homepage: https://github.com/roolebo/elfutils
+license: [ GPL-3.0, GPL-2.0, LGPL-3.0 ]
+description: Utilities and libraries to read, create and modify ELF binary files
+
+version: latest
+
+dependencies:
+  required:
+    - glibc
+    - json-c
+    - libstdc++
+    - bash
+  
+  build:
+    - bzip2
+    - curl
+    - json-c
+    - libstdc++
+    - xz
+    - zlib
+    - zstd
+  
+sources:
+  - type: tarball
+    name: elfutils
+    url: https://sourceware.org/elfutils/ftp/elfutils-${version}.tar.bz2
+    md5hash: 8d3f6cf81a8d27d6fa917ac1b566d8ff
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - --without-libbsd

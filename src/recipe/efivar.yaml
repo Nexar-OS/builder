@@ -1,0 +1,25 @@
+name: efivar
+homepage: https://github.com/rhboot/efivar
+license: LGPL-2.1-or-later
+description: Tools and libraries to work with EFI variables
+
+version: "39"
+
+dependencies:
+  required:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: efivar
+    url: https://github.com/rhboot/efivar/archive/refs/tags/${version}.tar.gz
+    md5hash: a8fc3e79336cd6e738ab44f9bc96a5aa
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+    
+    install_args:
+      - LIBDIR=/usr/lib

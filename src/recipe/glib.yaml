@@ -1,0 +1,28 @@
+name: glib
+homepage: https://gitlab.gnome.org/GNOME/glib
+license: LGPL-2.1-or-later
+description: Low-level core library that forms the basis for projects such as GTK and GNOME.
+
+version: 2.89.3
+
+dependencies:
+  required:
+    - glibc
+    - bash
+  
+sources:
+  - type: tarball
+    name: glib
+    url: https://download.gnome.org/sources/glib/2.89/glib-${version}.tar.xz
+    md5hash: a00f19c6efdf9ecf1b51d0597d7931cd
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+      
+    config_args:
+      - --prefix=/usr
+      - -Ddtrace=disabled
+      - -Dintrospection=disabled

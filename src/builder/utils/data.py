@@ -61,7 +61,7 @@ def retrieve_nested(
 def interpolate(
         value: Any,
         variables: dict[str, str],
-        variable_format: re.Pattern[str] = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
+        variable_format: re.Pattern[str] = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_.]*)\}")
     ) -> Any:
     """
     Recursively interpolate variables in a YAML value.

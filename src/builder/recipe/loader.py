@@ -145,7 +145,17 @@ def load_recipe(recipe_path: Path, role: BuildRole, ctx: BuildContext) -> Generi
         GenericRecipe | None: The loaded recipe or None if schema was invalid.
     """
     schema = load_schema(recipe_path, {
-        "patches": "src/patches/"
+        "patches": "src/patches/",
+        "target.libdir": ctx.target_machine.libdir,
+        "target.libdir.name": ctx.target_machine.libdir.split("/")[-1],
+        "target.triple": ctx.target_machine.triple,
+        "target.kernel_arch": ctx.target_machine.kernel_arch,
+        "target.arch": ctx.target_machine.arch,
+        "target.kernel_image.src": ctx.target_machine.kernel_image[0],
+        "target.kernel_image.filename": ctx.target_machine.kernel_image[1],
+        "build.triple": ctx.build_machine.triple,
+        "build.kernel_arch": ctx.build_machine.kernel_arch,
+        "build.arch": ctx.build_machine.arch,
     })
 
     if not schema:

@@ -1,0 +1,55 @@
+name: ncurses
+homepage: https://invisible-island.net/ncurses/ncurses.html
+license: MIT-open-group
+description: Library providing System V curses-compatible terminal interfaces
+
+version: "6.6"
+
+dependencies:
+  required:
+    - glibc
+    - libgcc
+    - libstdc++
+  
+  optional:
+    - bash
+
+sources:
+  - type: tarball
+    name: ncurses
+    url: https://ftp.gnu.org/gnu/ncurses/ncurses-${version}.tar.gz
+    md5hash: dd45bf6854430af403452a7a6a40652c
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - --with-termlib
+      - --with-shared
+      - --with-normal
+      - --enable-widec
+      - --enable-pc-files
+      - --with-pkg-config-libdir=/usr/lib/pkgconfig
+      - --disable-static
+      - --without-debug
+      - --libdir=/usr/lib
+    
+  post_install: |
+    mkdir -p "$DESTDIR"/usr/include/ncursesw
+
+    # Create ncursesw header directory
+    ln -s ../curses.h "$DESTDIR"/usr/include/ncursesw/curses.h
+    ln -s ../term.h "$DESTDIR"/usr/include/ncursesw/term.h
+    ln -s ../ncurses.h "$DESTDIR"/usr/include/ncursesw/ncurses.h
+    ln -s ../termcap.h "$DESTDIR"/usr/include/ncursesw/termcap.h
+
+    # Create symlinks for wide-character libraries
+    ln -s libformw.so "$DESTDIR"/usr/lib/libform.so
+    ln -s libmenuw.so "$DESTDIR"/usr/lib/libmenu.so
+    ln -s libncursesw.so "$DESTDIR"/usr/lib/libncurses.so
+    ln -s libpanelw.so "$DESTDIR"/usr/lib/libpanel.so
+    ln -s libtinfow.so "$DESTDIR"/usr/lib/libtinfo.so

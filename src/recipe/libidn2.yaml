@@ -1,0 +1,25 @@
+name: libidn2
+homepage: https://gnu.org/software/libidn
+license: [ GPL-2, LGPL-3 ]
+description: Implementation of IDNA2008, Punycode, and TR46 standards
+
+version: "2.3.8"
+
+dependencies:
+  required:
+    - libunistring
+  
+sources:
+  - type: tarball
+    name: libidn2
+    url: https://ftp.gnu.org/gnu/libidn/libidn2-${version}.tar.gz
+    md5hash: a8e113e040d57a523684e141970eea7a
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

@@ -1,0 +1,25 @@
+name: libpipeline
+homepage: https://nongnu.org/libpipeline/
+license: GPL-3.0-or-later
+description: C library for conveniently managing pipelines of subprocesses
+
+version: "20260512-3.1"
+
+dependencies:
+  required:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: libpipeline
+    url: https://download.savannah.nongnu.org/releases/libpipeline/libpipeline-1.5.8.tar.gz
+    md5hash: 17ac6969b2015386bcb5d278a08a40b5
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

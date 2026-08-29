@@ -1,0 +1,29 @@
+name: json-c
+homepage: https://github.com/json-c/json-c/wiki
+license: MIT
+description: C library for parsing and handling JSON data
+
+version: "0.19-20260627"
+
+dependencies:
+  required:
+    - glibc
+  
+  build:
+    - cmake
+    - ninja
+  
+sources:
+  - type: tarball
+    name: json-c
+    url: https://github.com/json-c/json-c/releases/download/json-c-${version}/json-c-0.19.tar.gz
+    md5hash: 5678f1373ba51e0041b574c0411c696b
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cmake
+      
+    config_args:
+      - -DCMAKE_INSTALL_PREFIX=/usr

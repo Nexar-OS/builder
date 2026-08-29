@@ -1,0 +1,33 @@
+name: kmod
+homepage: https://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git
+license: [ GPL-2.0-or-later, LGPL-2.1-or-later ]
+description: Tools and library for managing kernel modules
+
+version: "34.2"
+
+dependencies:
+  required:
+    - glibc
+    - openssl
+    - xz
+    - zlib
+    - zstd
+    - linux-headers
+  
+  build:
+    - meson
+  
+sources:
+  - type: tarball
+    name: kmod
+    url: https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-${version}.tar.gz
+    md5hash: c34c4d5566bd69b1972879ff5498979a
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

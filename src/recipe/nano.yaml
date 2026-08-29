@@ -1,0 +1,27 @@
+name: nano
+homepage: https://nano-editor.org/
+license: GPL-3.0-or-later
+description: Enhanced command-line text editor based on Pico
+
+version: "9.2"
+
+dependencies:
+  required:
+    - file
+    - glibc
+    - ncurses
+  
+sources:
+  - type: tarball
+    name: nano
+    url: https://www.nano-editor.org/dist/v9/nano-${version}.tar.xz
+    md5hash: 9bb0f37945afa964d16bffd9e4da3106
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

@@ -1,0 +1,25 @@
+name: libedit
+homepage: https://thrysoee.dk/editline/
+license: BSD-3-Clause
+description: Command-line editing library with history and tokenization support
+
+version: "20260512-3.1"
+
+dependencies:
+  required:
+    - glibc
+    - ncurses
+sources:
+  - type: tarball
+    name: libedit
+    url: https://thrysoee.dk/editline/libedit-${version}.tar.gz
+    md5hash: 2067df0d3b79b0f731994ad830d41a6d
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

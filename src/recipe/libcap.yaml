@@ -1,0 +1,37 @@
+name: libcap
+homepage: https://sites.google.com/site/fullycapable/
+license: [ BSD-3-Clause, GPL-2.0-only ]
+description: Library providing POSIX 1003.1e process capabilities
+
+version: "2.78"
+
+dependencies:
+  required:
+    - glibc
+    - linux-pam
+  
+  build:
+    - linux-headers
+  
+sources:
+  - type: tarball
+    name: libcap
+    url: https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-${version}.tar.xz
+    md5hash: 0ff11419aa4813c0a0f84fe67bf3b39e
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+    disable_fakeroot: True
+  
+    config_args:
+
+    build_args:
+      - prefix=/usr
+      - lib=lib
+  
+  post_install: |
+    mkdir -p "$DESTDIR"/usr/
+    mv "$DESTDIR"/lib* "$DESTDIR"/usr/

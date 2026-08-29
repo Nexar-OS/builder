@@ -1,0 +1,25 @@
+name: iw
+homepage: https://wireless.wiki.kernel.org/en/users/documentation/iw
+license: GLP
+description: Command-line utility for configuring wireless devices through nl80211
+
+version: "6.17"
+
+dependencies:
+  required:
+    - libnl
+  
+  build:
+    - linux-headers
+  
+sources:
+  - type: tarball
+    name: iw
+    url: https://www.kernel.org/pub/software/network/iw/iw-${version}.tar.xz
+    md5hash: 7323e43843f30068ffb6079e15e8e11a
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools

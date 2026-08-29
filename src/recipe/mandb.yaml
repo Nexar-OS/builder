@@ -1,0 +1,36 @@
+name: mandb
+homepage: https://gitlab.com/man-db/man-db
+license: GPL-2.0-or-later
+description: Utility for processing and maintaining man page databases
+
+version: "6.19.0"
+
+dependencies:
+  required:
+    - bash
+    - zlib
+    - libseccomp
+    - libpipeline
+    - less
+    - glibc
+    
+  build:
+    - gdbm
+    - libpipeline
+
+sources:
+  - type: tarball
+    name: mandb
+    url: https://download.savannah.nongnu.org/releases/man-db/man-db-2.13.1.tar.xz
+    md5hash: b6335533cbeac3b24cd7be31fdee8c83
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - --with-db=gdbm
+      - --disable-setuid

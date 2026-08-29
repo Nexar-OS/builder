@@ -1,0 +1,34 @@
+name: linux-pam
+homepage: https://linux-pam.org
+license: GPL-2.0-only
+description: Library implementing Pluggable Authentication Modules (PAM)
+
+version: "1.7.2"
+
+dependencies:
+  required:
+    - glibc
+    - systemd
+    - libxcrypt
+
+  build:
+    - meson
+    - libxcrypt
+    - systemd
+  
+sources:
+  - type: tarball
+    name: linux-pam
+    url: https://github.com/linux-pam/linux-pam/releases/download/v${version}/Linux-PAM-${version}.tar.xz
+    md5hash: 934c26eca3fada956356a30489e86291
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+    disable_fakeroot: True
+  
+    config_args:
+      - --prefix=/usr
+      - --sysconfdir=/etc

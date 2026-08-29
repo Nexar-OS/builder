@@ -1,0 +1,25 @@
+name: libmnl
+homepage: https://www.netfilter.org/projects/libmnl/
+license: LGPL-2.1
+description: Small userspace library designed for Netlink development
+
+version: "1.0.5"
+
+dependencies:
+  required:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: libmnl
+    url: https://www.netfilter.org/pub/libmnl/libmnl-${version}.tar.bz2
+    md5hash: 0bbb70573119ec5d49435114583e7a49
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

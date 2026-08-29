@@ -1,0 +1,26 @@
+name: libseccomp
+homepage: https://github.com/seccomp/libseccomp
+license: LGPL-2.1-only
+description: Library providing enhanced support for seccomp filtering
+
+version: "2.6.1"
+
+dependencies:
+  required:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: libseccomp
+    url: https://github.com/seccomp/libseccomp/releases/download/v${version}/libseccomp-${version}.tar.gz
+    md5hash: 33a3a5d4c526a739515ff4dc53cdc192
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - --disable-static

@@ -1,0 +1,25 @@
+name: m4
+homepage: https://www.gnu.org/software/m4
+license: GPL-3.0-or-later
+description: GNU macro processing utility
+
+version: "1.4.21"
+
+dependencies:
+  required:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: m4
+    url: https://ftp.gnu.org/gnu/m4/m4-${version}.tar.xz
+    md5hash: 8051eef7239b2f187791f2ab0034d6b7
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

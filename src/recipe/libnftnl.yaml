@@ -1,0 +1,25 @@
+name: libnftnl
+homepage: https://netfilter.org/projects/libnftnl/
+license: GPL-2
+description: Netfilter library for interacting with the nf_tables subsystem
+
+version: "1.3.1"
+
+dependencies:
+  required:
+    - libmnl
+  
+sources:
+  - type: tarball
+    name: libnftnl
+    url: https://www.netfilter.org/pub/libnftnl/libnftnl-${version}.tar.xz
+    md5hash: ab1a894717469fb1d45d4c8ca0557fb6
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

@@ -1,0 +1,29 @@
+name: libusb
+homepage: https://libusb.info/
+license: LGPL-2.1-or-later
+description: Library providing generic access to USB devices
+
+version: "1.0.30"
+
+dependencies:
+  required:
+    - glibc
+    - systemd
+  
+  build:
+    - systemd
+  
+sources:
+  - type: tarball
+    name: libusb
+    url: https://github.com/libusb/libusb/releases/download/v${version}/libusb-${version}.tar.bz2
+    md5hash: b0b0bacc2c6919515db8e863f0517db8
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

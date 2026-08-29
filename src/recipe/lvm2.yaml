@@ -1,0 +1,34 @@
+name: lvm2
+homepage: https://sourceware.org/lvm2/
+license: [ GPL-2.0-only, LGPL-2.1-only ]
+description: Utilities for managing Logical Volume Manager 2 storage
+
+version: "2.03.42"
+
+dependencies:
+  required:
+    - bash
+    - glibc
+    - util-linux
+    - systemd
+    - readline
+    - libaio
+  
+  build:
+    - libaio
+    - systemd
+  
+sources:
+  - type: tarball
+    name: lvm2
+    url: https://sourceware.org/ftp/lvm2/LVM2.${version}.tgz
+    md5hash: 1cfc17fcbdc5103492b4504c5ddaa274
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

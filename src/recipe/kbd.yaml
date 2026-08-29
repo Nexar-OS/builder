@@ -1,0 +1,27 @@
+name: kbd
+homepage: http://www.kbd-project.org
+license: GPL-2.0-or-later
+description: Keyboard utilities and keytable files
+
+version: "2.9.0"
+
+dependencies:
+  required:
+    - glibc
+    - gzip
+    - linux-pam
+  
+sources:
+  - type: tarball
+    name: kbd
+    url: https://www.kernel.org/pub/linux/utils/kbd/kbd-${version}.tar.xz
+    md5hash: 7be7c6f658f5fb9512e2c490349a8eeb
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

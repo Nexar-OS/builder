@@ -1,0 +1,26 @@
+name: less
+homepage: https://www.greenwoodsoftware.com/less/
+license: [ GPL-3.0-or-later, LicenseRef-Less ]
+description: Terminal utility for viewing text files
+
+version: "704"
+
+dependencies:
+  required:
+    - glibc
+    - ncurses
+  
+sources:
+  - type: tarball
+    name: less
+    url: https://ftp.gnu.org/gnu/less/less-${version}.tar.gz
+    md5hash: c4c9eea5b1862783b078c67ca67c9185
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

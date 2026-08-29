@@ -1,0 +1,23 @@
+name: manpages
+homepage: https://www.kernel.org/doc/man-pages/
+license: [ BSD-2-Clause, BSD-3-Clause, BSD-4-Clause-UC, BSD-4.3TAHOE, GPL-1.0-or-later, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-or-later, LGPL-3.0-linking-exception, LGPL-3.0-or-later, LicenseRef-Public-Domain, LicenseRef-UltraPermissive, Linux-man-pages-1-para, Linux-man-pages-copyleft, Linux-man-pages-copyleft-2-para, Linux-man-pages-copyleft-var, MIT, Spencer-94 ]
+description: Manual pages documenting system commands and interfaces
+
+
+version: "5.13"
+
+dependencies:
+  build:
+    - mandb
+  
+sources:
+  - type: tarball
+    name: manpages
+    url: https://github.com/mkerrisk/man-pages/archive/refs/tags/man-pages-${version}.tar.gz
+    md5hash: d0fc0d9268ad93995cad414140c34da0
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools

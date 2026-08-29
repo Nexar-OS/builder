@@ -1,0 +1,27 @@
+name: libxcrypt
+homepage: https://github.com/besser82/libxcrypt/
+license: LGPL
+description: Modern library for one-way password hashing
+
+version: "4.5.2"
+
+dependencies:
+  required:
+    - glibc
+
+sources:
+  - type: tarball
+    name: libxcrypt
+    url: https://github.com/besser82/libxcrypt/releases/download/v${version}/libxcrypt-${version}.tar.xz
+    md5hash: 25e888919ddcd153a07daa95224fa436
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --disable-werror
+      - --prefix=/usr
+      - --disable-static

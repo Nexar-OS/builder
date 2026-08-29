@@ -1,0 +1,39 @@
+name: iputils
+homepage: https://github.com/iputils/iputils
+license: [ BSD-3-Clause, GPL-2.0-or-later ]
+description: Network utilities for monitoring and testing connectivity
+
+version: "20250605"
+
+dependencies:
+  required:
+    - libcap
+    - libidn2
+  
+  build:
+    - systemd
+    - meson
+    - iproute2
+  
+sources:
+  - type: tarball
+    name: iputils
+    url: https://github.com/iputils/iputils/releases/download/${version}/iputils-${version}.tar.gz
+    md5hash: 3597adefcfe416222cb71e57b513cd03
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+      
+    config_args:
+      - --prefix=/usr
+
+
+    build_args:
+  
+    install_args:
+    
+  post_install: |
+    <post_install>

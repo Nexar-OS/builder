@@ -1,0 +1,25 @@
+name: libpsl
+homepage: https://github.com/rockdaboot/libpsl
+license: MIT
+description: Library for working with the Public Suffix List
+
+version: "0.23.3"
+
+dependencies:
+  required:
+    - libidn2
+  
+sources:
+  - type: tarball
+    name: libpsl
+    url: https://github.com/rockdaboot/libpsl/releases/download/${version}/libpsl-${version}.tar.gz
+    md5hash: 596df43f3c2a8f1d4a677b032ccbc820
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

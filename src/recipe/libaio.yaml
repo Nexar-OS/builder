@@ -1,0 +1,22 @@
+name: libaio
+homepage: https://codeberg.org/jmoyer/libaio
+license: LGPL-2.0-or-later
+description: Library providing native asynchronous I/O support
+
+version: "0.3.113"
+
+dependencies:
+  required:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: libaio
+    url: https://releases.pagure.org/libaio/libaio-${version}.tar.gz
+    md5hash: 7d5be185f20eeaae15e267419950aaf7
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools

@@ -1,0 +1,25 @@
+name: libndp
+homepage: https://libndp.org/
+license: LGPL-2.1-or-later
+description: Library for working with the Neighbor Discovery Protocol
+
+version: "1.9"
+
+dependencies:
+  required:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: libndp
+    url: http://libndp.org/files/libndp-${version}.tar.gz
+    md5hash: 9d486750569e7025e5d0afdcc509b93c
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

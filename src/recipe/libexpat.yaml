@@ -1,0 +1,28 @@
+name: libexpat
+homepage: https://libexpat.github.io/
+license: MIT
+description: Library for parsing XML documents
+
+version: "2.44"
+
+dependencies:
+  required:
+    - glibc
+  
+  build:
+    - cmake
+  
+sources:
+  - type: tarball
+    name: libexpat
+    url: https://github.com/libexpat/libexpat/releases/download/R_2_8_3/expat-2.8.3.tar.gz
+    md5hash: 6ea4b2b8f50bafd1d6e2fd63024ab0d8
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

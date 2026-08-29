@@ -38,7 +38,8 @@ class CustomBuildSystem(BuildSystem):
         """
         self._invoke(recipe.ctx, self._prepare, source_dir, {
             "BUILD": str(build_dir),
-            "SOURCE": str(source_dir)
+            "SOURCE": str(source_dir),
+            "DESTDIR": str(dest_dir),
         })
 
     def configure(self,
@@ -60,7 +61,8 @@ class CustomBuildSystem(BuildSystem):
         """
         self._invoke(recipe.ctx, self._configure, build_dir, {
             "BUILD": str(build_dir),
-            "SOURCE": str(source_dir)
+            "SOURCE": str(source_dir),
+            "DESTDIR": str(dest_dir),
         })
         
         
@@ -73,7 +75,9 @@ class CustomBuildSystem(BuildSystem):
             build_dir (Path): Directory containing the configured build tree.
         """
         self._invoke(recipe.ctx, self._build, build_dir, {
-            "BUILD": str(build_dir)
+            "BUILD": str(build_dir),
+            "SOURCE": str(source_dir),
+            "DESTDIR": str(dest_dir),
         })
 
     def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -90,5 +94,6 @@ class CustomBuildSystem(BuildSystem):
         
         self._invoke(recipe.ctx, self._install, dest_dir, {
             "BUILD": str(build_dir),
-            "DESTDIR": str(dest_dir)
+            "SOURCE": str(source_dir),
+            "DESTDIR": str(dest_dir),
         })

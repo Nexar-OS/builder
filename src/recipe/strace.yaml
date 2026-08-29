@@ -1,0 +1,25 @@
+name: strace
+homepage: https://strace.io/
+license: LGPL-2.1-or-later
+description: Userspace tool for tracing and diagnosing system calls
+
+version: "7.2"
+
+dependencies:
+  required:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: strace
+    url: https://strace.io/files/${version}/strace-${version}.tar.xz
+    md5hash: a91403939a36a75e9be4a95f5b8ffb8b
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

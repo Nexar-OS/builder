@@ -1,0 +1,44 @@
+name: rfkill
+homepage: https://wireless.docs.kernel.org/en/latest/en/users/documentation/rfkill.html#about-rfkill
+license: [ BSD-2-Clause, BSD-3-Clause, BSD-4-Clause-UC, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-or-later, ISC, LGPL-2.1-or-later, LicenseRef-PublicDomain ]
+description: Utilities for controlling and querying wireless device status
+
+version: "1.0"
+
+dependencies:
+  required:
+    - coreutils
+    - glibc
+    - file
+    - libcap
+    - libxcrypt
+    - libgcc
+    - ncurses
+    - systemd
+    - linux-pam
+    - shadow
+    - readline
+    - util-linux
+    - zlib
+  
+  build:
+    - bash-completion
+    - bash
+    - libcap
+    - libxcrypt
+    - systemd
+  
+sources:
+  - type: tarball
+    name: rfkill
+    url: https://mirrors.edge.kernel.org/pub/software/network/rfkill/rfkill-${version}.tar.xz
+    md5hash: 914fb2858b655db67d82c50fb77eb8ab
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

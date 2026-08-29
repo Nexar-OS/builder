@@ -1,0 +1,28 @@
+name: pkgconf
+homepage: https://github.com/pkgconf/pkgconf
+license: ISC
+description: Toolkit for managing compiler and linker package metadata
+
+version: "3.12"
+
+dependencies:
+  required:
+    - glibc
+  
+  build:
+    - meson
+  
+sources:
+  - type: tarball
+    name: pkgconf
+    url: https://github.com/pkgconf/pkgconf/releases/download/pkgconf-3.0.6/pkgconf-3.0.6.tar.gz
+    md5hash: e0df3475746e05614d2be0e2fafd5b68
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

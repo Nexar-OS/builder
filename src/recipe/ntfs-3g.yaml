@@ -1,0 +1,30 @@
+name: ntfs-3g
+homepage: https://www.tuxera.com/community/open-source-ntfs-3g/
+license: GPL-2.0-or-later
+description: Driver for accessing NTFS filesystems
+
+version: "2026.7.7"
+
+dependencies:
+  required:
+    - glibc
+  
+  optional:
+    - ntfsprogs
+  
+sources:
+  - type: tarball
+    name: ntfs-3g
+    url: https://tuxera.com/opensource/ntfs-3g_ntfsprogs-${version}.tgz
+    md5hash: d8a84db2a56bed3cec8547801c5b56e9
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - --with-fuse=internal
+      - --disable-ldconfig

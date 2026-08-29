@@ -1,0 +1,35 @@
+name: wpa_supplicant
+homepage: https://w1.fi/wpa_supplicant/
+license: BSD-3-Clause
+description: Utility for handling WPA authentication on wireless networks
+
+version: "2.12"
+
+dependencies:
+  required:
+    - glibc
+    - dbus
+    - libnl
+    - openssl
+    - readline
+  
+sources:
+  - type: tarball
+    name: wpa_supplicant
+    url: https://w1.fi/releases/wpa_supplicant-${version}.tar.gz
+    md5hash: 3f1af56655ebca941d2035358331bbc9
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+
+    build_args:
+  
+    install_args:
+  
+  prepare: |
+    cp "$SOURCE"/wpa_supplicant/defconfig "$SOURCE"/wpa_supplicant/.config

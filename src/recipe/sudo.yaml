@@ -1,0 +1,29 @@
+name: sudo
+homepage: https://www.sudo.ws/sudo/
+license: https://www.sudo.ws/about/license/
+description: Allows authorized users to execute commands with elevated privileges
+
+version: "1.9.17p2"
+
+dependencies:
+  required:
+    - glibc
+    - linux-pam
+    - zlib
+    - openssl
+  
+sources:
+  - type: tarball
+    name: sudo
+    url: https://www.sudo.ws/dist/sudo-${version}.tar.gz
+    md5hash: dcbf46f739ae06b076e1a11cbb271a10
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - --with-pam

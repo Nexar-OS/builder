@@ -1,0 +1,41 @@
+name: openssl
+homepage: https://openssl.org/
+license: Apache-2.0
+description: Open-source toolkit for cryptography and Transport Layer Security
+
+version: "3.6.3"
+
+dependencies:
+  required:
+    - glibc
+    - zlib
+    - zstd
+  
+  optional:
+    - ca-certificates
+  
+sources:
+  - type: tarball
+    name: openssl
+    url: https://github.com/openssl/openssl/releases/download/openssl-${version}/openssl-${version}.tar.gz
+    md5hash: f388d6144fe20b9b2c6bf208280d6ec3
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+    disable_fakeroot: True
+  
+    config_args:
+      - --prefix=/usr
+      - --openssldir=/etc/ssl
+      - shared
+
+
+    build_args:
+  
+    install_args:
+    
+  post_install: |
+    <post_install>

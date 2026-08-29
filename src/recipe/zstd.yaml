@@ -1,0 +1,36 @@
+name: zstd
+homepage: https://facebook.github.io/zstd/
+license: [ BSD-3-Clause, GPL-2.0-only ]
+description: Fast library and tools for Zstandard data compression
+
+version: "1.5.7"
+
+dependencies:
+  required:
+    - glibc
+    - libgcc
+    - libstdc++
+    - xz
+    - zlib
+  
+  build:
+    - cmake
+    - ninja
+  
+sources:
+  - type: tarball
+    name: zstd
+    url: https://github.com/facebook/zstd/releases/download/v${version}/zstd-${version}.tar.gz
+    md5hash: 780fc1896922b1bc52a4e90980cdda48
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+
+    build_args:
+      - PREFIX=/usr
+
+    install_args:
+      - PREFIX=/usr

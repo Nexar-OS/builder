@@ -1,0 +1,64 @@
+name: networkmanager
+homepage: https://networkmanager.dev/
+license: [ GPL-2.0-or-later, LGPL-2.1-or-later ]
+description: Network connection manager and related user applications
+
+version: "1.58.0"
+
+dependencies:
+  required:
+    - bash
+    - curl
+    - glib
+    - glibc
+    - iproute2
+    - libndp
+    - libpsl
+    - nss
+    - readline
+    - systemd
+    - wpa_supplicant
+  
+  optional:
+    - bluez
+  
+  build:
+    - bash
+    - curl
+    - glibc
+    - iproute2
+    - iptables
+    - nss
+    - libpsl
+    - libndp
+    - readline
+    - systemd
+    - wpa_supplicant
+  
+sources:
+  - type: tarball
+    name: NetworkManager
+    url: https://github.com/NetworkManager/NetworkManager/archive/refs/tags/${version}.tar.gz
+    md5hash: 09703e646e13321c6991bf77bb904042
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+      
+    config_args:
+      - --prefix=/usr
+      - -Dintrospection=false
+      - -Dselinux=false
+      - -Dclat=false
+      - -Dlibaudit=no
+      - -Dpolkit=false
+      - -Dcrypto=nss
+      - -Dppp=false
+      - -Dmodem_manager=false
+      - -Dovs=false
+      - -Dnmtui=false
+      - -Dnm_cloud_setup=false
+      - -Dnbft=false
+      - -Dman=false

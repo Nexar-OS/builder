@@ -1,0 +1,37 @@
+name: usb-utils
+homepage: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usbutils.git/
+license: [ GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, LGPL-2.1-or-later, MIT ]
+description: Collection of tools for inspecting connected USB devices
+
+version: "018"
+
+dependencies:
+  required:
+    - glibc
+    - hwdata
+    - systemd
+    - libusb
+  
+  optional:
+    - bash
+
+  build:
+    - libusb
+    - systemd
+    - meson
+  
+sources:
+  - type: tarball
+    name: usb-utils
+    url: https://www.kernel.org/pub/linux/utils/usb/usbutils/usbutils-${version}.tar.xz
+    md5hash: 0a351e2241c50a1f026a455dccf24d73
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+      
+    config_args:
+      - --sysconfdir=/etc
+      - --localstatedir=/var

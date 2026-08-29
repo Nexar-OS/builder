@@ -1,0 +1,53 @@
+name: util-linux
+homepage: https://github.com/util-linux/util-linux
+license: [ BSD-2-Clause, BSD-3-Clause, BSD-4-Clause-UC, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-or-later, ISC, LGPL-2.1-or-later, LicenseRef-PublicDomain ]
+description: Collection of miscellaneous system utilities
+
+version: "2.42.1"
+
+dependencies:
+  required:
+    - coreutils
+    - file
+    - glibc
+    - libcap
+    - libxcrypt
+    - libgcc
+    - ncurses
+    - linux-pam
+    - readline
+    - shadow
+    - zlib
+  
+  build:
+    - bash
+    - bash-completion
+    - libcap
+    - libxcrypt
+    - meson
+  
+sources:
+  - type: tarball
+    name: util-linux
+    url: https://www.kernel.org/pub/linux/utils/util-linux/v2.42/util-linux-${version}.tar.xz
+    md5hash: 575bf65577d9bd0e65aeb073e8f61343
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+
+
+    build_args:
+      - LIBS=-lncursesw -ltinfow
+      - CFLAGS=-fPIC
+
+  
+    install_args:
+    
+  post_install: |
+    <post_install>

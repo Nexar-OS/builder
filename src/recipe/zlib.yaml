@@ -1,0 +1,25 @@
+name: zlib
+homepage: https://www.zlib.net/
+license: https://zlib.net/zlib_license.html
+description: Compression library implementing the deflate algorithm used by gzip and PKZIP
+
+version: "1.3.2"
+
+dependencies:
+  required:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: zlib
+    url: https://zlib.net/zlib-${version}.tar.gz
+    md5hash: a1e6c958597af3c67d162995a342138a
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

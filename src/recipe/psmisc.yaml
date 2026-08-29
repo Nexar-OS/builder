@@ -1,0 +1,25 @@
+name: psmisc
+homepage: https://gitlab.com/psmisc/psmisc
+license: GPL
+description: Collection of miscellaneous procfs utilities
+
+version: "23.7"
+
+dependencies:
+  required:
+    - ncurses
+  
+sources:
+  - type: tarball
+    name: psmisc
+    url: https://sourceforge.net/projects/psmisc/files/psmisc/psmisc-${version}.tar.xz/download
+    md5hash: 53eae841735189a896d614cba440eb10
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

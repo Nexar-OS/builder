@@ -1,0 +1,65 @@
+name: systemd
+homepage: https://www.github.com/systemd/systemd
+license: [ CC0-1.0, GPL-2.0-or-later, LGPL-2.1-or-later, MIT-0 ]
+description: System and service manager
+
+version: "259.8"
+
+dependencies:
+  required:
+    - bash
+    - cryptsetup
+    - dbus
+    - hwdata
+    - kbd
+    - kmod
+    - libxcrypt
+    - libidn2
+    - libseccomp
+    - openssl
+    - linux-pam
+    - util-linux
+    - xz
+  
+  optional:
+    - iptables
+
+  build:
+    - bash
+    - bash-completion
+    - curl
+    - iptables
+    - kmod
+    - libidn2
+    - libseccomp
+    - libxcrypt
+    - linux-headers
+    - llvm2
+    - meson
+    - linux-pam
+    - shadow
+    - util-linux
+    - xz
+  
+sources:
+  - type: tarball
+    name: systemd
+    url: https://github.com/systemd/systemd/archive/refs/tags/v${version}.tar.gz
+    md5hash: af9f9fb1aae5bfab603d7820b35ac6c9
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+    disable_fakeroot: True
+  
+    config_args:
+      - --prefix=/usr
+      - --sysconfdir=/etc
+      - --localstatedir=/var
+      - -Dstatic-libsystemd=false
+      - -Dfirstboot=false
+      - -Dtests=false
+      - -Dsysusers=True
+      - -Dtmpfiles=true

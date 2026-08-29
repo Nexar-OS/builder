@@ -1,0 +1,26 @@
+name: tar
+homepage: https://www.gnu.org/software/tar/
+license: GPL-3.0-or-later
+description: Utility for archiving, backing up, and transferring files
+
+version: "1.35"
+
+dependencies:
+  required:
+    - glibc
+    - attr
+  
+sources:
+  - type: tarball
+    name: tar
+    url: https://ftp.gnu.org/gnu/tar/tar-${version}.tar.xz
+    md5hash: a2d8042658cfd8ea939e6d911eaf4152
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

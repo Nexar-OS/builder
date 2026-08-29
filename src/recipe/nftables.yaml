@@ -1,0 +1,23 @@
+name: nftables
+homepage: https://netfilter.org/projects/nftables/
+license: None
+description: Userspace tools for managing Netfilter firewall tables
+
+version: "1.1.6"
+
+dependencies:
+  
+sources:
+  - type: tarball
+    name: nftables
+    url: https://www.netfilter.org/pub/nftables/nftables-${version}.tar.xz
+    md5hash: 638ddff35ca429f68860a437d53237b4
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

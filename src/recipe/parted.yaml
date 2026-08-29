@@ -1,0 +1,28 @@
+name: parted
+homepage: https://www.gnu.org/software/parted/
+license: GPL-3.0-or-later
+description: Utility for creating, modifying, checking, resizing, and copying partitions
+
+version: "3.7"
+
+dependencies:
+  required:
+    - util-linux
+  
+  build:
+    - pkgconfig
+  
+sources:
+  - type: tarball
+    name: parted
+    url: https://ftp.gnu.org/gnu/parted/parted-${version}.tar.xz
+    md5hash: b56ec0cf7bc89d61da1585f88fc8ef5e
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

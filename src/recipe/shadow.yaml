@@ -1,0 +1,36 @@
+name: shadow
+homepage: https://github.com/shadow-maint/shadow
+license: BSD-3-Clause
+description: Tools for managing accounts, passwords, shadow files, and PAM
+
+version: "4.20.2"
+
+dependencies:
+  required:
+    - glibc
+    - libxcrypt
+    - linux-pam
+  
+  optional:
+    - <optional_dependencies>
+  
+  build:
+    - libcap
+    - libxcrypt
+    - linux-pam
+  
+sources:
+  - type: tarball
+    name: shadow
+    url: https://github.com/shadow-maint/shadow/releases/download/${version}/shadow-${version}.tar.gz
+    md5hash: ad1e45eaa06bf2c61e406eaa0c771a8b
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr
+      - --without-libbsd

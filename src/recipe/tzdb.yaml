@@ -1,0 +1,26 @@
+name: tzdb
+homepage: https://www.iana.org/time-zones
+license: LicenseRef-tz
+description: Database sources containing time zone and daylight saving information
+
+version: "2026c"
+
+dependencies:
+  optional:
+    - bash
+    - glibc
+  
+sources:
+  - type: tarball
+    name: tzdb
+    url: https://data.iana.org/time-zones/releases/tzdb-${version}.tar.lz
+    md5hash: b20a51bf4c062509d35f377a99a52507
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

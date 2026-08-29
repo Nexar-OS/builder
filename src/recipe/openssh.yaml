@@ -1,0 +1,38 @@
+name: openssh
+homepage: https://www.openssh.com/
+license: [ 0BSD, BSD-2-Clause, BSD-3-Clause, ISC, LicenseRef-Public-Domain, MIT ]
+description: SSH implementation for remote access, command execution, and file transfer
+
+version: "9.9p2"
+
+dependencies:
+  required:
+    - glibc
+    - libxcrypt
+    - openssl
+    - libedit
+    - zlib
+    - linux-pam
+  
+  build:
+    - linux-headers
+    - libedit
+    - libxcrypt
+    - openssl
+    - linux-pam
+    - zlib
+  
+sources:
+  - type: tarball
+    name: openssh
+    url: https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-${version}.tar.gz
+    md5hash: f617b95fe278bfea8d004589c7a68a85
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

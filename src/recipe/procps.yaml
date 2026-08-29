@@ -1,0 +1,31 @@
+name: procps
+homepage: https://gitlab.com/procps-ng/procps
+license: [ GPL, LGPL ]
+description: Utilities for monitoring system resources and running processes
+
+version: "4.0.6"
+
+dependencies:
+  required:
+    - glibc
+    - ncurses
+    - systemd
+
+  build:
+    - gettext
+    - systemd
+  
+sources:
+  - type: tarball
+    name: procps
+    url: https://sourceforge.net/projects/procps-ng/files/Production/procps-ng-${version}.tar.xz/download
+    md5hash: 20c23dc3dd1569a2bb1d1fa93de213ed
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

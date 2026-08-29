@@ -1,0 +1,26 @@
+name: which
+homepage: https://savannah.gnu.org/projects/which/
+license: GPL-3.0-or-later
+description: Utility for displaying the full path of a command
+
+version: "2.25"
+
+dependencies:
+  required:
+    - bash
+    - glibc
+  
+sources:
+  - type: tarball
+    name: which
+    url: https://ftp.gnu.org/gnu/which/which-${version}.tar.gz
+    md5hash: 60140cb2637634e4f4e68c2e98c6a07b
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

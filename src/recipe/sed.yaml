@@ -1,0 +1,28 @@
+name: sed
+homepage: https://www.gnu.org/software/sed/
+license: GPL-3.0-or-later
+description: GNU utility for editing and transforming text streams
+
+version: "3.12"
+
+dependencies:
+  required:
+    - glibc
+  
+  build:
+    - gettext
+  
+sources:
+  - type: tarball
+    name: sed
+    url: https://ftp.gnu.org/gnu/sed/sed-4.10.tar.xz
+    md5hash: c70dc5372db95c816442ffedf77a0d0f
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

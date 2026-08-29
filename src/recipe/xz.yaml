@@ -1,0 +1,26 @@
+name: xz
+homepage: https://tukaani.org/xz/
+license: [ GPL-2.0-or-later, 0BSD, LicenseRef-Public-Domain, LGPL-2.1-or-later ]
+description: Library and command-line tools for XZ and LZMA compression
+
+version: "5.8.3"
+
+dependencies:
+  required:
+    - glibc
+    - bash
+  
+sources:
+  - type: tarball
+    name: xz
+    url: https://github.com/tukaani-project/xz/releases/download/v${version}/xz-${version}.tar.gz
+    md5hash: 6dcfcd102e25b31ae30467498b3eeeab
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+      
+    config_args:
+      - --prefix=/usr

@@ -46,7 +46,14 @@ dst.mkdir(exist_ok=True, parents=True)
 preset = Path("src/recipe/.example").read_text()
 
 def export_recipe(recipe: TargetRecipe) -> str | None:
-    if not isinstance(recipe.build_system, Autotools):
+    if not any(isinstance(recipe.build_system, c) for c in [
+        Autotools,
+        CMake,
+        Meson
+    ]):
+        return None
+    
+    if not recipe.build_system:
         return None
 
     config_args = (recipe.build_system.config_args or []) + recipe._config_args(ctx)
@@ -72,7 +79,7 @@ def export_recipe(recipe: TargetRecipe) -> str | None:
         .replace("<install_args>", install_args) \
         .replace("<build_method>", recipe.build_method.name) \
         .replace("<build_system>", type(recipe.build_system).__name__.lower()) \
-        .replace("<disable_fakeroot>", f"{recipe.build_system.disable_fakeroot}") \
+        .replace("<disable_fakeroot>", f"{getattr(recipe.build_system, 'disable_fakeroot', False)}") \
         .replace("disable_fakeroot: False\n", "") \
         .replace("config_args:\n      - \n", "config_args:") \
         .replace("build_args:\n      - \n", "build_args:") \

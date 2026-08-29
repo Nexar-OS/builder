@@ -7,6 +7,13 @@ from dataclasses import dataclass
 
 from builder.utils.logger import warn
 
+KERNEL_IMAGES = {
+    "x86": ("arch/x86/boot/bzImage", "vmlinuz"),
+    "arm64": ("arch/arm64/boot/Image", "Image"),
+    "arm": ("arch/arm/boot/Image", "zImage"),
+    "riscv": ("arch/riscv/boot/Image", "Image"),
+}
+
 @dataclass(frozen=True)
 class MachineSpec:
     """
@@ -25,6 +32,14 @@ class MachineSpec:
     arch: str
     kernel_arch: str
     triple: str
+
+    @property
+    def kernel_image(self) -> tuple[str, str]:
+        image = KERNEL_IMAGES.get(self.kernel_arch)
+        if not image:
+            raise RuntimeError(f"Unrecognized kernel arch: '{self.kernel_arch}'")
+
+        return image
 
     @property
     def libdir(self) -> str:

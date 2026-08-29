@@ -1,0 +1,26 @@
+name: ca-certificates
+homepage: https://curl.se/docs/caextract.html
+license: MPL-2.0
+description: A collection of ca-certificates by curl
+
+version: "2026-08-13"
+
+dependencies:
+  
+sources:
+  - type: file
+    name: curl-ca-cert
+    url: https://curl.se/ca/cacert-${version}.pem
+    md5hash: b7a0a25670b6987c14b542d83212af4e
+    filename: ca-certificates.crt
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: custom
+  
+    install: |
+      mkdir -p "$DESTDIR"/etc/ssl/certs
+      cp "$SOURCE"/ca-certificates.crt "$DESTDIR"/etc/ssl/certs
+      ln -s /etc/ssl/certs/ca-certificates.crt "$DESTDIR"/etc/ssl/cert.pem

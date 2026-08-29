@@ -1,42 +1,47 @@
-name: 
-homepage: 
-license: 
-description: 
+name: <name>
+homepage: <homepage>
+license: <license>
+description: <description>
 
-version: 
+version: <version>
 
 dependencies:
   required:
-    - 
+    - <required_dependencies>
   
   optional:
-    - 
+    - <optional_dependencies>
   
   build:
-    - 
+    - <build_dependencies>
   
 sources:
-  - type: 
-    name: 
-    url: 
-    md5hash: 
+  - type: <source_type>
+    name: <source_name>
+    url: <source_url>
+    md5hash: <source_hash>
 
 build:
-  method: OUT_OF_SOURCE
+  method: <build_method>
 
   build_system:
-    type: autotools
+    type: <build_system>
+    disable_fakeroot: <disable_fakeroot>
   
     config_args:
-      - "--prefix=/usr"
-  
+      - <config_args>
+
     build_args:
+      - <build_args>
   
     install_args:
+      - <install_args>
   
   patches:
-    -
+    - <patches>
 
   prepare: |
+    <prepare>
   
   post_install: |
+    <post_install>

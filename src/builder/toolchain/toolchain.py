@@ -1,4 +1,5 @@
 import os
+from builder.build import BuildContext
 from pathlib import Path
 from abc import ABC
 from dataclasses import dataclass
@@ -24,6 +25,7 @@ class Toolchain(ABC):
     target: MachineSpec
     prefix: Path
     sysroot: Path
+    num_jobs: int = 1
 
     @property
     def cc(self) -> str:
@@ -92,6 +94,12 @@ class Toolchain(ABC):
         ]
     
     @property
+    def makeflags(self) -> list[str]:
+        return [
+            f"-j{self.num_jobs}"
+        ]
+    
+    @property
     def path(self) -> str:
         return str(self.prefix / "bin")
     
@@ -119,6 +127,7 @@ class Toolchain(ABC):
             "CPPFLAGS": " ".join(self.cflags),
             "CXXFLAGS": " ".join(self.cflags),
             "LDFLAGS": " ".join(self.ldflags),
+            "MAKEFLAGS": " ".join(self.makeflags),
 
             "PKG_CONFIG": self.pkg_config,
             "PKG_CONFIG_SYSROOT_DIR": f"{self.sysroot}",

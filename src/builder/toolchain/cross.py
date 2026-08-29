@@ -169,8 +169,8 @@ def build_cross_toolchain(ctx: BuildContext) -> "CrossToolchain":
     # The first GCC pass only produces a minimal C compiler:
     # - no target C library yet
     # - no target headers exist yet
-    BinutilsRecipe().build(ctx)
-    GCCFirstPassRecipe().build(ctx)
+    BinutilsRecipe(ctx).build()
+    GCCFirstPassRecipe(ctx).build()
 
     # Bootstrap compiler now exists, but it needs a target system
     # environment to finish the compiler build.
@@ -185,8 +185,8 @@ def build_cross_toolchain(ctx: BuildContext) -> "CrossToolchain":
     )
 
     info(f" | Populating compiler sysroot...")
-    LinuxHeadersRecipe().build(ctx)
-    GlibCRecipe().build(ctx)
+    LinuxHeadersRecipe(ctx).build()
+    GlibCRecipe(ctx).build()
 
     # Now that the cross compiler sysroot contains Linux headers and glibc,
     # rebuild GCC using the native build compiler.
@@ -196,7 +196,7 @@ def build_cross_toolchain(ctx: BuildContext) -> "CrossToolchain":
     # machine and generates binaries for the target machine.
     ctx.toolchain = ntc
     info(f" | Completing compiler...")
-    GCCSecondPassRecipe().build(ctx)
+    GCCSecondPassRecipe(ctx).build()
 
     # Construct the final cross compiler
     toolchain = CrossToolchain(ctx)
@@ -251,7 +251,8 @@ class CrossToolchain(Toolchain):
             name="cross",
             target=ctx.target_machine,
             prefix=ctx.cross_toolchain_dir,
-            sysroot=ctx.cross_toolchain_sysroot
+            sysroot=ctx.cross_toolchain_sysroot,
+            num_jobs=ctx.num_jobs,
         )
 
         # Load pkg-config wrapper

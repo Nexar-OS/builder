@@ -1,6 +1,6 @@
 from pathlib import Path
 from .toolchain import Toolchain
-from builder.build.machine import detect_machine
+from builder.build.machine import detect_machine, nproc
 from builder.utils.logger import info
 
 class NativeToolchain(Toolchain):
@@ -16,7 +16,8 @@ class NativeToolchain(Toolchain):
             name="native",
             target=host,
             prefix=Path("/usr"),
-            sysroot=Path("/")
+            sysroot=Path("/"),
+            num_jobs=nproc()
         )
     
     @property

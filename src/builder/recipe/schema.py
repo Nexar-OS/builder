@@ -75,6 +75,6 @@ class RecipeSchema(Schema):
     license: str | list[str]
     description: str
     version: str
-    dependencies: Dependencies
+    dependencies: Dependencies | None = None
     sources: list[SourceSchema]
     build: BuildSchema

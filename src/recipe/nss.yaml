@@ -1,0 +1,90 @@
+name: nss
+homepage: https://firefox-source-docs.mozilla.org/security/nss/index.html
+license: MPL-2.0
+description: Network Security Services library and utilities
+
+version: "3.127"
+
+dependencies:
+  required:
+    - glibc
+    - nspr
+    - bash
+    - zlib
+  
+  build:
+    - ninja
+  
+sources:
+  - type: tarball
+    name: nss
+    url: https://ftp.mozilla.org/pub/security/nss/releases/NSS_${version.major}_${version.minor}_RTM/src/nss-${version}.tar.gz
+    md5hash: 63e961bed0a1bb1ecdbee60cb572cc2e
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: custom
+
+    prepare: |
+      # mkdir $BUILD/nss
+      # mv "$SOURCE"/* "$BUILD"/nss
+
+    build: |
+      cd nss
+      make \
+        USE_64=1 \
+        NSPR_INCLUDE_DIR="$SYSROOT/usr/include/nspr" \
+        NSPR_LIB_DIR="$SYSROOT/usr/lib"
+    
+    install: |
+      cd "$BUILD"
+
+      # Copy NSS command-line utilities
+      install -Dm755 dist/*/bin/certutil "$DESTDIR/usr/bin/certutil"
+      install -Dm755 dist/*/bin/cmsutil "$DESTDIR/usr/bin/cmsutil"
+      install -Dm755 dist/*/bin/crlutil "$DESTDIR/usr/bin/crlutil"
+      install -Dm755 dist/*/bin/modutil "$DESTDIR/usr/bin/modutil"
+      install -Dm755 dist/*/bin/nss-policy-check "$DESTDIR/usr/bin/nss-policy-check"
+      install -Dm755 dist/*/bin/pk12util "$DESTDIR/usr/bin/pk12util"
+      install -Dm755 dist/*/bin/signtool "$DESTDIR/usr/bin/signtool"
+      install -Dm755 dist/*/bin/signver "$DESTDIR/usr/bin/signver"
+      install -Dm755 dist/*/bin/vfychain "$DESTDIR/usr/bin/vfychain"
+
+      # Copy NSS shared libraries
+      install -Dm755 dist/*/lib/libfreebl3.so "$DESTDIR/usr/lib/libfreebl3.so"
+      install -Dm755 dist/*/lib/libfreeblpriv3.so "$DESTDIR/usr/lib/libfreeblpriv3.so"
+      install -Dm755 dist/*/lib/libnss3.so "$DESTDIR/usr/lib/libnss3.so"
+      install -Dm755 dist/*/lib/libnssckbi.so "$DESTDIR/usr/lib/libnssckbi.so"
+      install -Dm755 dist/*/lib/libssdbm3.so "$DESTDIR/usr/lib/libssdbm3.so"
+      install -Dm755 dist/*/lib/libssutil3.so "$DESTDIR/usr/lib/libssutil3.so"
+      install -Dm755 dist/*/lib/libsmime3.so "$DESTDIR/usr/lib/libsmime3.so"
+      install -Dm755 dist/*/lib/libsoftokn3.so "$DESTDIR/usr/lib/libsoftokn3.so"
+      install -Dm755 dist/*/lib/libssl3.so "$DESTDIR/usr/lib/libssl3.so"
+
+      # NSS module integrity/check files
+      for f in dist/*/lib/*.chk; do
+        install -Dm644 "$f" "$DESTDIR/usr/lib/$(basename "$f")"
+      done
+
+      # Public NSS headers
+      for f in dist/public/nss/*; do
+        install -Dm644 "$f" "$DESTDIR/usr/include/nss/$(basename "$f")"
+      done
+
+      # .pc file
+      mkdir -p "$DESTDIR/usr/lib/pkgconfig"
+      cat > "$DESTDIR/usr/lib/pkgconfig/nss.pc" <<EOF
+      prefix=/usr
+      exec_prefix=${prefix}
+      libdir=${exec_prefix}/lib
+      includedir=${prefix}/include/nss
+
+      Name: NSS
+      Description: NSS
+      Version: 3.127
+      Requires: nspr
+      Libs: -L${libdir} -lssl3 -lsmime3 -lnss3
+      Cflags: -I${includedir}
+      EOF

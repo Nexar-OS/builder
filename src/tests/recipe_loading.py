@@ -36,5 +36,11 @@ def recipe(name: str, role: BuildRole|None = None):
 
     return recipe
 
-recipe("libstdc++") \
+# recipe("nspr", BuildRole.SYSROOT) \
+#     .build()
+
+# recipe("zlib", BuildRole.SYSROOT) \
+#     .build()
+
+recipe("nss") \
     .build()

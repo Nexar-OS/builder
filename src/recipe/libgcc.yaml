@@ -1,0 +1,54 @@
+name: libgcc
+homepage: https://gcc.gnu.org/
+license: [ GPL-3.0-or-later, GCC-exception-3.1 ]
+description: GNU Compiler Collection low-level runtime library
+
+version: "16.1.0"
+
+dependencies:
+  required:
+    - glibc
+  
+  build:
+    - gcc
+    - binutils
+    - make
+    - m4
+  
+sources:
+  - type: tarball
+    name: gcc
+    url: https://ftp.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz
+    md5hash: 9b016416f8e2dce4a0ef8759d1936446
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+    disable_fakeroot: true
+    install_target: install-target-libgcc
+  
+    config_args:
+      - --prefix=/usr
+      - --libdir=/usr/lib
+      - --enable-shared
+      - --disable-bootstrap
+      - --disable-nls
+      - --disable-multilib
+      - --disable-libstdcxx
+      - --disable-libgomp
+      - --disable-libquadmath
+      - --disable-libssp
+      - --disable-libvtv
+      - --disable-libsanitizer
+      - --disable-libatomic
+      - --disable-libcc1
+      - --enable-languages=c
+
+    build_args:
+      - all-target-libgcc
+  
+  prepare: |
+    cd $SOURCE
+    sh ./contrib/download_prerequisites

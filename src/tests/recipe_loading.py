@@ -36,5 +36,5 @@ def recipe(name: str, role: BuildRole|None = None):
 
     return recipe
 
-recipe("kernel") \
+recipe("libgcc") \
     .build()

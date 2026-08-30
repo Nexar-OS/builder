@@ -1,4 +1,5 @@
 from dataclasses import dataclass, asdict
+import re
 
 @dataclass
 class Version:
@@ -9,6 +10,7 @@ class Version:
     major: int
     minor: int | None = None
     patch: int | None = None
+    note: str | None = None
 
     @classmethod
     def from_version_string(cls, value: str) -> "Version | None":
@@ -21,18 +23,20 @@ class Version:
         Returns:
             Version: The parsed version. None if invalid format.
         """
-        parts = value.split(".")
-        
-        try:
-            nums = [ int(part) for part in parts ]
-        except ValueError:
+        match = re.search(r"(?<!\d)(\d+(?:\.\d+){1,2})(?!\d)", value)
+
+        if not match:
             return None
         
-        if not nums:
-            return None
+        version = match.group(1)
+        parts = [ int(part) for part in version.split(".") ]
+
+        note = value[:match.start()] + value[match.end():]
+        note.strip("-")
         
         return cls(
-            *nums
+            *parts,
+            note=note or None
         )
 
     def dict(self) -> dict[str, str]:

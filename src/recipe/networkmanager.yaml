@@ -15,6 +15,7 @@ dependencies:
     - libndp
     - libpsl
     - nss
+    - nspr
     - readline
     - systemd
     - wpa_supplicant
@@ -29,6 +30,7 @@ dependencies:
     - iproute2
     - iptables
     - nss
+    - nspr
     - libpsl
     - libndp
     - readline

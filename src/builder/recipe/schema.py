@@ -11,7 +11,7 @@ class AutotoolsSchema(Schema):
     type: Literal["autotools"]
     disable_fakeroot: bool = False
     skip_build: bool = False
-    install_target: str = "autotools"
+    install_target: str = "install"
     config_args: list[str] | None = None
     build_args: list[str] | None = None
     install_args: list[str] | None = None

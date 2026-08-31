@@ -1,4 +1,4 @@
-name: kernel-headers
+name: linux-headers
 homepage: https://kernel.org/
 license: GPL-2.0
 description: The linux kernel api headers

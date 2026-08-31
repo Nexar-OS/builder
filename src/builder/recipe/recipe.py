@@ -517,7 +517,10 @@ class GenericRecipe(BuildRecipe):
                 **self.env,
                 "DESTDIR": str(dest_dir)
             }
-        )        
+        )
+
+    def __repr__(self) -> str:
+        return self.name      
 
 class ToolchainRecipe(BuildRecipe):
     """

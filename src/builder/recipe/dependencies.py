@@ -49,7 +49,7 @@ class DependencyKind(Enum):
     """
 
     @property
-    def build_role(self) -> BuildRole:
+    def build_role(self) -> "BuildRole":
         """
         Returns the appropriate build role for recipes
         matching this dependency kind.
@@ -57,6 +57,7 @@ class DependencyKind(Enum):
         Returns:
             BuildRole: The build role.
         """
+        from .recipe import BuildRole
 
         match self:
             case DependencyKind.RUNTIME:
@@ -80,10 +81,10 @@ class DependencyGraph():
     def __init__(self,
                  recipes: Iterable[BuildRecipe],
                  registry: RecipeRegistry,
-                 kind: DependencyKind,
+                 kinds: list[DependencyKind],
                 ) -> None:
         self.registry = registry
-        self.kind = kind
+        self.kinds = kinds
 
         self._recipes: dict[str, BuildRecipe] = {}
 
@@ -101,11 +102,14 @@ class DependencyGraph():
         Builds the dependency graph and checks for circular dependencies.
         """
         for recipe in recipes:
-            self._resolve(recipe)
+            if recipe.name in self._recipes:
+                continue
+            for kind in self.kinds:
+                self._resolve(recipe, kind)
         
         self._check_cycles()
 
-    def _load_dependency(self, name: str, parent: BuildRecipe) -> BuildRecipe:
+    def _load_dependency(self, name: str, parent: BuildRecipe, kind: DependencyKind) -> BuildRecipe:
         """
         Resolve a dependency through the registry.
 
@@ -119,7 +123,7 @@ class DependencyGraph():
 
         dependency = self.registry.get(
             name=name,
-            role=self.kind.build_role,
+            role=kind.build_role,
             ctx=parent.ctx
         )
 
@@ -131,41 +135,39 @@ class DependencyGraph():
         
         return dependency
 
-    def _dependency_names(self, recipe: BuildRecipe) -> list[str]:
+    def _dependency_names(self, recipe: BuildRecipe, kind: DependencyKind) -> list[str]:
         """
         Return the dependencies relevant to this graph.
         """
-        match self.kind:
+        match kind:
             case DependencyKind.BUILD:
                 return list(recipe.dependencies.build or [])
             
             case DependencyKind.RUNTIME:
                 return list(recipe.dependencies.required or [])
 
-    def _resolve(self, recipe: BuildRecipe):
+    def _resolve(self, recipe: BuildRecipe, kind: DependencyKind):
         """
         Recursively resolve a recipe and all of its dependencies.
 
         Args:
             recipe (BuildRecipe): The recipe to resolve.
+            kind (DependencyKind): The kind of dependencies to resolve.
         """
-
-        if recipe.name in self._recipes:
-            return
         
         self._recipes[recipe.name] = recipe
         self._dependencies[recipe.name] = set()
         self._dependents.setdefault(recipe.name, set())
         
-        for name in self._dependency_names(recipe):
-            dependency = self._load_dependency(name, recipe)
+        for name in self._dependency_names(recipe, kind):
+            dependency = self._load_dependency(name, recipe, kind)
 
             self._dependencies[recipe.name].add(dependency.name)
             self._dependents \
                 .setdefault(dependency.name, set()) \
                 .add(recipe.name)
             
-            self._resolve(dependency)
+            self._resolve(dependency, kind)
     
     def _check_cycles(self) -> None:
         """

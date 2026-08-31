@@ -10,6 +10,9 @@ from .recipe import (
 
 from .dependencies import (
     Dependencies,
+    DependencyCycleError,
+    DependencyGraph,
+    DependencyKind
 )
 
 from .loader import (

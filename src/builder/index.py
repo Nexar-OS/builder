@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from builder.recipe.target import *
 from builder.toolchain import NativeToolchain, load_or_build_cross_toolchain
 from builder.stage import Stage
 from builder.build import (
@@ -12,7 +11,9 @@ from builder.build import (
 
 from builder.recipe import (
     RecipeRegistry,
-    BuildRole
+    BuildRole,
+    DependencyKind,
+    DependencyGraph
 )
 
 ctx = BuildContext(
@@ -33,4 +34,13 @@ registry = RecipeRegistry([
     Path(__file__).parent.parent / "recipe"
 ])
 
-print(registry.get("gcc", BuildRole.TARGET, ctx).name)
+g = DependencyGraph(
+    [x for x in [
+        registry.get("curl", BuildRole.TARGET, ctx)
+    ] if x],
+    registry,
+    DependencyKind.BUILD
+)
+
+
+print(g.dependencies_of("curl"))

@@ -1,0 +1,35 @@
+name: gcc
+homepage: https://gcc.gnu.org/
+license: [ GPL-3.0-or-later, GCC-exception-3.1 ]
+description: GNU Compiler Collection
+
+version: "16.1.0"
+
+dependencies:
+  runtime:
+    - binutils
+    - libgcc
+
+sources:
+  - type: tarball
+    name: gcc
+    url: https://ftp.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz
+    md5hash: 9b016416f8e2dce4a0ef8759d1936446
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - --with-native-system-header-dir=/usr/include
+      - --disable-nls
+      - --disable-multilib
+      - --disable-libatomic
+      - --disable-libssp
+      - --enable-languages=c,c++
+  
+  prepare: |
+    cd $SOURCE
+    sh ./contrib/download_prerequisites

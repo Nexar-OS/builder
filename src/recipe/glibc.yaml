@@ -1,4 +1,4 @@
-name: glibc-runtime
+name: glibc
 homepage: https://www.gnu.org/software/libc/
 license: GPL-2.0-or-later, LGPL-2.0-or-later
 description: GNU C library
@@ -7,7 +7,7 @@ version: "2.44"
 
 dependencies:
   required:
-    - tzdata
+    - tzdb
     - linux-headers
   
 sources:

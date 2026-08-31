@@ -36,11 +36,13 @@ registry = RecipeRegistry([
 
 g = DependencyGraph(
     [x for x in [
-        registry.get("curl", BuildRole.TARGET, ctx)
+        registry.get("bash-completion", BuildRole.TARGET, ctx)
     ] if x],
     registry,
-    DependencyKind.BUILD
+    DependencyKind.RUNTIME
 )
 
+print(g._dependents)
 
-print(g.dependencies_of("curl"))
+for recipe in g.topological_order:
+    print(recipe.name)

@@ -146,7 +146,7 @@ class DependencyGraph():
             self._dependencies[recipe.name].add(dependency.name)
             self._dependents \
                 .setdefault(dependency.name, set()) \
-                .add(dependency.name)
+                .add(recipe.name)
             
             self._resolve(dependency)
     
@@ -193,3 +193,39 @@ class DependencyGraph():
 
         name = recipe if isinstance(recipe, str) else recipe.name
         return set(self._dependencies[name])
+
+    @property
+    def topological_order(self) -> list[BuildRecipe]:
+        """
+        Returns recipes in a valid dependency order.
+        """
+
+        remaining = {
+            name: len(dependencies)
+            for name, dependencies in self._dependencies.items()
+        }
+
+        ready = sorted(
+            name
+            for name, count in remaining.items()
+            if count == 0
+        )
+
+        result: list[BuildRecipe] = []
+
+        while ready:
+            name = ready.pop(0)
+            result.append(self._recipes[name])
+
+            for dependent in sorted(self._dependents.get(name, ())):
+                remaining[dependent] -= 1
+
+                if remaining[dependent] == 0:
+                    ready.append(dependent)
+                
+            ready.sort()
+
+        if len(result) > len(self._recipes):
+            raise DependencyCycleError("Dependency graph contains a cycle.")
+
+        return result

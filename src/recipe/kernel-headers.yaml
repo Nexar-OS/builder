@@ -1,0 +1,27 @@
+name: kernel-headers
+homepage: https://kernel.org/
+license: GPL-2.0
+description: The linux kernel api headers
+
+version: "6.18.42"
+
+dependencies:
+  
+sources:
+  - type: tarball
+    name: kernel
+    url: https://cdn.kernel.org/pub/linux/kernel/v${version.major}.x/linux-${version}.tar.xz
+    md5hash: 6f8233a94b0774e64df2bafff25a63d6
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: custom
+    
+    install: |
+      cd $BUILD
+      make \
+        ARCH=${target.kernel_arch} \
+        headers_install \
+        INSTALL_HDR_PATH="$DESTDIR/usr"

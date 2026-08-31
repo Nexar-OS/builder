@@ -1,0 +1,41 @@
+name: gcc-first
+homepage: https://gcc.gnu.org/
+license: [ GPL-3.0-or-later, GCC-exception-3.1 ]
+description: GNU Compiler Collection in first stage
+
+version: "16.1.0"
+
+dependencies:
+  
+sources:
+  - type: tarball
+    name: gcc
+    url: https://ftp.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz
+    md5hash: 9b016416f8e2dce4a0ef8759d1936446
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - --with-glibc-version=2.43
+      - --with-newlib
+      - --without-headers
+      - --enable-default-pie
+      - --enable-default-ssp
+      - --disable-nls
+      - --disable-shared
+      - --disable-multilib
+      - --disable-threads
+      - --disable-libatomic
+      - --disable-libgomp
+      - --disable-libquadmath
+      - --disable-libssp
+      - --disable-libvtv
+      - --enable-languages=c
+  
+  prepare: |
+    cd $SOURCE
+    sh ./contrib/download_prerequisites

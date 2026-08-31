@@ -42,5 +42,5 @@ def recipe(name: str, role: BuildRole|None = None):
 # recipe("zlib", BuildRole.SYSROOT) \
 #     .build()
 
-recipe("nss") \
+recipe("gcc-first") \
     .build()

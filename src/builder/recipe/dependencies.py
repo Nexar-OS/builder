@@ -87,6 +87,7 @@ class DependencyGraph():
         self.kinds = kinds
 
         self._recipes: dict[str, BuildRecipe] = {}
+        self._resolved: set[tuple[str, DependencyKind]] = set()
 
         # Recipes which are dependencies of another recipe.
         self._dependencies: dict[str, set] = {}
@@ -102,8 +103,6 @@ class DependencyGraph():
         Builds the dependency graph and checks for circular dependencies.
         """
         for recipe in recipes:
-            if recipe.name in self._recipes:
-                continue
             for kind in self.kinds:
                 self._resolve(recipe, kind)
         
@@ -155,6 +154,10 @@ class DependencyGraph():
             kind (DependencyKind): The kind of dependencies to resolve.
         """
         
+        key = (recipe.name, kind)
+        if key in self._resolved:
+            return
+
         self._recipes[recipe.name] = recipe
         self._dependencies[recipe.name] = set()
         self._dependents.setdefault(recipe.name, set())
@@ -168,6 +171,8 @@ class DependencyGraph():
                 .add(recipe.name)
             
             self._resolve(dependency, kind)
+        
+        self._resolved.add(key)
     
     def _check_cycles(self) -> None:
         """

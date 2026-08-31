@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 if TYPE_CHECKING:
-    from .recipe import BuildRecipe
+    from .recipe import BuildRecipe, BuildRole
     from .registry import RecipeRegistry
 
 @dataclass
@@ -47,6 +47,23 @@ class DependencyKind(Enum):
     """
     Dependencies needed to build a recipe.
     """
+
+    @property
+    def build_role(self) -> BuildRole:
+        """
+        Returns the appropriate build role for recipes
+        matching this dependency kind.
+
+        Returns:
+            BuildRole: The build role.
+        """
+
+        match self:
+            case DependencyKind.RUNTIME:
+                return BuildRole.TARGET
+            
+            case DependencyKind.BUILD:
+                return BuildRole.SYSROOT
 
 class DependencyCycleError(RuntimeError):
     """
@@ -102,7 +119,7 @@ class DependencyGraph():
 
         dependency = self.registry.get(
             name=name,
-            role=parent.build_role,
+            role=self.kind.build_role,
             ctx=parent.ctx
         )
 

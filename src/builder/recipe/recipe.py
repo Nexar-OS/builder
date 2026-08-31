@@ -391,6 +391,9 @@ class BuildRecipe(ABC):
             dest_dir (Path): The directory to where the program was built into.
         """
         ...
+    
+    def __repr__(self) -> str:
+        return self.name
 
 @dataclass
 class GenericRecipe(BuildRecipe):
@@ -514,8 +517,7 @@ class GenericRecipe(BuildRecipe):
                 **self.env,
                 "DESTDIR": str(dest_dir)
             }
-        )
-        
+        )        
 
 class ToolchainRecipe(BuildRecipe):
     """

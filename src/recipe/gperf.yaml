@@ -1,0 +1,27 @@
+name: gperf
+homepage: http://gnu.org/software/gperf
+license: GPL-3.0-or-later
+description: GNU's 'perfect hash function generator'
+
+version: "3.3"
+
+dependencies:
+  required:
+    - glibc
+    - libgcc
+    - libstdc++
+  
+sources:
+  - type: tarball
+    name: gperf
+    url: https://ftp.gnu.org/gnu/gperf/gperf-{version}.tar.gz
+    md5hash: 31753b021ea78a21f154bf9eecb8b079
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - --prefix=/usr

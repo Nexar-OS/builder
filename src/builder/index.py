@@ -3,11 +3,16 @@ from pathlib import Path
 from builder.recipe.target import *
 from builder.toolchain import NativeToolchain, load_or_build_cross_toolchain
 from builder.stage import Stage
-from .build import (
+from builder.build import (
     BuildContext,
     Target,
     detect_machine,
     nproc
+)
+
+from builder.recipe import (
+    RecipeRegistry,
+    BuildRole
 )
 
 ctx = BuildContext(
@@ -22,85 +27,10 @@ ctx = BuildContext(
     num_jobs                = nproc()
 )
 
-ctx.toolchain = load_or_build_cross_toolchain(ctx)
+# ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
-Stage(name="base", recipes=[
-    RootfsRecipe(ctx),
-    GlibCRuntimeRecipe(ctx),
-    LibstdcxxRuntimeRecipe(ctx),
-    LibgccRuntimeRecipe(ctx),
-    ZlibRecipe(ctx),
-    XZRecipe(ctx),
-    BZip2Recipe(ctx),
-    ZStdRecipe(ctx),
-    TarRecipe(ctx),
-    NcursesRecipe(ctx),
-    BashRecipe(ctx),
-    CoreutilsRecipe(ctx),
-    FindutilsRecipe(ctx),
-    GrepRecipe(ctx),
-    SedRecipe(ctx),
-    GawkRecipe(ctx),
-    DiffutilsRecipe(ctx),
-    PatchRecipe(ctx),
-    UtilLinuxRecipe(ctx),
-    GZipRecipe(ctx),
-    LessRecipe(ctx),
-    WhichRecipe(ctx),
-    FileRecipe(ctx),
-    ProcpsRecipe(ctx),
-    PsmiscRecipe(ctx),
-    KmodRecipe(ctx),
-    PciutilsRecipe(ctx),
-    KernelRecipe(ctx),
-    LibxcryptRecipe(ctx),
-    LinuxPamRecipe(ctx),
-    LibcapRecipe(ctx),
-    LibseccompRecipe(ctx),
-    GlibRecipe(ctx),
-    DbusRecipe(ctx),
-    SystemdRecipe(ctx),
-    USButilsRecipe(ctx),
-    IpRoute2Recipe(ctx),
-    NFtablesRecipe(ctx),
-    IpUtilsRecipe(ctx),
-    OpenSSLRecipe(ctx),
-    WgetRecipe(ctx),
-    CaCertificateRecipe(ctx),
-    CurlRecipe(ctx),
-    NetworkManagerRecipe(ctx),
-    ShadowRecipe(ctx),
-    StraceRecipe(ctx),
-    E2fsProgsRecipe(ctx),
-    KBDRecipe(ctx),
-    IanaEtcRecipe(ctx),
-    ReadlineRecipe(ctx),
-    ManPagesRecipe(ctx),
-    ManDBRecipe(ctx),
-    OpenSSHRecipe(ctx),
-    IwRecipe(ctx),
-    WPASupplicantRecipe(ctx),
-    FirmwareRecipe(ctx),
-    GettextRecipe(ctx),
-    AttrRecipe(ctx),
-    ElfutilsRecipe(ctx),
-    BcRecipe(ctx),
-    M4Recipe(ctx),
-    PkgconfRecipe(ctx),
-    EfibootmgrRecipe(ctx),
-    GrubRecipe(ctx),
-    TzdbRecipe(ctx),
-    SudoRecipe(ctx),
-    NanoRecipe(ctx),
-    HwdataRecipe(ctx),
-    PartedRecipe(ctx),
-    Ntfs3gRecipe(ctx),
-    RfkillRecipe(ctx),
-    CryptsetupRecipe(ctx),
-    DosfstoolsRecipe(ctx),
-    ScreenRecipe(ctx),
-    CpioRecipe(ctx),
-    BashCompletionRecipe(ctx),
-]) \
-    .build(ctx) \
-    .export(ctx, copy=True)
+registry = RecipeRegistry([
+    Path(__file__).parent.parent / "recipe"
+])
+
+print(registry.get("gcc", BuildRole.TARGET, ctx).name)

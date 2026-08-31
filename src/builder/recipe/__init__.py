@@ -5,9 +5,21 @@ from .recipe import (
     ToolchainRecipe,
     SysrootRecipe,
     TargetRecipe,
-    BuildMethod
+    BuildMethod,
 )
 
 from .dependencies import (
-    Dependencies
+    Dependencies,
+)
+
+from .loader import (
+    load_recipe,
+    load_schema,
+    load_recipe_from_schema,
+)
+
+from .schema import *
+
+from .registry import (
+    RecipeRegistry
 )

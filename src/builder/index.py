@@ -41,9 +41,10 @@ stage = Stage(
     recipes=[
         "bash-completion",
         "curl",
-        "nano"
+        "nano",
+        "bc"
     ],
-    add_runtime_dependencies=True
+    add_runtime_dependencies=False
 )
 
 

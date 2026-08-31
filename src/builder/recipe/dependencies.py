@@ -71,6 +71,15 @@ class DependencyCycleError(RuntimeError):
     Thrown on circular dependencies.
     """
 
+@dataclass(frozen=True, slots=True)
+class DependencyNode:
+    name: str
+    kind: DependencyKind
+
+    @property
+    def role(self) -> "BuildRole":
+        return self.kind.build_role
+
 class DependencyGraph():
     """
     A directed acyclic graph describing build or runtime dependencies between multiple recipes.
@@ -86,15 +95,16 @@ class DependencyGraph():
         self.registry = registry
         self.kinds = kinds
 
-        self._recipes: dict[str, BuildRecipe] = {}
-        self._resolved: set[tuple[str, DependencyKind]] = set()
+        self._recipes: dict[DependencyNode, BuildRecipe] = {}
+        self._resolved: set[DependencyNode] = set()
+        self._resolving: set[DependencyNode] = set()
 
         # Recipes which are dependencies of another recipe.
-        self._dependencies: dict[str, set] = {}
+        self._dependencies: dict[DependencyNode, set[DependencyNode]] = {}
 
         # Reverse edges:
         # dependency -> recipes depending on it
-        self._dependents: dict[str, set] = {}
+        self._dependents: dict[DependencyNode, set[DependencyNode]] = {}
 
         self._build_graph(recipes)
 
@@ -105,8 +115,6 @@ class DependencyGraph():
         for recipe in recipes:
             for kind in self.kinds:
                 self._resolve(recipe, kind)
-        
-        self._check_cycles()
 
     def _load_dependency(self, name: str, parent: BuildRecipe, kind: DependencyKind) -> BuildRecipe:
         """
@@ -154,69 +162,58 @@ class DependencyGraph():
             kind (DependencyKind): The kind of dependencies to resolve.
         """
         
-        key = (recipe.name, kind)
-        if key in self._resolved:
-            return
+        node = DependencyNode(recipe.name, kind)
 
-        self._recipes[recipe.name] = recipe
-        self._dependencies[recipe.name] = set()
-        self._dependents.setdefault(recipe.name, set())
+        if node in self._resolved:
+            return
+        
+        if node in self._resolving:
+            # Runtime dependency cycles are allowed
+            if kind == DependencyKind.RUNTIME:
+                return
+            
+            raise DependencyCycleError(
+                f"Dependency cycle involving '{recipe.name}'."
+            )
+        
+        self._resolving.add(node)
+
+        self._recipes[node] = recipe
+        self._dependencies.setdefault(node, set())
+        self._dependents.setdefault(node, set())
         
         for name in self._dependency_names(recipe, kind):
             dependency = self._load_dependency(name, recipe, kind)
+            dependency_node = DependencyNode(dependency.name, kind)
 
-            self._dependencies[recipe.name].add(dependency.name)
-            self._dependents \
-                .setdefault(dependency.name, set()) \
-                .add(recipe.name)
+            self._dependencies[node].add(dependency_node)
+            self._dependents.setdefault(dependency_node, set())
+            self._dependents[dependency_node].add(node)
             
             self._resolve(dependency, kind)
         
-        self._resolved.add(key)
-    
-    def _check_cycles(self) -> None:
-        """
-        Check the graph for dependency cycles.
-        """
-
-        visiting: set[str] = set()
-        visited: set[str] = set()
-
-        def visit(name: str) -> None:
-            if name in visiting:
-                raise DependencyCycleError(f"Dependency cycle involving '{name}'.")
-            
-            if name in visited:
-                return
-            
-            visiting.add(name)
-
-            for dependency in self._dependencies[name]:
-                visit(dependency)
-            
-            visiting.remove(name)
-            visited.add(name)
-        
-        for name in self._recipes:
-            visit(name)
+        self._resolving.remove(node)
+        self._resolved.add(node)
     
     @property
-    def recipes(self) -> dict[str, BuildRecipe]:
+    def recipes(self) -> dict[DependencyNode, BuildRecipe]:
         """
         Returns all recipes contained in the resolved graph.
         """
         return dict(self._recipes)
     
-    def dependencies_of(self, recipe: str | BuildRecipe) -> set[str]:
+    def dependencies_of(self, recipe: str | BuildRecipe, kind: DependencyKind) -> set[DependencyNode]:
         """
         Returns a list of all dependencies of a recipe.
 
         Args:
             recipe (str | BuildRecipe): The recipe to check.
+            kind (DependencyKind): The kind of dependency to check.
         """
 
         name = recipe if isinstance(recipe, str) else recipe.name
-        return set(self._dependencies[name])
+        node = DependencyNode(name, kind)
+        return set(self._dependencies[node])
 
     @property
     def topological_order(self) -> list[BuildRecipe]:
@@ -225,31 +222,26 @@ class DependencyGraph():
         """
 
         remaining = {
-            name: len(dependencies)
-            for name, dependencies in self._dependencies.items()
+            node: len(dependencies)
+            for node, dependencies in self._dependencies.items()
         }
 
-        ready = sorted(
-            name
-            for name, count in remaining.items()
+        ready = list(
+            node
+            for node, count in remaining.items()
             if count == 0
         )
 
         result: list[BuildRecipe] = []
 
         while ready:
-            name = ready.pop(0)
-            result.append(self._recipes[name])
+            node = ready.pop(0)
+            result.append(self._recipes[node])
 
-            for dependent in sorted(self._dependents.get(name, ())):
+            for dependent in self._dependents.get(node, ()):
                 remaining[dependent] -= 1
 
                 if remaining[dependent] == 0:
                     ready.append(dependent)
-                
-            ready.sort()
-
-        if len(result) > len(self._recipes):
-            raise DependencyCycleError("Dependency graph contains a cycle.")
 
         return result

@@ -1,0 +1,29 @@
+name: binutils
+homepage: https://www.gnu.org/software/binutils/
+license: [ GPL-3.0-or-later, GPL-2.0-or-later, LGPL-3.0-or-later, LGPL-2.0-or-later, GFDL-1.3, FSFAP ]
+description: A collection of GNU binary tools
+
+version: "2.47"
+
+dependencies:
+  required:
+    - glibc
+  
+  build:
+    - glibc
+  
+sources:
+  - type: tarball
+    name: binutils
+    url: https://ftp.gnu.org/gnu/binutils/binutils-${version}.tar.xz
+    md5hash: d772acfbd55a81644e9fe7b8189cd2a5
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+  
+    config_args:
+      - --disable-gdb
+      - --prefix=/usr

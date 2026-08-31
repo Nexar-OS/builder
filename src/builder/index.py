@@ -34,15 +34,17 @@ registry = RecipeRegistry([
     Path(__file__).parent.parent / "recipe"
 ])
 
-g = DependencyGraph(
-    [x for x in [
-        registry.get("bash-completion", BuildRole.TARGET, ctx)
-    ] if x],
-    registry,
-    DependencyKind.RUNTIME
+stage = Stage(
+    ctx=ctx,
+    registry=registry,
+    name="test",
+    recipes=[
+        "bash-completion",
+        "curl",
+        "nano"
+    ],
+    add_runtime_dependencies=True
 )
 
-print(g._dependents)
 
-for recipe in g.topological_order:
-    print(recipe.name)
+print(stage._dependency_graph.topological_order)

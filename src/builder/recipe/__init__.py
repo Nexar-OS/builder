@@ -26,3 +26,8 @@ from .schema import *
 from .registry import (
     RecipeRegistry
 )
+
+from .sequencing import (
+    Sequencer,
+    SequencerError,
+)

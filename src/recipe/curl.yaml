@@ -17,6 +17,7 @@ dependencies:
     - zlib
     - zstd
     - libpsl
+    - gperf
   
 sources:
   - type: tarball

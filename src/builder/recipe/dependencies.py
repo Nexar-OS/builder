@@ -97,6 +97,17 @@ class DependencyGraph():
         for recipe in recipes:
             self._resolve(recipe)
 
+    @classmethod
+    def empty(cls) -> "DependencyGraph":
+        """
+        Return an empty and invalid dependency graph.
+        """
+        return DependencyGraph(
+            recipes=[],
+            registry=RecipeRegistry([]),
+            kind=DependencyKind.BUILD
+        )
+
     def _load_dependency(self, name: str, parent: BuildRecipe) -> BuildRecipe:
         """
         Resolve a dependency through the registry.

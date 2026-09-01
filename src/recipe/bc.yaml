@@ -24,11 +24,19 @@ build:
   method: OUT_OF_SOURCE
 
   build_system:
-    type: autotools
-  
-    config_args:
-      - "--prefix=/usr"
-      - "--disable-dc"
+    type: custom
+
+    configure: |
+      "$SOURCE/configure" \
+        --prefix=/usr \
+        --disable-dc
+      
+    build: |
+      make
+    
+    install: |
+      cd "$BUILD"
+      make DESTDIR="$DESTDIR" install
   
   patches:
     - gcc16.patch

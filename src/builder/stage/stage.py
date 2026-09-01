@@ -62,25 +62,30 @@ class Stage:
 
             self._recipes.append(loaded)
 
-    def _build_dependency_graph(self):
+    def _build_dependency_graphs(self):
         """
-        Constructs the dependency graph.
+        Constructs the dependency graphs.
         """
-        kinds = [ DependencyKind.BUILD ]
-        if self.add_runtime_dependencies:
-            kinds.append(DependencyKind.RUNTIME)
-
-        self._dependency_graph: DependencyGraph = DependencyGraph(
+        self._build_dependencies = DependencyGraph(
             recipes=self._recipes,
             registry=self.registry,
-            kinds=kinds
+            kind=DependencyKind.BUILD,
+            allow_cycles=False
         )
+
+        if self.add_runtime_dependencies:
+            self.runtime_dependencies = DependencyGraph(
+                recipes=self._recipes,
+                registry=self.registry,
+                kind=DependencyKind.RUNTIME,
+                allow_cycles=True
+            )
 
     def __post_init__(self):
         self._load_recipes()
-        self._build_dependency_graph()
+        self._build_dependency_graphs()
 
-        self._recipes = self._dependency_graph.topological_order + self._recipes
+        self._recipes = []
 
     def build(self):
         """

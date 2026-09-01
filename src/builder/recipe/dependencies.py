@@ -71,52 +71,33 @@ class DependencyCycleError(RuntimeError):
     Thrown on circular dependencies.
     """
 
-@dataclass(frozen=True, slots=True)
-class DependencyNode:
-    name: str
-    kind: DependencyKind
-
-    @property
-    def role(self) -> "BuildRole":
-        return self.kind.build_role
-
 class DependencyGraph():
     """
-    A directed acyclic graph describing build or runtime dependencies between multiple recipes.
-
-    e.g. ``A -> B`` means ``B depends on A``.
-    Therefore A must be built before B.
+    Directed dependency graph for a collection of recipes.
+    Resolves the dependency closure for a single dependency kind.
     """
     def __init__(self,
                  recipes: Iterable[BuildRecipe],
                  registry: RecipeRegistry,
-                 kinds: list[DependencyKind],
+                 kind: DependencyKind,
+                 allow_cycles: bool = False,
                 ) -> None:
         self.registry = registry
-        self.kinds = kinds
+        self.kind = kind
+        self.allow_cycles = allow_cycles
 
-        self._recipes: dict[DependencyNode, BuildRecipe] = {}
-        self._resolved: set[DependencyNode] = set()
-        self._resolving: set[DependencyNode] = set()
+        self._recipes: dict[str, BuildRecipe] = {}
 
-        # Recipes which are dependencies of another recipe.
-        self._dependencies: dict[DependencyNode, set[DependencyNode]] = {}
+        self._dependents: dict[str, set[str]] = {}
+        self._dependencies: dict[str, set[str]] = {}
 
-        # Reverse edges:
-        # dependency -> recipes depending on it
-        self._dependents: dict[DependencyNode, set[DependencyNode]] = {}
+        self._resolved: set[str] = set()
+        self._resolving: set[str] = set()
 
-        self._build_graph(recipes)
-
-    def _build_graph(self, recipes: Iterable[BuildRecipe]):
-        """
-        Builds the dependency graph and checks for circular dependencies.
-        """
         for recipe in recipes:
-            for kind in self.kinds:
-                self._resolve(recipe, kind)
+            self._resolve(recipe)
 
-    def _load_dependency(self, name: str, parent: BuildRecipe, kind: DependencyKind) -> BuildRecipe:
+    def _load_dependency(self, name: str, parent: BuildRecipe) -> BuildRecipe:
         """
         Resolve a dependency through the registry.
 
@@ -130,7 +111,7 @@ class DependencyGraph():
 
         dependency = self.registry.get(
             name=name,
-            role=kind.build_role,
+            role=self.kind.build_role,
             ctx=parent.ctx
         )
 
@@ -142,18 +123,21 @@ class DependencyGraph():
         
         return dependency
 
-    def _dependency_names(self, recipe: BuildRecipe, kind: DependencyKind) -> list[str]:
+    def _dependency_names(self, recipe: BuildRecipe) -> Iterable[str]:
         """
         Return the dependencies relevant to this graph.
         """
-        match kind:
+        match self.kind:
             case DependencyKind.BUILD:
-                return list(recipe.dependencies.build or [])
+                yield from recipe.dependencies.build or []
             
             case DependencyKind.RUNTIME:
-                return list(recipe.dependencies.required or [])
+                yield from recipe.dependencies.required or []
+        
+            case _:
+                raise ValueError(f"Unhandled dependency kind: '{self.kind!r}'")
 
-    def _resolve(self, recipe: BuildRecipe, kind: DependencyKind):
+    def _resolve(self, recipe: BuildRecipe):
         """
         Recursively resolve a recipe and all of its dependencies.
 
@@ -161,59 +145,65 @@ class DependencyGraph():
             recipe (BuildRecipe): The recipe to resolve.
             kind (DependencyKind): The kind of dependencies to resolve.
         """
-        
-        node = DependencyNode(recipe.name, kind)
-
-        if node in self._resolved:
+        if recipe.name in self._resolved:
             return
         
-        if node in self._resolving:
-            # Runtime dependency cycles are allowed
-            if kind == DependencyKind.RUNTIME:
+        if recipe.name in self._resolving:
+            # Ignore cycles if allowed
+            if self.allow_cycles:
                 return
             
             raise DependencyCycleError(
                 f"Dependency cycle involving '{recipe.name}'."
             )
         
-        self._resolving.add(node)
+        self._resolving.add(recipe.name)
 
-        self._recipes[node] = recipe
-        self._dependencies.setdefault(node, set())
-        self._dependents.setdefault(node, set())
+        self._recipes[recipe.name] = recipe
+        self._dependencies.setdefault(recipe.name, set())
+        self._dependents.setdefault(recipe.name, set())
         
-        for name in self._dependency_names(recipe, kind):
-            dependency = self._load_dependency(name, recipe, kind)
-            dependency_node = DependencyNode(dependency.name, kind)
+        for name in self._dependency_names(recipe):
+            dependency = self._load_dependency(name, recipe)
 
-            self._dependencies[node].add(dependency_node)
-            self._dependents.setdefault(dependency_node, set())
-            self._dependents[dependency_node].add(node)
+            self._dependencies[recipe.name].add(dependency.name)
+            self._dependents.setdefault(dependency.name, set())
+            self._dependents[dependency.name].add(recipe.name)
             
-            self._resolve(dependency, kind)
+            self._resolve(dependency)
         
-        self._resolving.remove(node)
-        self._resolved.add(node)
+        self._resolving.remove(recipe.name)
+        self._resolved.add(recipe.name)
     
     @property
-    def recipes(self) -> dict[DependencyNode, BuildRecipe]:
+    def recipes(self) -> dict[str, BuildRecipe]:
         """
         Returns all recipes contained in the resolved graph.
         """
         return dict(self._recipes)
     
-    def dependencies_of(self, recipe: str | BuildRecipe, kind: DependencyKind) -> set[DependencyNode]:
+    def dependencies_of(self, recipe: str | BuildRecipe) -> set[str]:
         """
         Returns a list of all dependencies of a recipe.
 
         Args:
             recipe (str | BuildRecipe): The recipe to check.
-            kind (DependencyKind): The kind of dependency to check.
         """
 
         name = recipe if isinstance(recipe, str) else recipe.name
-        node = DependencyNode(name, kind)
-        return set(self._dependencies[node])
+        return set(self._dependencies[name])
+
+    def dependents_of(self, recipe: str | BuildRecipe) -> set[str]:
+        """
+        Returns a list of all dependents of a recipe.
+
+        Args:
+            recipe (str | BuildRecipe): The recipe to check.
+        """
+
+        name = recipe if isinstance(recipe, str) else recipe.name
+        return set(self._dependents[name])
+
 
     @property
     def topological_order(self) -> list[BuildRecipe]:

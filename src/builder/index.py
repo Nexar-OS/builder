@@ -44,8 +44,8 @@ stage = Stage(
         "nano",
         "bc"
     ],
-    add_runtime_dependencies=False
+    add_runtime_dependencies=True
 )
 
 
-print(stage._dependency_graph.topological_order)
+print(stage._build_dependencies.recipes)

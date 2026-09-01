@@ -8,7 +8,8 @@ from builder.recipe import (
     BuildRole,
     RecipeRegistry,
     DependencyGraph,
-    DependencyKind
+    DependencyKind,
+    Sequencer
 )
 
 @dataclass
@@ -73,6 +74,7 @@ class Stage:
             allow_cycles=False
         )
 
+        self.runtime_dependencies = None
         if self.add_runtime_dependencies:
             self.runtime_dependencies = DependencyGraph(
                 recipes=self._recipes,
@@ -85,7 +87,11 @@ class Stage:
         self._load_recipes()
         self._build_dependency_graphs()
 
-        self._recipes = []
+        self.sequencer = Sequencer(
+            build_graph=self._build_dependencies,
+            runtime_graph=self.runtime_dependencies,
+            max_workers=16
+        )
 
     def build(self):
         """
@@ -95,18 +101,4 @@ class Stage:
         the provided build context
         """
 
-        if self.pre_build_hook:
-            self.pre_build_hook(self, self.ctx)
-
-        for recipe in self._recipes:
-            if recipe.needs_rebuild:
-                info(f"Building '{recipe.name}'.")
-                recipe.build()
-            
-            else:
-                info(f"Skipping {recipe.name} (up to date).")
-        
-        if self.post_build_hook:
-            self.post_build_hook(self, self.ctx)
-
-        return self
+        pass

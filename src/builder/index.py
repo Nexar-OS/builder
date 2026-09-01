@@ -28,7 +28,7 @@ ctx = BuildContext(
     num_jobs                = nproc()
 )
 
-# ctx.toolchain = load_or_build_cross_toolchain(ctx)
+ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
 registry = RecipeRegistry([
     Path(__file__).parent.parent / "recipe"
@@ -48,4 +48,4 @@ stage = Stage(
 )
 
 
-print(stage._build_dependencies.recipes)
+print(stage.sequencer.build())

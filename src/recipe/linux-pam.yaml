@@ -31,3 +31,41 @@ build:
     config_args:
       - --prefix=/usr
       - --sysconfdir=/etc
+  
+  post_install: |
+    pam="$DESTDIR/etc/pam.d"
+    mkdir -p "$pam"
+
+    cat > "$pam/passwd" <<EOF
+    #%PAM-1.0
+    auth            required         pam_unix.so
+    account         required         pam_unix.so
+    password        required         pam_unix.so
+    EOF
+
+    cat > "$pam/login" <<EOF
+    #%PAM-1.0
+    
+    auth       requisite    pam_nologin.so
+    auth       required      pam_unix.so
+    account    required      pam_unix.so
+    session    required      pam_unix.so
+    password   required      pam_unix.so
+    EOF
+
+    cat > "$pam/sudo" <<EOF
+    #%PAM-1.0
+    auth            required         pam_unix.so
+    account         required         pam_unix.so
+    session         required         pam_unix.so
+    session         optional         pam_systemd.so class=none
+    EOF
+
+    cat > "$pam/su" <<EOF
+    #%PAM-1.0
+    auth            sufficient      pam_rootok.so
+    auth            required        pam_unix.so
+    account         required        pam_unix.so
+    session         required        pam_unix.so
+    password        required        pam_unix.so
+    EOF

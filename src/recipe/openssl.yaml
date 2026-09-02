@@ -14,6 +14,9 @@ dependencies:
   optional:
     - ca-certificates
   
+  build:
+    - libxcrypt
+  
 sources:
   - type: tarball
     name: openssl
@@ -24,18 +27,18 @@ build:
   method: OUT_OF_SOURCE
 
   build_system:
-    type: autotools
+    type: custom
     disable_fakeroot: True
   
-    config_args:
-      - --prefix=/usr
-      - --openssldir=/etc/ssl
-      - shared
-
-
-    build_args:
-  
-    install_args:
+    configure: |
+      "$SOURCE/Configure" \
+        --prefix=/usr \
+        --openssldir=/etc/ssl \
+        shared
+      
+    build: |
+      make
     
-  post_install: |
-    <post_install>
+    install: |
+      cd $BUILD
+      make DESTDIR="$DESTDIR" install

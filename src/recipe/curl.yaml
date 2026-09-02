@@ -18,6 +18,7 @@ dependencies:
     - zstd
     - libpsl
     - gperf
+    - openssl
   
 sources:
   - type: tarball

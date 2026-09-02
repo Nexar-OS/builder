@@ -78,7 +78,7 @@ class DependencyGraph():
     """
     def __init__(self,
                  recipes: Iterable[BuildRecipe],
-                 registry: RecipeRegistry,
+                 registry: "RecipeRegistry",
                  kind: DependencyKind,
                  allow_cycles: bool = False,
                 ) -> None:
@@ -102,6 +102,7 @@ class DependencyGraph():
         """
         Return an empty and invalid dependency graph.
         """
+        from .registry import RecipeRegistry
         return DependencyGraph(
             recipes=[],
             registry=RecipeRegistry([]),

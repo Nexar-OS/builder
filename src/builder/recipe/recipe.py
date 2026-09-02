@@ -150,6 +150,8 @@ class BuildRecipe(ABC):
 
         # Recipe identity
         h.update(self.name.encode())
+        h.update(self.build_role.name.encode())
+        h.update(str(self.ctx).encode())
 
         # Build system args
         config_args = self._config_args(self.ctx)

@@ -6,8 +6,7 @@ from pathlib import Path
 from builder.build import BuildContext
 from builder.toolchain import Toolchain
 
-from builder.recipe.toolchain import *
-from builder.recipe.sysroot import *
+from builder.recipe import BuildRole
 from builder.build import MachineSpec
 
 from builder.utils.logger import info, warn, debug
@@ -125,8 +124,8 @@ def load_cross_toolchain(ctx: BuildContext) -> Toolchain | None:
         Toolchain: The loaded cross compiler toolchain. None if toolchain is invalid.
     """
     is_valid = validate_toolchain(
-        toolchain_dir=ctx.cross_toolchain_dir,
-        sysroot=ctx.cross_toolchain_sysroot,
+        toolchain_dir=ctx.toolchain_dir,
+        sysroot=ctx.toolchain_sysroot,
         triple=ctx.target_machine.triple
     )
 
@@ -156,8 +155,8 @@ def build_cross_toolchain(ctx: BuildContext) -> "CrossToolchain":
     info(f"Building new cross compiler toolchain using {ctx}")
 
     info(f" | Cleaning environment...")
-    rmtree(ctx.cross_toolchain_dir)
-    rmtree(ctx.cross_toolchain_sysroot)
+    rmtree(ctx.toolchain_dir)
+    rmtree(ctx.toolchain_sysroot)
 
     ntc = ctx.toolchain
 
@@ -169,8 +168,11 @@ def build_cross_toolchain(ctx: BuildContext) -> "CrossToolchain":
     # The first GCC pass only produces a minimal C compiler:
     # - no target C library yet
     # - no target headers exist yet
-    BinutilsRecipe(ctx).build()
-    GCCFirstPassRecipe(ctx).build()
+    ctx.registry.getOrThrow("binutils", BuildRole.TOOLCHAIN, ctx) \
+        .build()
+    
+    ctx.registry.getOrThrow("gcc-first", BuildRole.TOOLCHAIN, ctx) \
+        .build()
 
     # Bootstrap compiler now exists, but it needs a target system
     # environment to finish the compiler build.
@@ -180,13 +182,16 @@ def build_cross_toolchain(ctx: BuildContext) -> "CrossToolchain":
     ctx.toolchain = Toolchain(
         name="cross-bootstrap",
         target=ctx.target_machine,
-        prefix=ctx.cross_toolchain_dir,
-        sysroot=ctx.cross_toolchain_sysroot
+        prefix=ctx.toolchain_dir,
+        sysroot=ctx.toolchain_sysroot
     )
 
     info(f" | Populating compiler sysroot...")
-    LinuxHeadersRecipe(ctx).build()
-    GlibCRecipe(ctx).build()
+    ctx.registry.getOrThrow("linux-headers", BuildRole.SYSROOT, ctx) \
+        .build()
+    
+    ctx.registry.getOrThrow("glibc", BuildRole.SYSROOT, ctx) \
+        .build()
 
     # Now that the cross compiler sysroot contains Linux headers and glibc,
     # rebuild GCC using the native build compiler.
@@ -196,7 +201,8 @@ def build_cross_toolchain(ctx: BuildContext) -> "CrossToolchain":
     # machine and generates binaries for the target machine.
     ctx.toolchain = ntc
     info(f" | Completing compiler...")
-    GCCSecondPassRecipe(ctx).build()
+    ctx.registry.getOrThrow("gcc", BuildRole.TOOLCHAIN, ctx) \
+        .build()
 
     # Construct the final cross compiler
     toolchain = CrossToolchain(ctx)
@@ -250,8 +256,8 @@ class CrossToolchain(Toolchain):
         super().__init__(
             name="cross",
             target=ctx.target_machine,
-            prefix=ctx.cross_toolchain_dir,
-            sysroot=ctx.cross_toolchain_sysroot,
+            prefix=ctx.toolchain_dir,
+            sysroot=ctx.toolchain_sysroot,
             num_jobs=ctx.num_jobs,
         )
 

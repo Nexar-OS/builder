@@ -8,7 +8,11 @@ def download_url(url: str, dest: Path, chunk_size: int = 8192) -> None:
         url (str): The url to download the file from.
         dest (Path): The final path where the file should be placed at (including filename).
     """
-    response = requests.get(url, stream=True)
+    response = requests.get(
+        url,
+        stream=True,
+        timeout=(10, 60)
+    )
     response.raise_for_status()
 
     with dest.open("wb") as file:

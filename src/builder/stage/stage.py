@@ -1,7 +1,9 @@
+from pathlib import Path
 from typing import Callable
 from dataclasses import dataclass
 
 from builder.utils.logger import warn, info
+from builder.utils.file import merge_trees
 from builder.build import BuildContext
 from builder.recipe import (
     BuildRecipe,
@@ -93,6 +95,42 @@ class Stage:
             runtime_graph=self.runtime_dependencies,
             max_workers=16
         )
+    
+    @property
+    def _dir(self) -> Path:
+        """
+        Returns the shared stage root for this stage.
+        """
+        dir = self.ctx.staging_dir / self.name
+        dir.mkdir(exist_ok=True, parents=True)
+        return dir
+
+    def _export_recipe(self, recipe: BuildRecipe, stage_dir: Path, copy: bool = False) -> None:
+        """
+        Exports a specific recipe to the target stage.
+        """
+        
+        path = recipe._install_path
+        
+        if not path:
+            warn(f"Failed to export recipe '{recipe.name}': No install path.")
+            return
+
+        merge_trees(
+            path,
+            stage_dir,
+            copy=copy
+        )
+
+    def export(self) -> None:
+        """
+        Exports all recipes of this stage into a shared stage-dir.
+        """
+        out = self._dir
+        for recipe in self._recipes:
+            info(f"Exporting recipe '{recipe.name}' to '{str(out)}'")
+            self._export_recipe(recipe, out)
+        
 
     def build(self) -> list[BuildRecipe]:
         """

@@ -1,0 +1,88 @@
+name: rootfs
+homepage: None
+license: None
+description: The core filesystem layout
+
+version: "1.0"
+
+dependencies:
+
+sources: []
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: custom
+
+    install: |
+      cd "$DESTDIR"
+
+      # Create directory layout
+      mkdir -p etc tmp var root home dev proc sys run mnt opt \
+            usr/{bin,include,lib,${target.libdir.name}} \
+            usr/share/{man,info,doc} \
+            var/{cache,lib,log,tmp,run,mail} \
+            run/{lock,user}
+      
+      chmod 1777 tmp
+      chmod 755 var/mail
+      chmod 1777 var/tmp
+
+      # Create symlinks
+      ln -sf usr/bin bin
+      ln -sf usr/bin sbin
+      ln -sf bin usr/sbin
+      ln -sf usr/lib ${target.libdir.name}
+      ln -sf usr/lib lib
+
+      # Create passwd file
+      cat > etc/passwd <<EOF
+      root:x:0:0::/root:/usr/bin/bash
+
+      EOF
+      chown 0:0 etc/passwd
+      chmod 644 etc/passwd
+
+      # Create group file
+      cat > etc/group <<EOF
+      root:x:0:
+      mail:x:12:
+      
+      EOF
+      chown 0:0 etc/group
+      chmod 644 etc/group
+
+      # Create shadow file
+      cat > etc/shadow <<EOF
+      root:*:2000::::::
+
+      EOF
+      chown 0:0 etc/shadow
+      chmod 644 etc/shadow
+
+      # Create nsswich file
+      cat > etc/nsswich.conf <<EOF
+      passwd: files
+      group: files
+      shadow: files
+
+      EOF
+      chown 0:0 etc/nsswich.conf
+      chmod 644 etc/nsswich.conf
+
+      # Create os-release file
+      cat > etc/os-release <<EOF
+      NAME="NexarOS"
+      PRETTY_NAME="NexarOS"
+      ID=nexar
+      BUILD_ID=rolling
+      ANSI_COLOR="38;2;23;147;209"
+      HOME_URL=""
+      DOCUMENTATION_URL=""
+      SUPPORT_URL=""
+      BUG_REPORT_URL=""
+      PRIVACY_POLICY_URL=""
+      LOGO=archlinux-logo
+
+      EOF

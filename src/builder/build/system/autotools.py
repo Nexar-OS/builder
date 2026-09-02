@@ -130,3 +130,8 @@ class Autotools(BuildSystem):
         cmd.append(self.install_target)
 
         recipe.ctx.run(cmd, cwd=build_dir, use_fakeroot=not self.disable_fakeroot)
+
+        # Strip .la files
+        recipe.ctx.run([
+            "find", str(dest_dir), "-type", "f", "-name", "*.la", "-delete"
+        ])

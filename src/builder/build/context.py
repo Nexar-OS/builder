@@ -6,6 +6,7 @@ from .machine import MachineSpec
 
 import typing
 if typing.TYPE_CHECKING:
+    from builder.recipe import RecipeRegistry
     from builder.toolchain.toolchain import Toolchain
 
 from builder.utils.logger import debug
@@ -16,6 +17,7 @@ class BuildContext:
     BuildContext serves as a global source of truth for several build variables.
 
     Attributes:
+        registry (RecipeRegistry): The recipe registry to load recipes from.
         build_dir (Path): The directory where recipes will be build in.
         staging_dir (Path): The directory where the final output stages will be placed in.
         metadata_dir (Path): The directory where recipe metadata files will be stored.
@@ -24,11 +26,13 @@ class BuildContext:
         target_machine (MachineSpec): The targeted architecture the final build should run on.
 
         toolchain (Toolchain): Toolchain used to build the next recipe.
-        cross_toolchain_dir (Path): Directory where the cross toolchain will be located.
-        cross_toolchain_sysroot (Path): Directory where the cross toolchains sysroot will be located.
+        toolchain_dir (Path): Directory where the (cross-)toolchain will be located.
+        toolchain_sysroot (Path): Directory where the (cross-)toolchains sysroot will be located.
 
         num_jobs (int): The amount of concurrent build jobs.
     """
+    registry: RecipeRegistry
+
     build_dir: Path
     staging_dir: Path
     metadata_dir: Path
@@ -38,8 +42,8 @@ class BuildContext:
 
     toolchain: "Toolchain"
 
-    cross_toolchain_dir: Path
-    cross_toolchain_sysroot: Path
+    toolchain_dir: Path
+    toolchain_sysroot: Path
 
     num_jobs: int
 

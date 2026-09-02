@@ -6,7 +6,6 @@ from builder.build import BuildContext
 from builder.recipe import (
     BuildRecipe,
     BuildRole,
-    RecipeRegistry,
     DependencyGraph,
     DependencyKind,
     Sequencer
@@ -23,7 +22,6 @@ class Stage:
 
     Attributes:
         ctx (BuildContext): The context used for building recipes in this stage.
-        registry (RecipeRegistry): The registry to load recipes from.
         name (str): Name of the stage.
         recipes (list[str]): Recipes included in this stage.
         build_role (BuildRole): The role in which recipes should be built.
@@ -33,7 +31,6 @@ class Stage:
     """
 
     ctx: BuildContext
-    registry: RecipeRegistry
 
     name: str
 
@@ -51,7 +48,7 @@ class Stage:
         self._recipes: list[BuildRecipe] = []
 
         for recipe in self.recipes:
-            loaded = self.registry.get(
+            loaded = self.ctx.registry.get(
                 name=recipe,
                 role=self.build_role,
                 ctx=self.ctx
@@ -69,7 +66,7 @@ class Stage:
         """
         self._build_dependencies = DependencyGraph(
             recipes=self._recipes,
-            registry=self.registry,
+            registry=self.ctx.registry,
             kind=DependencyKind.BUILD,
             allow_cycles=False
         )
@@ -78,7 +75,7 @@ class Stage:
         if self.add_runtime_dependencies:
             self.runtime_dependencies = DependencyGraph(
                 recipes=self._recipes,
-                registry=self.registry,
+                registry=self.ctx.registry,
                 kind=DependencyKind.RUNTIME,
                 allow_cycles=True
             )

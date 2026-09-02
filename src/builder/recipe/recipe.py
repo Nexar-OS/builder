@@ -265,7 +265,7 @@ class BuildRecipe(ABC):
 
         Path is determined by the build role, this recipe was constructed with:
 
-        ``BuildRole.TOOLCHAIN``: $ctx.cross_toolchain_dir
+        ``BuildRole.TOOLCHAIN``: None (toolchain components use '--prefix')
         ``BuildRole.SYSROOT``: $ctx.cross_toolchain_sysroot
         ``BuildRole.TARGET``: $work_dir/rootfs
 
@@ -277,7 +277,7 @@ class BuildRecipe(ABC):
         """
         match self.build_role:
             case BuildRole.TOOLCHAIN:
-                return self.ctx.cross_toolchain_dir
+                return None
 
             case BuildRole.SYSROOT:
                 return self.ctx.cross_toolchain_sysroot

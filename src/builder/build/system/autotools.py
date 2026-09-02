@@ -57,8 +57,8 @@ class Autotools(BuildSystem):
                     f"--build={recipe.ctx.build_machine.triple}",
                     f"--host={recipe.ctx.build_machine.triple}",
                     f"--target={recipe.ctx.target_machine.triple}",
-                    f"--prefix={recipe.ctx.cross_toolchain_dir}",
-                    f"--with-sysroot={recipe.ctx.cross_toolchain_sysroot}"
+                    f"--prefix={recipe.ctx.toolchain_dir}",
+                    f"--with-sysroot={recipe.ctx.toolchain_sysroot}"
                 ]
 
         # No config args were passed means no configuration will be invoked

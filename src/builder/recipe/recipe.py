@@ -280,7 +280,7 @@ class BuildRecipe(ABC):
                 return None
 
             case BuildRole.SYSROOT:
-                return self.ctx.cross_toolchain_sysroot
+                return self.ctx.toolchain_sysroot
             
             case BuildRole.TARGET:
                 return self.work_dir / "rootfs"
@@ -580,7 +580,7 @@ class TargetRecipe(BuildRecipe):
 
         for relative in self._export_to_toolchain:
             source = root / relative
-            dest = self.ctx.cross_toolchain_sysroot / relative
+            dest = self.ctx.toolchain_sysroot / relative
 
             if not source.exists():
                 continue

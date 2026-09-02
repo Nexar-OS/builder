@@ -151,7 +151,13 @@ class BuildRecipe(ABC):
         # Recipe identity
         h.update(self.name.encode())
         h.update(self.build_role.name.encode())
-        h.update(str(self.ctx).encode())
+
+        # h.update(str(self.ctx).encode()) # doesn't work because of ctx.registry
+        h.update(str(self.ctx.build_dir).encode())
+        h.update(str(self.ctx.build_machine.triple).encode())
+        h.update(str(self.ctx.target_machine.triple).encode())
+        h.update(str(self.ctx.toolchain_dir).encode())
+        h.update(str(self.ctx.toolchain_sysroot).encode())
 
         # Build system args
         config_args = self._config_args(self.ctx)

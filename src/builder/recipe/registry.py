@@ -7,6 +7,11 @@ from builder.build import BuildContext
 from .loader import load_recipe
 from builder.utils.logger import warn, debug
 
+class RecipeNotFoundError(RuntimeError):
+    """
+    Thrown when a recipe couldn't be resolved.
+    """
+
 class RecipeRegistry:
     """
     Interface for discovering and lazy loading recipes
@@ -89,6 +94,26 @@ class RecipeRegistry:
             debug(f"Using cached recipe for '{name} ({role.name})'")
 
         return self._loaded[key]
+
+    def getOrThrow(self, name: str, role: BuildRole, ctx: BuildContext) -> GenericRecipe:
+        """
+        Loads and instantiates a recipe from its name.
+
+        If the recipe doesn't exist or couldn't be parsed,
+        a "RecipeNotFoundError" will be thrown.
+
+        Args:
+            name (str): The name of the recipe.
+            role (BuildRole): The role the recipe will be used for.
+            ctx (BuildContext): The context that will be used to build the recipe with.
+        """
+
+        recipe = self.get(name, role, ctx)
+
+        if not recipe:
+            raise RecipeNotFoundError(f"Failed to locate recipe '{name}'.")
+
+        return recipe
 
     def path(self, name: str) -> Path | None:
         """

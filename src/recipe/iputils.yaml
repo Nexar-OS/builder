@@ -11,9 +11,10 @@ dependencies:
     - libidn2
   
   build:
-    - systemd
-    - meson
+    # - meson
     - iproute2
+    - libcap
+    - libidn2
   
 sources:
   - type: tarball
@@ -29,11 +30,3 @@ build:
       
     config_args:
       - --prefix=/usr
-
-
-    build_args:
-  
-    install_args:
-    
-  post_install: |
-    <post_install>

@@ -10,14 +10,13 @@ dependencies:
     - glibc
     - libxcrypt
     - linux-pam
-  
-  optional:
-    - <optional_dependencies>
+    - systemd
   
   build:
     - libcap
     - libxcrypt
     - linux-pam
+    - systemd
   
 sources:
   - type: tarball

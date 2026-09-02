@@ -19,25 +19,25 @@ dependencies:
     - openssl
     - linux-pam
     - util-linux
+    - shadow
     - xz
   
   optional:
-    - iptables
+    - iputils
 
   build:
     - bash
     - bash-completion
     - curl
-    - iptables
+    - iputils
     - kmod
     - libidn2
     - libseccomp
     - libxcrypt
     - linux-headers
-    - llvm2
-    - meson
+    # - llvm
+    # - meson
     - linux-pam
-    - shadow
     - util-linux
     - xz
   

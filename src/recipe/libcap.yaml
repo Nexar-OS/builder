@@ -33,5 +33,7 @@ build:
       - lib=lib
   
   post_install: |
-    mkdir -p "$DESTDIR"/usr/
-    mv "$DESTDIR"/lib* "$DESTDIR"/usr/
+    lib="${target.libdir.name}"
+    mkdir -p "$DESTDIR/usr/$lib"
+    cp -aR "$DESTDIR/$lib/." "$DESTDIR/usr/$lib/"
+    rm -rf $lib

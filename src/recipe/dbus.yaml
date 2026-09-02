@@ -12,7 +12,7 @@ dependencies:
     - systemd
 
   build:
-    - meson
+    # - meson
     - systemd
   
 sources:

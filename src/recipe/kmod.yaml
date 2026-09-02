@@ -15,7 +15,7 @@ dependencies:
     - linux-headers
   
   build:
-    - meson
+    # - meson
   
 sources:
   - type: tarball

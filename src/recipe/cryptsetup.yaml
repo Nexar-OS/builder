@@ -10,7 +10,8 @@ dependencies:
     - glibc
     - openssl
     - json-c
-    - popt
+    - libpopt
+    - util-linux
   
   build:
     - util-linux

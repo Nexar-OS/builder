@@ -22,7 +22,7 @@ dependencies:
   # This creates a separate (host) version of file that the
   # target file can later use to generate said database.
   build:
-    - file
+    # - file
   
 sources:
   - type: tarball

@@ -18,7 +18,7 @@ dependencies:
   build:
     - libusb
     - systemd
-    - meson
+    # - meson
   
 sources:
   - type: tarball

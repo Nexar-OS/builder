@@ -24,7 +24,8 @@ dependencies:
     - bash-completion
     - libcap
     - libxcrypt
-    - meson
+    - ncurses
+    # - meson
   
 sources:
   - type: tarball
@@ -45,9 +46,3 @@ build:
     build_args:
       - LIBS=-lncursesw -ltinfow
       - CFLAGS=-fPIC
-
-  
-    install_args:
-    
-  post_install: |
-    <post_install>

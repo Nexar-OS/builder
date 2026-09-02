@@ -10,7 +10,7 @@ dependencies:
     - glibc
   
   build:
-    - meson
+    # - meson
   
 sources:
   - type: tarball

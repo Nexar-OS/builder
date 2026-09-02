@@ -19,6 +19,7 @@ dependencies:
     - libpsl
     - gperf
     - openssl
+    - libidn2
   
 sources:
   - type: tarball

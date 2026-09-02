@@ -90,7 +90,7 @@ class Stage:
             max_workers=16
         )
 
-    def build(self):
+    def build(self) -> list[BuildRecipe]:
         """
         Build all recipes associated with this stage.
 
@@ -98,4 +98,4 @@ class Stage:
         the provided build context
         """
 
-        pass
+        return self.sequencer.build()

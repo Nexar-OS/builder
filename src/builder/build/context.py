@@ -31,7 +31,7 @@ class BuildContext:
 
         num_jobs (int): The amount of concurrent build jobs.
     """
-    registry: RecipeRegistry
+    registry: "RecipeRegistry"
 
     build_dir: Path
     staging_dir: Path

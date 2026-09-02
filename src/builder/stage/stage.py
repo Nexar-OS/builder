@@ -26,6 +26,7 @@ class Stage:
         recipes (list[str]): Recipes included in this stage.
         build_role (BuildRole): The role in which recipes should be built.
         add_runtime_dependencies (bool): When set to ``True``, runtime dependencies will be built as well.
+        ignore_dependency_errors (bool): When set to ``True``, missing dependencies will be tollerated.
         pre_build_hook (Callable[BuildContext]): An optional pre-build hook.
         post_build_hook (Callable[BuildContext]): An optional post-build hook.
     """
@@ -37,6 +38,7 @@ class Stage:
     recipes: list[str]
     build_role: BuildRole = BuildRole.TARGET
     add_runtime_dependencies: bool = False
+    ignore_dependency_errors: bool = False
 
     pre_build_hook: Callable | None = None
     post_build_hook: Callable | None = None
@@ -68,7 +70,8 @@ class Stage:
             recipes=self._recipes,
             registry=self.ctx.registry,
             kind=DependencyKind.BUILD,
-            allow_cycles=False
+            allow_cycles=False,
+            ignore_dependency_errors=self.ignore_dependency_errors
         )
 
         self.runtime_dependencies = None
@@ -77,7 +80,8 @@ class Stage:
                 recipes=self._recipes,
                 registry=self.ctx.registry,
                 kind=DependencyKind.RUNTIME,
-                allow_cycles=True
+                allow_cycles=True,
+                ignore_dependency_errors=self.ignore_dependency_errors
             )
 
     def __post_init__(self):

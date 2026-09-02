@@ -81,10 +81,12 @@ class DependencyGraph():
                  registry: "RecipeRegistry",
                  kind: DependencyKind,
                  allow_cycles: bool = False,
+                 ignore_dependency_errors: bool = False
                 ) -> None:
         self.registry = registry
         self.kind = kind
         self.allow_cycles = allow_cycles
+        self.ignore_dependency_errors = ignore_dependency_errors
 
         self._recipes: dict[str, BuildRecipe] = {}
 
@@ -109,7 +111,7 @@ class DependencyGraph():
             kind=DependencyKind.BUILD
         )
 
-    def _load_dependency(self, name: str, parent: BuildRecipe) -> BuildRecipe:
+    def _load_dependency(self, name: str, parent: BuildRecipe) -> BuildRecipe | None:
         """
         Resolve a dependency through the registry.
 
@@ -127,7 +129,7 @@ class DependencyGraph():
             ctx=parent.ctx
         )
 
-        if not dependency:
+        if not dependency and not self.ignore_dependency_errors:
             raise RuntimeError(
                 f"Recipe '{parent.name}' depends on '{name}', "
                 f"but recipe '{name}' could not be loaded."
@@ -177,6 +179,11 @@ class DependencyGraph():
         
         for name in self._dependency_names(recipe):
             dependency = self._load_dependency(name, recipe)
+
+            # Dependency errors are ignored
+            # thus simply skip this dependency
+            if not dependency:
+                continue
 
             self._dependencies[recipe.name].add(dependency.name)
             self._dependents.setdefault(dependency.name, set())

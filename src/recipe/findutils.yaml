@@ -15,7 +15,7 @@ dependencies:
 sources:
   - type: tarball
     name: findutils
-    url: https://ftp.gnu.org/gnu/findutils/findutils-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/findutils/findutils-${version}.tar.xz
     md5hash: 512c6875ed84034dca240c4bc9380b96
 
 build:

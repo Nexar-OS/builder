@@ -17,7 +17,7 @@ dependencies:
 sources:
   - type: tarball
     name: gdbm
-    url: https://ftp.gnu.org/gnu/gdbm/gdbm-${version}.tar.gz
+    url: https://ftpmirror.gnu.org/gnu/gdbm/gdbm-${version}.tar.gz
     md5hash: aaa600665bc89e2febb3c7bd90679115
 
 build:

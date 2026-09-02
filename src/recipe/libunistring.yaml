@@ -16,7 +16,7 @@ dependencies:
 sources:
   - type: tarball
     name: libunistring
-    url: https://ftp.gnu.org/gnu/libunistring/libunistring-${version}.tar.gz
+    url: https://ftpmirror.gnu.org/gnu/libunistring/libunistring-${version}.tar.gz
     md5hash: a1b88d4c0f3b0504d10cfe2a76a7bee7
 
 build:

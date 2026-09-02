@@ -13,7 +13,7 @@ dependencies:
 sources:
   - type: tarball
     name: gawk
-    url: https://ftp.gnu.org/gnu/gawk/gawk-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/gawk/gawk-${version}.tar.xz
     md5hash: d379c2110e7a3e15347dd5559a41ad64
 
 build:

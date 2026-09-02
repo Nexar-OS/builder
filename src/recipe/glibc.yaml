@@ -13,7 +13,7 @@ dependencies:
 sources:
   - type: tarball
     name: glibc
-    url: https://ftp.gnu.org/gnu/glibc/glibc-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/glibc/glibc-${version}.tar.xz
     md5hash: 7677da43ef759c68e005f5d4c37986a6
 
 build:

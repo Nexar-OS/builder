@@ -13,7 +13,7 @@ dependencies:
 sources:
   - type: tarball
     name: diffutils
-    url: https://ftp.gnu.org/gnu/diffutils/diffutils-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/diffutils/diffutils-${version}.tar.xz
     md5hash: d1b18b20868fb561f77861cd90b05de4
 
 build:

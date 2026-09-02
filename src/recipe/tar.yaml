@@ -13,7 +13,7 @@ dependencies:
 sources:
   - type: tarball
     name: tar
-    url: https://ftp.gnu.org/gnu/tar/tar-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/tar/tar-${version}.tar.xz
     md5hash: a2d8042658cfd8ea939e6d911eaf4152
 
 build:

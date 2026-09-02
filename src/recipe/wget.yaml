@@ -19,7 +19,7 @@ dependencies:
 sources:
   - type: tarball
     name: wget
-    url: https://ftp.gnu.org/gnu/wget/wget-${version}.tar.gz
+    url: https://ftpmirror.gnu.org/gnu/wget/wget-${version}.tar.gz
     md5hash: c70ba58b36f944e8ba1d655ace552881
 
 build:

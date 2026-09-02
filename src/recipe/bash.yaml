@@ -17,7 +17,7 @@ dependencies:
 sources:
   - type: tarball
     name: bash
-    url: "https://ftp.gnu.org/gnu/bash/bash-${version}.tar.gz"
+    url: "https://ftpmirror.gnu.org/gnu/bash/bash-${version}.tar.gz"
     md5hash: "977c8c0c5ae6309191e7768e28ebc951"
 
 build:

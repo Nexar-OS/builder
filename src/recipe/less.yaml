@@ -13,7 +13,7 @@ dependencies:
 sources:
   - type: tarball
     name: less
-    url: https://ftp.gnu.org/gnu/less/less-${version}.tar.gz
+    url: https://ftpmirror.gnu.org/gnu/less/less-${version}.tar.gz
     md5hash: c4c9eea5b1862783b078c67ca67c9185
 
 build:

@@ -18,7 +18,7 @@ dependencies:
 sources:
   - type: tarball
     name: gettext
-    url: https://ftp.gnu.org/gnu/gettext/gettext-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/gettext/gettext-${version}.tar.xz
     md5hash: dc8b2911535929cec1e263706b0a13a1
 
 build:

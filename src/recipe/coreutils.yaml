@@ -15,7 +15,7 @@ dependencies:
 sources:
   - type: tarball
     name: coreutils
-    url: https://ftp.gnu.org/gnu/coreutils/coreutils-${version}.tar.gz
+    url: https://ftpmirror.gnu.org/gnu/coreutils/coreutils-${version}.tar.gz
     md5hash: b49641aa883b5a05cd6156d3cba82853
 
 build:

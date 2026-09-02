@@ -15,7 +15,7 @@ dependencies:
 sources:
   - type: tarball
     name: sed
-    url: https://ftp.gnu.org/gnu/sed/sed-4.10.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/sed/sed-4.10.tar.xz
     md5hash: c70dc5372db95c816442ffedf77a0d0f
 
 build:

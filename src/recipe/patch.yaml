@@ -13,7 +13,7 @@ dependencies:
 sources:
   - type: tarball
     name: patch
-    url: https://ftp.gnu.org/gnu/patch/patch-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/patch/patch-${version}.tar.xz
     md5hash: 149327a021d41c8f88d034eab41c039f
 
 build:

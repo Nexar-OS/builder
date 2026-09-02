@@ -12,7 +12,7 @@ dependencies:
 sources:
   - type: tarball
     name: libidn2
-    url: https://ftp.gnu.org/gnu/libidn/libidn2-${version}.tar.gz
+    url: https://ftpmirror.gnu.org/gnu/libidn/libidn2-${version}.tar.gz
     md5hash: a8e113e040d57a523684e141970eea7a
 
 build:

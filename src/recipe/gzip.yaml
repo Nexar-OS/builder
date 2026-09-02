@@ -19,7 +19,7 @@ dependencies:
 sources:
   - type: tarball
     name: gzip
-    url: https://ftp.gnu.org/gnu/gzip/gzip-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/gzip/gzip-${version}.tar.xz
     md5hash: 4bf5a10f287501ee8e8ebe00ef62b2c2
 
 build:

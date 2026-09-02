@@ -21,7 +21,7 @@ dependencies:
 sources:
   - type: tarball
     name: grub
-    url: https://ftp.gnu.org/gnu/grub/grub-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/grub/grub-${version}.tar.xz
     md5hash: 383f9effad01c235d2535357ff717543
 
 build:

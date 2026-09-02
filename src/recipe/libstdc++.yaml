@@ -18,7 +18,7 @@ dependencies:
 sources:
   - type: tarball
     name: gcc
-    url: https://ftp.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz
     md5hash: 9b016416f8e2dce4a0ef8759d1936446
 
 build:

@@ -15,7 +15,7 @@ dependencies:
 sources:
   - type: tarball
     name: grep
-    url: https://ftp.gnu.org/gnu/grep/grep-${version}.tar.xz
+    url: https://ftpmirror.gnu.org/gnu/grep/grep-${version}.tar.xz
     md5hash: 5d9301ed9d209c4a88c8d3a6fd08b9ac
 
 build:

@@ -13,7 +13,7 @@ dependencies:
 sources:
   - type: tarball
     name: attr
-    url: "http://download.savannah.gnu.org/releases/attr/attr-${version}.tar.xz"
+    url: "http://download-mirror.savannah.gnu.org/releases/attr/attr-${version}.tar.xz"
     md5hash: "c0516a99377b4938eeb7fb2699247e82"
 
 build:

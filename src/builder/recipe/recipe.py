@@ -326,6 +326,14 @@ class BuildRecipe(ABC):
         if build_dir.is_dir():
             rmtree(build_dir)
 
+        # Clean target root
+        if (
+            dest_dir
+            and self.build_role == BuildRole.TARGET
+            and dest_dir.is_dir()
+        ):
+            rmtree(dest_dir)
+
         build_dir.mkdir(exist_ok=True, parents=True)
         source_dir.mkdir(exist_ok=True, parents=True)
 

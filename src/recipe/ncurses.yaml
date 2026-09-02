@@ -42,14 +42,14 @@ build:
     mkdir -p "$DESTDIR"/usr/include/ncursesw
 
     # Create ncursesw header directory
-    ln -s ../curses.h "$DESTDIR"/usr/include/ncursesw/curses.h
-    ln -s ../term.h "$DESTDIR"/usr/include/ncursesw/term.h
-    ln -s ../ncurses.h "$DESTDIR"/usr/include/ncursesw/ncurses.h
-    ln -s ../termcap.h "$DESTDIR"/usr/include/ncursesw/termcap.h
+    ln -sf ../curses.h "$DESTDIR"/usr/include/ncursesw/curses.h
+    ln -sf ../term.h "$DESTDIR"/usr/include/ncursesw/term.h
+    ln -sf ../ncurses.h "$DESTDIR"/usr/include/ncursesw/ncurses.h
+    ln -sf ../termcap.h "$DESTDIR"/usr/include/ncursesw/termcap.h
 
     # Create symlinks for wide-character libraries
-    ln -s libformw.so "$DESTDIR"/usr/lib/libform.so
-    ln -s libmenuw.so "$DESTDIR"/usr/lib/libmenu.so
-    ln -s libncursesw.so "$DESTDIR"/usr/lib/libncurses.so
-    ln -s libpanelw.so "$DESTDIR"/usr/lib/libpanel.so
-    ln -s libtinfow.so "$DESTDIR"/usr/lib/libtinfo.so
+    ln -sf libformw.so "$DESTDIR"/usr/lib/libform.so
+    ln -sf libmenuw.so "$DESTDIR"/usr/lib/libmenu.so
+    ln -sf libncursesw.so "$DESTDIR"/usr/lib/libncurses.so
+    ln -sf libpanelw.so "$DESTDIR"/usr/lib/libpanel.so
+    ln -sf libtinfow.so "$DESTDIR"/usr/lib/libtinfo.so

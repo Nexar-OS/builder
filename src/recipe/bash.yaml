@@ -32,4 +32,4 @@ build:
   
   post_install: |
     mkdir -p $DESTDIR / "bin"
-    ln -s bash bin/sh
+    ln -sf bash bin/sh

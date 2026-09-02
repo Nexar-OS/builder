@@ -12,9 +12,11 @@ dependencies:
     - json-c
     - libpopt
     - util-linux
+    - lvm2
   
   build:
     - util-linux
+    - lvm2
   
 sources:
   - type: tarball

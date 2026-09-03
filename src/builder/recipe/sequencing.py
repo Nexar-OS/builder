@@ -5,14 +5,48 @@ from concurrent.futures import (
     FIRST_COMPLETED
 )
 
+from dataclasses import dataclass
+
 from .dependencies import DependencyGraph
-from .recipe import BuildRecipe
+from .recipe import (
+    BuildRecipe,
+    BuildRole,
+)
 from builder.utils.logger import info
 
 class SequencerError(RuntimeError):
     """
     Thrown by the sequencer.
     """
+
+@dataclass(frozen=True)
+class RecipeKey:
+    """
+    A role dependent graph node of a recipe.
+
+    This separation is needed, since a recipe could appear
+    as both a BUILD as well as a RUNTIME dependency in the
+    build Sequence.
+    """
+
+    name: str
+    role: BuildRole
+
+    @classmethod
+    def get(cls, recipe: BuildRecipe):
+        """
+        Load a recipe key from a normal ``BuildRecipe`` instance.
+
+        Args:
+            recipe (BuildRecipe): The recipe.
+
+        Returns:
+            _type_: The key derived from that recipes name and build role.
+        """
+        return cls(recipe.name, recipe.build_role)
+
+    def __repr__(self) -> str:
+        return f"{self.name} ({self.role.name.upper()})"
 
 class Sequencer:
     """
@@ -35,9 +69,9 @@ class Sequencer:
 
         self.max_workers = max_workers
 
-        self._tasks: dict[str, BuildRecipe] = {}
-        self._dependencies: dict[str, set[str]] = {}
-        self._dependents: dict[str, set[str]] = {}
+        self._tasks: dict[RecipeKey, BuildRecipe] = {}
+        self._dependencies: dict[RecipeKey, set[RecipeKey]] = {}
+        self._dependents: dict[RecipeKey, set[RecipeKey]] = {}
 
         self._build_plan()
 
@@ -53,15 +87,22 @@ class Sequencer:
             self.runtime_graph
         ):
             for recipe in graph.recipes.values():
-                self._tasks[recipe.name] = recipe
-                self._dependencies[recipe.name] = set()
-                self._dependents[recipe.name] = set()
+                key = RecipeKey.get(recipe)
+                self._tasks[key] = recipe
+                self._dependencies[key] = set()
+                self._dependents[key] = set()
         
         # Only BUILD edges become constraints.
-        for node in self.build_graph.recipes:
-            for dependency in self.build_graph.dependencies_of(node):
-                self._dependencies[node].add(dependency)
-                self._dependents[dependency].add(node)
+        recipes = self.build_graph.recipes
+        for recipe in recipes.values():
+            node_key = RecipeKey.get(recipe)
+            
+            for dependency in self.build_graph.dependencies_of(recipe):
+                dependency_recipe = recipes[dependency]
+                dependency_key = RecipeKey.get(dependency_recipe)
+
+                self._dependencies[node_key].add(dependency_key)
+                self._dependents[dependency_key].add(node_key)
     
     def _build(self, recipe: BuildRecipe) -> BuildRecipe:
         """
@@ -75,14 +116,7 @@ class Sequencer:
             BuildRecipe: The recipe that has been built.
         """
 
-        if recipe.needs_rebuild:
-            info(f"Building recipe '{recipe.name}'...")
-            recipe.build()
-        else:
-            info(f"Skipping recipe '{recipe.name}' (Up to date).")
-
-        # TODO: error handling
-
+        recipe.build()
         return recipe
     
     def build(self) -> list[BuildRecipe]:
@@ -106,8 +140,8 @@ class Sequencer:
             if count == 0
         ]
 
-        completed: set[str] = set()
-        running: dict[Future[BuildRecipe], str] = {}
+        completed: set[RecipeKey] = set()
+        running: dict[Future[BuildRecipe], RecipeKey] = {}
         result: list[BuildRecipe] = []
 
         with ThreadPoolExecutor(
@@ -116,15 +150,15 @@ class Sequencer:
             while ready or running:
                 # Fill all available worker slots
                 while ready and len(running) < self.max_workers:
-                    name = ready.pop()
-                    task = self._tasks[name]
+                    key = ready.pop()
+                    task = self._tasks[key]
 
                     future = executor.submit(
                         self._build,
                         task,
                     )
 
-                    running[future] = name
+                    running[future] = key
                 
                 if not running:
                     break
@@ -150,10 +184,10 @@ class Sequencer:
                             ready.append(dependent)
         
         if len(completed) != len(self._tasks):
-            unresolved = (
+            unresolved = [ key.__repr__() for key in (
                 set(self._tasks)
                 - completed
-            )
+            )]
 
             raise SequencerError(
                 "Could not schedule all recipes. "

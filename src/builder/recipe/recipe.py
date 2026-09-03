@@ -150,7 +150,7 @@ class BuildRecipe(ABC):
 
         # Recipe identity
         h.update(self.name.encode())
-        h.update(self.build_role.name.encode())
+        h.update(str(self._dest_dir or "").encode())
 
         # h.update(str(self.ctx).encode()) # doesn't work because of ctx.registry
         h.update(str(self.ctx.build_dir).encode())
@@ -265,7 +265,7 @@ class BuildRecipe(ABC):
         return work_dir.resolve()
 
     @property
-    def _install_path(self) -> Path|None:
+    def _dest_dir(self) -> Path|None:
         """
         Return the directory where the build should be installed.
 
@@ -286,7 +286,7 @@ class BuildRecipe(ABC):
                 return None
 
             case BuildRole.SYSROOT:
-                return self.ctx.toolchain_sysroot
+                return self.work_dir / "rootfs"
             
             case BuildRole.TARGET:
                 return self.work_dir / "rootfs"
@@ -307,7 +307,32 @@ class BuildRecipe(ABC):
         """
         return []
 
-    def build(self) -> None:
+    def _install_to_sysroot(self, delete_after_copy: bool = False):
+        """
+        Copies the build output into sysroot.
+
+        No checks of the recipe built actually being
+        ``BuildRole.SYSROOT`` are performed.
+
+        Args:
+            delete_after_copy (bool): If ``True``, deletes the rootfs.
+        """
+
+        source = self._dest_dir
+
+        if not source:
+            return
+
+        merge_trees(
+            source=source,
+            dest=self.ctx.toolchain_sysroot,
+            copy=not delete_after_copy,
+            skip_extensions=[
+                "la"
+            ]
+        )
+
+    def build(self, force_rebuild: bool = False) -> None:
         """
         Executes the complete build lifecycle of the recipe.
 
@@ -320,49 +345,58 @@ class BuildRecipe(ABC):
         6. Run the optional :meth:`post_install` hook.
 
         Args:
-            ctx (BuildContext): Context used for the build.
+            force_rebuild (bool): If ``True``, the self.needs_rebuild flag is ignored and the recipe is built again.
         """
 
         work_dir = self.work_dir
         build_dir = work_dir / "build"
         source_dir = work_dir / "sources"
-        dest_dir = self._install_path
+        dest_dir = self._dest_dir
 
-        # Ensure a fresh empty build directory
-        if build_dir.is_dir():
-            rmtree(build_dir)
+        if self.needs_rebuild or force_rebuild:
+            info(f"Building recipe '{self.name}'...")
 
-        # Clean target root
-        if (
-            dest_dir
-            and self.build_role == BuildRole.TARGET
-            and dest_dir.is_dir()
-        ):
-            rmtree(dest_dir)
+            # Ensure a fresh empty build directory
+            if build_dir.is_dir():
+                rmtree(build_dir)
 
-        build_dir.mkdir(exist_ok=True, parents=True)
-        source_dir.mkdir(exist_ok=True, parents=True)
+            # Clean target root
+            if (
+                dest_dir
+                and dest_dir.is_dir()
+            ):
+                rmtree(dest_dir)
 
-        info(f"Building recipe '{self.name}-{self.version}' using \n{work_dir=}\n{build_dir=}\n{source_dir=}\n{dest_dir=}")
+            build_dir.mkdir(exist_ok=True, parents=True)
+            source_dir.mkdir(exist_ok=True, parents=True)
 
-        self._resolve_sources(source_dir, build_dir)
+            info(f"Building recipe '{self.name}-{self.version}' using \n{work_dir=}\n{build_dir=}\n{source_dir=}\n{dest_dir=}")
 
-        # Fix source directory passed to build system
-        if self.build_method == BuildMethod.IN_SOURCE:
-            source_dir = build_dir
+            self._resolve_sources(source_dir, build_dir)
 
-        # Let recipes prepare their environment
-        self.prepare(self.ctx, source_dir, build_dir)
+            # Fix source directory passed to build system
+            if self.build_method == BuildMethod.IN_SOURCE:
+                source_dir = build_dir
 
-        # Let recipes apply custom patches
-        self.patch(self.ctx, source_dir)
+            # Let recipes prepare their environment
+            self.prepare(self.ctx, source_dir, build_dir)
 
-        # Run installation
-        if self.build_system:
-            self.build_system.prepare(self, source_dir, build_dir, dest_dir)
-            self.build_system.configure(self, source_dir, build_dir, dest_dir, self._config_args(self.ctx))
-            self.build_system.build(self, source_dir, build_dir, dest_dir)
-            self.build_system.install(self, source_dir, build_dir, dest_dir)
+            # Let recipes apply custom patches
+            self.patch(self.ctx, source_dir)
+
+            # Run installation
+            if self.build_system:
+                self.build_system.prepare(self, source_dir, build_dir, dest_dir)
+                self.build_system.configure(self, source_dir, build_dir, dest_dir, self._config_args(self.ctx))
+                self.build_system.build(self, source_dir, build_dir, dest_dir)
+                self.build_system.install(self, source_dir, build_dir, dest_dir)
+        
+        else:
+            info(f"Skipping build for recipe '{self.name}' (Up to date).")
+
+        # Install to sysroot
+        if self.build_role == BuildRole.SYSROOT:
+            self._install_to_sysroot()
 
         # Run post install hook
         self.post_install(self.ctx, dest_dir)

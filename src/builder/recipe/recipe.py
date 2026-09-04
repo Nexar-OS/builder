@@ -379,7 +379,7 @@ class BuildRecipe(ABC):
             build_dir.mkdir(exist_ok=True, parents=True)
             source_dir.mkdir(exist_ok=True, parents=True)
 
-            info(f"Building recipe '{self.name}-{self.version}' using \n{work_dir=}\n{build_dir=}\n{source_dir=}\n{dest_dir=}")
+            info(f"Building recipe '{self}' using \n{work_dir=}\n{build_dir=}\n{source_dir=}\n{dest_dir=}")
 
             self._resolve_sources(source_dir, build_dir)
 
@@ -401,7 +401,7 @@ class BuildRecipe(ABC):
                 self.build_system.install(self, source_dir, build_dir, dest_dir)
         
         else:
-            info(f"Skipping build for recipe '{self.name}' (Up to date).")
+            info(f"Skipping build for recipe '{self}' (Up to date).")
 
         # Install to sysroot
         # This must run even when the recipe is already marked as built

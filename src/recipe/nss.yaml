@@ -13,7 +13,7 @@ dependencies:
     - zlib
   
   build:
-    - ninja
+    # - ninja
   
 sources:
   - type: tarball

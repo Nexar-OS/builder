@@ -12,7 +12,7 @@ dependencies:
   build:
     - gcc
     - binutils
-    - make
+    # - make
     - m4
   
 sources:

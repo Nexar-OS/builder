@@ -10,8 +10,8 @@ dependencies:
     - glibc
   
   build:
-    - cmake
-    - ninja
+    # - cmake
+    # - ninja
   
 sources:
   - type: tarball

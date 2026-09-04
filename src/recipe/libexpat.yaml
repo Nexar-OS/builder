@@ -10,7 +10,7 @@ dependencies:
     - glibc
   
   build:
-    - cmake
+    # - cmake
   
 sources:
   - type: tarball

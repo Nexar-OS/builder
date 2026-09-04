@@ -323,6 +323,9 @@ class BuildRecipe(ABC):
         if not source:
             return
 
+        if not source.is_dir():
+            return
+
         merge_trees(
             source=source,
             dest=self.ctx.toolchain_sysroot,

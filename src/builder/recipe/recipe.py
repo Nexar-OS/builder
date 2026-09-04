@@ -443,7 +443,7 @@ class BuildRecipe(ABC):
         ...
     
     def __repr__(self) -> str:
-        return self.name
+        return f"{self.name}-{self.version} ({self.build_role.name.upper()})"
 
 @dataclass
 class GenericRecipe(BuildRecipe):
@@ -570,8 +570,8 @@ class GenericRecipe(BuildRecipe):
         )
 
     def __repr__(self) -> str:
-        return self.name      
-
+        return super().__repr__()
+    
 class ToolchainRecipe(BuildRecipe):
     """
     Base class describing how a toolchain component is built.

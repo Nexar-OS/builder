@@ -9,6 +9,9 @@ dependencies:
   required:
     - ncurses
   
+  build:
+    - ncurses
+  
 sources:
   - type: tarball
     name: psmisc

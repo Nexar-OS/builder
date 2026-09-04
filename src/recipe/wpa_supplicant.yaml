@@ -13,6 +13,11 @@ dependencies:
     - openssl
     - readline
   
+  build:
+    - libnl
+    - dbus
+    - openssl
+  
 sources:
   - type: tarball
     name: wpa_supplicant

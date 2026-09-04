@@ -11,6 +11,9 @@ dependencies:
     - gzip
     - linux-pam
   
+  build:
+    - linux-pam
+  
 sources:
   - type: tarball
     name: kbd

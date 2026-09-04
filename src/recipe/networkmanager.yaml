@@ -28,7 +28,7 @@ dependencies:
     - curl
     - glibc
     - iproute2
-    - iptables
+    # - iptables
     - nss
     - nspr
     - libpsl

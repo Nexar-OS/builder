@@ -281,19 +281,23 @@ class BuildRecipe(ABC):
         Returns:
             Path: The path for the final build to be installed into.
         """
+        dir = None
         match self.build_role:
             case BuildRole.TOOLCHAIN:
-                return None
+                dir = None
 
-            case BuildRole.SYSROOT:
-                return self.work_dir / "rootfs"
-            
-            case BuildRole.TARGET:
-                return self.work_dir / "rootfs"
+            case BuildRole.SYSROOT | BuildRole.TARGET:
+                dir = self.work_dir / "rootfs"
 
-        raise NotImplementedError(
-            f"Build role not supported: '{self.build_role}'"
-        )
+            case _:
+                raise NotImplementedError(
+                    f"Build role not supported: '{self.build_role}'"
+                )
+        
+        if dir:
+            dir.mkdir(exist_ok=True, parents=True)
+
+        return dir
 
     def _config_args(self, ctx: BuildContext) -> list[str]:
         """
@@ -356,7 +360,9 @@ class BuildRecipe(ABC):
         source_dir = work_dir / "sources"
         dest_dir = self._dest_dir
 
-        if self.needs_rebuild or force_rebuild:
+        build: bool = self.needs_rebuild or force_rebuild
+
+        if build:
             info(f"Building recipe '{self.name}'...")
 
             # Ensure a fresh empty build directory
@@ -398,13 +404,15 @@ class BuildRecipe(ABC):
             info(f"Skipping build for recipe '{self.name}' (Up to date).")
 
         # Install to sysroot
+        # This must run even when the recipe is already marked as built
         if self.build_role == BuildRole.SYSROOT:
             self._install_to_sysroot()
 
-        # Run post install hook
-        self.post_install(self.ctx, dest_dir)
+        if build:
+            # Run post install hook
+            self.post_install(self.ctx, dest_dir)
 
-        self.mark_built()
+            self.mark_built()
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """

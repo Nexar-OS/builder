@@ -92,6 +92,20 @@ class Sequencer:
                 self._dependencies[key] = set()
                 self._dependents[key] = set()
         
+        # Prevent recipes existing as both target and build dependencies
+        # from being built as target before or concurrently as the build
+        # role by making TARGET roles depend on SYSROOT roles.
+        for task in self._tasks:
+            name = task.name
+
+            sysroot_key = RecipeKey(name, BuildRole.SYSROOT)
+            target_key = RecipeKey(name, BuildRole.TARGET)
+
+
+            if sysroot_key in self._tasks and target_key in self._tasks:
+                self._dependencies[target_key].add(sysroot_key)
+                self._dependents[sysroot_key].add(target_key)
+    
         # Only BUILD edges become constraints.
         recipes = self.build_graph.recipes
         for recipe in recipes.values():
@@ -103,7 +117,7 @@ class Sequencer:
 
                 self._dependencies[node_key].add(dependency_key)
                 self._dependents[dependency_key].add(node_key)
-    
+        
     def _build(self, recipe: BuildRecipe) -> BuildRecipe:
         """
         Invokes the build of a recipe if it hasn't

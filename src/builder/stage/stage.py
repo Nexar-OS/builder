@@ -138,7 +138,16 @@ class Stage:
         Exports all recipes of this stage into a shared stage-dir.
         """
         out = self._dir
-        for recipe in self._recipes:
+
+        recipes = self._recipes
+
+        # Export runtime dependencies if flag is enabled
+        if self.add_runtime_dependencies and self.runtime_dependencies:
+            recipes.extend(
+                list(self.runtime_dependencies.recipes.values())
+            )
+
+        for recipe in recipes:
             info(f"Exporting recipe '{recipe.name}' to '{str(out)}'")
             self._export_recipe(recipe, out)
         

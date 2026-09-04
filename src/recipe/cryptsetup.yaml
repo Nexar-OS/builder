@@ -17,6 +17,8 @@ dependencies:
   build:
     - util-linux
     - lvm2
+    - libpopt
+    - json-c
   
 sources:
   - type: tarball

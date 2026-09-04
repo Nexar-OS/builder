@@ -47,7 +47,7 @@ def merge_trees(source: Path, dest: Path, copy: bool = False, skip_extensions: l
 
         # Merge real directories recursively
         if item.is_dir() and not item.is_symlink():
-            merge_trees(item, dst, copy)
+            merge_trees(item, dst, copy, skip_extensions, skip_names)
         
         else:
             # Remove whatever is currently at the destination

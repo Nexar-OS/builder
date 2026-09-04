@@ -68,14 +68,9 @@ class Stage:
         """
         Constructs the dependency graphs.
         """
-        self._build_dependencies = DependencyGraph(
-            recipes=self._recipes,
-            registry=self.ctx.registry,
-            kind=DependencyKind.BUILD,
-            allow_cycles=False,
-            ignore_dependency_errors=self.ignore_dependency_errors
-        )
+        recipes: list[BuildRecipe] = self._recipes
 
+        # Only create a runtime graph if the feature is explicitly requested
         self.runtime_dependencies = None
         if self.add_runtime_dependencies:
             self.runtime_dependencies = DependencyGraph(
@@ -86,12 +81,27 @@ class Stage:
                 ignore_dependency_errors=self.ignore_dependency_errors
             )
 
+            # The recipes list passed to the build graph must be updated
+            # with all recipes resolved by the runtime graph, as runtime
+            # dependencies could introduce new build dependencies
+            recipes = list(self.runtime_dependencies.recipes.values())
+
+        # Build graph will always be needed
+        # but the recipes used may depend on the runtime graph
+        self.build_dependencies = DependencyGraph(
+            recipes=recipes,
+            registry=self.ctx.registry,
+            kind=DependencyKind.BUILD,
+            allow_cycles=False,
+            ignore_dependency_errors=self.ignore_dependency_errors
+        )
+
     def __post_init__(self):
         self._load_recipes()
         self._build_dependency_graphs()
 
         self.sequencer = Sequencer(
-            build_graph=self._build_dependencies,
+            build_graph=self.build_dependencies,
             runtime_graph=self.runtime_dependencies,
             max_workers=16
         )
@@ -110,7 +120,7 @@ class Stage:
         Exports a specific recipe to the target stage.
         """
         
-        path = recipe._install_path
+        path = recipe._dest_dir
         
         if not path:
             warn(f"Failed to export recipe '{recipe.name}': No install path.")

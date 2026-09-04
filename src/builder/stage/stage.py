@@ -3,7 +3,7 @@ from typing import Callable
 from dataclasses import dataclass
 
 from builder.utils.logger import warn, info
-from builder.utils.file import merge_trees
+from builder.utils.file import merge_trees, rmtree
 from builder.build import BuildContext
 from builder.recipe import (
     BuildRecipe,
@@ -138,6 +138,11 @@ class Stage:
         Exports all recipes of this stage into a shared stage-dir.
         """
         out = self._dir
+
+        # Clean root
+        if out.is_dir():
+            warn(f"Stage root '{out}' already existed. Removing...")
+            rmtree(out)
 
         recipes = self._recipes
 

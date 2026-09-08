@@ -187,6 +187,9 @@ def build_cross_toolchain(ctx: BuildContext) -> "CrossToolchain":
     )
 
     info(f" | Populating compiler sysroot...")
+    ctx.registry.getOrThrow("rootfs", BuildRole.SYSROOT, ctx) \
+        .build()
+    
     ctx.registry.getOrThrow("linux-headers", BuildRole.SYSROOT, ctx) \
         .build()
     

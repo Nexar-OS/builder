@@ -35,6 +35,7 @@ build:
       ln -sf bin usr/sbin
       ln -sf usr/lib ${target.libdir.name}
       ln -sf usr/lib lib
+      ln -sf lib usr/${target.libdir.name}
 
       # Create passwd file
       cat > etc/passwd <<EOF

@@ -79,14 +79,14 @@ build:
       mkdir -p "$DESTDIR/usr/lib/pkgconfig"
       cat > "$DESTDIR/usr/lib/pkgconfig/nss.pc" <<EOF
       prefix=/usr
-      exec_prefix=${prefix}
-      libdir=${exec_prefix}/lib
-      includedir=${prefix}/include/nss
+      exec_prefix=\${prefix}
+      libdir=\${exec_prefix}/lib
+      includedir=\${prefix}/include/nss
 
       Name: NSS
       Description: NSS
       Version: 3.127
       Requires: nspr
-      Libs: -L${libdir} -lssl3 -lsmime3 -lnss3
-      Cflags: -I${includedir}
+      Libs: -L\${libdir} -lssl3 -lsmime3 -lnss3
+      Cflags: -I\${includedir}
       EOF

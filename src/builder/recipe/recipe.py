@@ -399,7 +399,12 @@ class BuildRecipe(ABC):
                 self.build_system.configure(self, source_dir, build_dir, dest_dir, self._config_args(self.ctx))
                 self.build_system.build(self, source_dir, build_dir, dest_dir)
                 self.build_system.install(self, source_dir, build_dir, dest_dir)
-        
+
+            # Run post install hook
+            self.post_install(self.ctx, dest_dir)
+
+            self.mark_built()
+
         else:
             info(f"Skipping build for recipe '{self}' (Up to date).")
 
@@ -407,12 +412,6 @@ class BuildRecipe(ABC):
         # This must run even when the recipe is already marked as built
         if self.build_role == BuildRole.SYSROOT:
             self._install_to_sysroot()
-
-        if build:
-            # Run post install hook
-            self.post_install(self.ctx, dest_dir)
-
-            self.mark_built()
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """

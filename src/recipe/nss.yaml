@@ -13,6 +13,8 @@ dependencies:
     - zlib
   
   build:
+    - nspr
+    - zlib
     # - ninja
   
 sources:
@@ -58,7 +60,7 @@ build:
       install -Dm755 dist/*/lib/libnss3.so "$DESTDIR/usr/lib/libnss3.so"
       install -Dm755 dist/*/lib/libnssckbi.so "$DESTDIR/usr/lib/libnssckbi.so"
       install -Dm755 dist/*/lib/libssdbm3.so "$DESTDIR/usr/lib/libssdbm3.so"
-      install -Dm755 dist/*/lib/libssutil3.so "$DESTDIR/usr/lib/libssutil3.so"
+      install -Dm755 dist/*/lib/libnssutil3.so "$DESTDIR/usr/lib/libnssutil3.so"
       install -Dm755 dist/*/lib/libsmime3.so "$DESTDIR/usr/lib/libsmime3.so"
       install -Dm755 dist/*/lib/libsoftokn3.so "$DESTDIR/usr/lib/libsoftokn3.so"
       install -Dm755 dist/*/lib/libssl3.so "$DESTDIR/usr/lib/libssl3.so"

@@ -24,7 +24,7 @@ class Meson(BuildSystem):
             f.write(f"cpp = '{recipe.ctx.toolchain.cxx}'\n")
             f.write(f"ar = '{recipe.ctx.toolchain.ar}'\n")
             f.write(f"strip = '{recipe.ctx.toolchain.strip}'\n")
-            f.write(f"pkgconfig = '{recipe.ctx.toolchain.pkg_config}'\n")
+            f.write(f"pkg-config = '{recipe.ctx.toolchain.pkg_config}'\n")
 
             f.write("[host_machine]\n")
             f.write("system = 'linux'\n")

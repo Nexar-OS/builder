@@ -34,6 +34,10 @@ def create(
         logger.addHandler(stdout_handler)
     
     if log_file:
+        # Ensure log file will be new
+        if log_file.is_file():
+            log_file.unlink(missing_ok=True)
+
         file_handler = logging.FileHandler(str(log_file))
         file_handler.setFormatter(logging.Formatter(format))
 

@@ -50,7 +50,7 @@ def create(
 global_logger = create(
     name="builder",
     use_std_out=True,
-    log_file=Path("builder.log").resolve()
+    log_file=Path("build/builder.log").resolve()
 )
 
 warn      = global_logger.warning

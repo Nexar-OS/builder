@@ -131,6 +131,11 @@ def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSc
         post_install_script=schema.build.post_install
     )
 
+
+MIRRORS = {
+    "gnu": "https://mirrors.edge.kernel.org/gnu/"
+}
+
 def load_recipe(recipe_path: Path, role: BuildRole, ctx: BuildContext) -> GenericRecipe | None:
     """
     Loads and parses a recipe from a schema file.
@@ -156,6 +161,8 @@ def load_recipe(recipe_path: Path, role: BuildRole, ctx: BuildContext) -> Generi
         "build.triple": ctx.build_machine.triple,
         "build.kernel_arch": ctx.build_machine.kernel_arch,
         "build.arch": ctx.build_machine.arch,
+        
+        **{ f"mirror.{key}": value for key, value in MIRRORS.items() }
     })
 
     if not schema:

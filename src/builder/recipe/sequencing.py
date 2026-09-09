@@ -7,46 +7,20 @@ from concurrent.futures import (
 
 from dataclasses import dataclass
 
-from .dependencies import DependencyGraph
+from .dependencies import (
+    DependencyGraph,
+    RecipeKey
+)
 from .recipe import (
     BuildRecipe,
     BuildRole,
 )
-from builder.utils.logger import info
+from builder.utils.logger import debug
 
 class SequencerError(RuntimeError):
     """
     Thrown by the sequencer.
     """
-
-@dataclass(frozen=True)
-class RecipeKey:
-    """
-    A role dependent graph node of a recipe.
-
-    This separation is needed, since a recipe could appear
-    as both a BUILD as well as a RUNTIME dependency in the
-    build Sequence.
-    """
-
-    name: str
-    role: BuildRole
-
-    @classmethod
-    def get(cls, recipe: BuildRecipe):
-        """
-        Load a recipe key from a normal ``BuildRecipe`` instance.
-
-        Args:
-            recipe (BuildRecipe): The recipe.
-
-        Returns:
-            _type_: The key derived from that recipes name and build role.
-        """
-        return cls(recipe.name, recipe.build_role)
-
-    def __repr__(self) -> str:
-        return f"{self.name} ({self.role.name.upper()})"
 
 class Sequencer:
     """
@@ -118,6 +92,10 @@ class Sequencer:
                 self._dependencies[node_key].add(dependency_key)
                 self._dependents[dependency_key].add(node_key)
         
+        debug("BUILD PLAN:")
+        for recipe, dependencies in self._dependencies.items():
+            debug(f"{recipe} depends on {', '.join([ f'{dep.name} ({dep.role.name.upper()})' for dep in dependencies] or [ '/' ])}")
+        
     def _build(self, recipe: BuildRecipe) -> BuildRecipe:
         """
         Invokes the build of a recipe if it hasn't
@@ -172,6 +150,8 @@ class Sequencer:
                         task,
                     )
 
+                    debug(f"Build started: {task}")
+
                     running[future] = key
                 
                 if not running:
@@ -189,6 +169,8 @@ class Sequencer:
 
                     completed.add(name)
                     result.append(recipe)
+
+                    debug(f"Build finished: {recipe}")
 
                     # Every dependent potentially became runnable
                     for dependent in self._dependents[name]:

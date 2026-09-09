@@ -71,6 +71,35 @@ class DependencyCycleError(RuntimeError):
     Thrown on circular dependencies.
     """
 
+@dataclass(frozen=True)
+class RecipeKey:
+    """
+    A role dependent graph node of a recipe.
+
+    This separation is needed, since a recipe could appear
+    as both a BUILD as well as a RUNTIME dependency in the
+    build Sequence.
+    """
+
+    name: str
+    role: BuildRole
+
+    @classmethod
+    def get(cls, recipe: BuildRecipe):
+        """
+        Load a recipe key from a normal ``BuildRecipe`` instance.
+
+        Args:
+            recipe (BuildRecipe): The recipe.
+
+        Returns:
+            _type_: The key derived from that recipes name and build role.
+        """
+        return cls(recipe.name, recipe.build_role)
+
+    def __repr__(self) -> str:
+        return f"{self.name} ({self.role.name.upper()})"
+
 class DependencyGraph():
     """
     Directed dependency graph for a collection of recipes.
@@ -88,13 +117,13 @@ class DependencyGraph():
         self.allow_cycles = allow_cycles
         self.ignore_dependency_errors = ignore_dependency_errors
 
-        self._recipes: dict[str, BuildRecipe] = {}
+        self._recipes: dict[RecipeKey, BuildRecipe] = {}
 
-        self._dependents: dict[str, set[str]] = {}
-        self._dependencies: dict[str, set[str]] = {}
+        self._dependents: dict[RecipeKey, set[RecipeKey]] = {}
+        self._dependencies: dict[RecipeKey, set[RecipeKey]] = {}
 
-        self._resolved: set[str] = set()
-        self._resolving: set[str] = set()
+        self._resolved: set[RecipeKey] = set()
+        self._resolving: set[RecipeKey] = set()
 
         for recipe in recipes:
             self._resolve(recipe)
@@ -111,7 +140,7 @@ class DependencyGraph():
             kind=DependencyKind.BUILD
         )
 
-    def _load_dependency(self, name: str, parent: BuildRecipe) -> BuildRecipe | None:
+    def _load_dependency(self, key: RecipeKey, parent: BuildRecipe) -> BuildRecipe | None:
         """
         Resolve a dependency through the registry.
 
@@ -124,29 +153,43 @@ class DependencyGraph():
         """
 
         dependency = self.registry.get(
-            name=name,
-            role=self.kind.build_role,
+            name=key.name,
+            role=key.role,
             ctx=parent.ctx
         )
 
         if not dependency and not self.ignore_dependency_errors:
             raise RuntimeError(
-                f"Recipe '{parent.name}' depends on '{name}', "
-                f"but recipe '{name}' could not be loaded."
+                f"Recipe '{parent.name}' depends on '{key.name}', "
+                f"but recipe '{key.name}' could not be loaded."
             )
         
         return dependency
 
-    def _dependency_names(self, recipe: BuildRecipe) -> Iterable[str]:
+    def _dependency_names(self, recipe: BuildRecipe) -> Iterable[RecipeKey]:
         """
         Return the dependencies relevant to this graph.
         """
+        from .recipe import BuildRole
+        
         match self.kind:
             case DependencyKind.BUILD:
-                yield from recipe.dependencies.build or []
+                yield from (
+                    RecipeKey(
+                        name=dependency,
+                        role=BuildRole.SYSROOT
+                    )
+                    for dependency in (recipe.dependencies.build or [])
+                )
             
             case DependencyKind.RUNTIME:
-                yield from recipe.dependencies.required or []
+                yield from (
+                    RecipeKey(
+                        name=dependency,
+                        role=BuildRole.TARGET
+                    )
+                    for dependency in (recipe.dependencies.required or [])
+                )
         
             case _:
                 raise ValueError(f"Unhandled dependency kind: '{self.kind!r}'")
@@ -159,69 +202,72 @@ class DependencyGraph():
             recipe (BuildRecipe): The recipe to resolve.
             kind (DependencyKind): The kind of dependencies to resolve.
         """
-        if recipe.name in self._resolved:
+        key = RecipeKey.get(recipe)
+
+        if key in self._resolved:
             return
         
-        if recipe.name in self._resolving:
+        if key in self._resolving:
             # Ignore cycles if allowed
             if self.allow_cycles:
                 return
             
             raise DependencyCycleError(
-                f"Dependency cycle involving '{recipe.name}'."
+                f"Dependency cycle involving '{recipe}'."
             )
         
-        self._resolving.add(recipe.name)
+        self._resolving.add(key)
 
-        self._recipes[recipe.name] = recipe
-        self._dependencies.setdefault(recipe.name, set())
-        self._dependents.setdefault(recipe.name, set())
+        self._recipes[key] = recipe
+        self._dependencies.setdefault(key, set())
+        self._dependents.setdefault(key, set())
         
-        for name in self._dependency_names(recipe):
-            dependency = self._load_dependency(name, recipe)
+        for dependency_key in self._dependency_names(recipe):
+            dependency = self._load_dependency(dependency_key, recipe)
 
             # Dependency errors are ignored
             # thus simply skip this dependency
             if not dependency:
                 continue
 
-            self._dependencies[recipe.name].add(dependency.name)
-            self._dependents.setdefault(dependency.name, set())
-            self._dependents[dependency.name].add(recipe.name)
+            self._dependencies[key].add(dependency_key)
+            self._dependents.setdefault(dependency_key, set())
+            self._dependents[dependency_key].add(key)
             
             self._resolve(dependency)
         
-        self._resolving.remove(recipe.name)
-        self._resolved.add(recipe.name)
+        self._resolving.remove(key)
+        self._resolved.add(key)
     
     @property
-    def recipes(self) -> dict[str, BuildRecipe]:
+    def recipes(self) -> dict[RecipeKey, BuildRecipe]:
         """
         Returns all recipes contained in the resolved graph.
         """
         return dict(self._recipes)
     
-    def dependencies_of(self, recipe: str | BuildRecipe) -> set[str]:
+    def dependencies_of(self, recipe: RecipeKey | BuildRecipe) -> set[RecipeKey]:
         """
         Returns a list of all dependencies of a recipe.
 
         Args:
-            recipe (str | BuildRecipe): The recipe to check.
+            recipe (RecipeKey | BuildRecipe): The recipe to check.
         """
 
-        name = recipe if isinstance(recipe, str) else recipe.name
-        return set(self._dependencies[name])
+        key = recipe if isinstance(recipe, RecipeKey) else RecipeKey.get(recipe)
 
-    def dependents_of(self, recipe: str | BuildRecipe) -> set[str]:
+        return set(self._dependencies[key])
+
+    def dependents_of(self, recipe: RecipeKey | BuildRecipe) -> set[RecipeKey]:
         """
         Returns a list of all dependents of a recipe.
 
         Args:
-            recipe (str | BuildRecipe): The recipe to check.
+            recipe (RecipeKey | BuildRecipe): The recipe to check.
         """
 
-        name = recipe if isinstance(recipe, str) else recipe.name
-        return set(self._dependents[name])
+        key = recipe if isinstance(recipe, RecipeKey) else RecipeKey.get(recipe)
+        return set(self._dependents[key])
 
 
     @property

@@ -67,7 +67,7 @@ class BuildContext:
             check: bool = True,
             use_toolchain_env: bool = True,
             use_fakeroot: bool = True,
-            recipe: BuildRecipe | None = None,
+            recipe: "BuildRecipe | None" = None,
             **kwargs
             ):
         """

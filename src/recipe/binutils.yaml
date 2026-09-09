@@ -15,7 +15,7 @@ dependencies:
 sources:
   - type: tarball
     name: binutils
-    url: ${mirrors.gnu}/binutils/binutils-${version}.tar.xz
+    url: ${mirror.gnu}/binutils/binutils-${version}.tar.xz
     md5hash: d772acfbd55a81644e9fe7b8189cd2a5
 
 build:

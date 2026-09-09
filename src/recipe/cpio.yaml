@@ -16,7 +16,7 @@ dependencies:
 sources:
   - type: tarball
     name: cpio
-    url: ${mirrors.gnu}/cpio/cpio-${version}.tar.gz
+    url: ${mirror.gnu}/cpio/cpio-${version}.tar.gz
     md5hash: 64130013fa9900f6b7de36de53573985
 
 build:

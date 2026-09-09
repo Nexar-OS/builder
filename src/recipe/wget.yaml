@@ -23,7 +23,7 @@ dependencies:
 sources:
   - type: tarball
     name: wget
-    url: ${mirrors.gnu}/wget/wget-${version}.tar.gz
+    url: ${mirror.gnu}/wget/wget-${version}.tar.gz
     md5hash: c70ba58b36f944e8ba1d655ace552881
 
 build:

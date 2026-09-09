@@ -12,7 +12,7 @@ dependencies:
 sources:
   - type: tarball
     name: libidn2
-    url: ${mirrors.gnu}/libidn/libidn2-${version}.tar.gz
+    url: ${mirror.gnu}/libidn/libidn2-${version}.tar.gz
     md5hash: a8e113e040d57a523684e141970eea7a
 
 build:

@@ -13,7 +13,7 @@ dependencies:
 sources:
   - type: tarball
     name: patch
-    url: ${mirrors.gnu}/patch/patch-${version}.tar.xz
+    url: ${mirror.gnu}/patch/patch-${version}.tar.xz
     md5hash: 149327a021d41c8f88d034eab41c039f
 
 build:

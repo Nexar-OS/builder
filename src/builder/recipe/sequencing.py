@@ -15,7 +15,7 @@ from .recipe import (
     BuildRecipe,
     BuildRole,
 )
-from builder.utils.logger import debug
+from builder.utils.logger import debug, warn
 
 class SequencerError(RuntimeError):
     """
@@ -96,19 +96,34 @@ class Sequencer:
         for recipe, dependencies in self._dependencies.items():
             debug(f"{recipe} depends on {', '.join([ f'{dep.name} ({dep.role.name.upper()})' for dep in dependencies] or [ '/' ])}")
         
-    def _build(self, recipe: BuildRecipe) -> BuildRecipe:
+    def _build(self, recipe: BuildRecipe, max_retries: int = 3) -> BuildRecipe:
         """
         Invokes the build of a recipe if it hasn't
         been built or is flagged as out-of-date.
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            max_retries (int): The amount of tries to build the recipe.
 
         Returns:
             BuildRecipe: The recipe that has been built.
         """
+        for attempt in range(max_retries):
+            try:
+                recipe.build()
+                break
+            
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    recipe.logger.error(
+                        f"Build failed:\n{e}",
+                        exc_info=True
+                    )
 
-        recipe.build()
+                    warn(f"Build of recipe '{recipe}' failed! Look at '{recipe.logfile}' for more info.")
+                    
+                    break
+
         return recipe
     
     def build(self) -> list[BuildRecipe]:

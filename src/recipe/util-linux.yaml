@@ -41,6 +41,7 @@ build:
       
     config_args:
       - --prefix=/usr
+      - --without-systemd
 
 
     build_args:

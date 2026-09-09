@@ -125,7 +125,7 @@ class BuildRecipe(ABC):
         self.logger = logger.create(
             name="Recipe " + self.__repr__(),
             use_std_out=ctx.verbose_build_logs,
-            log_file=self.work_dir / "builder.log"
+            log_file=self.logfile
         )
 
     dependencies: Dependencies = Dependencies.none()
@@ -138,6 +138,10 @@ class BuildRecipe(ABC):
     build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE  # most recipes are build out-of-source
     
     build_system: BuildSystem|None = None
+
+    @property
+    def logfile(self) -> Path:
+        return self.work_dir / "build.log"
 
     @property
     def fingerprint(self) -> str:

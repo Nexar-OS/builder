@@ -8,10 +8,10 @@ from .machine import MachineSpec
 
 import typing
 if typing.TYPE_CHECKING:
-    from builder.recipe import RecipeRegistry
+    from builder.recipe import RecipeRegistry, BuildRecipe
     from builder.toolchain.toolchain import Toolchain
 
-from builder.utils.logger import debug
+from builder.utils.logger import global_logger
 
 @dataclass
 class BuildContext:
@@ -67,6 +67,7 @@ class BuildContext:
             check: bool = True,
             use_toolchain_env: bool = True,
             use_fakeroot: bool = True,
+            recipe: BuildRecipe | None = None,
             **kwargs
             ):
         """
@@ -77,9 +78,12 @@ class BuildContext:
             check (bool, optional): Check for errors.
             use_toolchain_env (bool, optional): If set to False, no custom environment will be used.
             use_fakeroot (bool, optional): If set to False, no fakeroot will be used.
+            recipe (BuildRecipe | None, optional): The build recipe which invoked this call.
         """
 
-        debug(f"> {' '.join(cmd)}")
+        logger = recipe.logger if recipe else global_logger
+
+        logger.debug(f"> {' '.join(cmd)}")
 
         if use_toolchain_env:
             kwargs.setdefault("env", self.env)
@@ -96,10 +100,13 @@ class BuildContext:
         )
 
         if check and result.returncode != 0:
-            raise RuntimeError(
+            logger.error(
                 f"Command failed: {' '.join(cmd)}\n\n"
                 f"STDOUT: \n{result.stdout}\n\n\n"
-                f"STDERR: \n{result.stderr}"
+                f"STDERR: \n{result.stderr}",
+                exc_info=True,
+                stack_info=True
             )
+            raise
         
         return result

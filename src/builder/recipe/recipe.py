@@ -520,7 +520,8 @@ class GenericRecipe(BuildRecipe):
                     str(patch)
                 ],
                 cwd=source_dir,
-                check=True
+                check=True,
+                recipe=self
             )
 
     @property
@@ -556,7 +557,8 @@ class GenericRecipe(BuildRecipe):
                 **self.env,
                 "SOURCE": str(source_dir),
                 "BUILD": str(build_dir),
-            }
+            },
+            recipe=self
         )
     
     def post_install(self, ctx: BuildContext, dest_dir: Path|None) -> None:
@@ -583,7 +585,8 @@ class GenericRecipe(BuildRecipe):
                 **ctx.env,
                 **self.env,
                 "DESTDIR": str(dest_dir)
-            }
+            },
+            recipe=self
         )
 
     def __repr__(self) -> str:

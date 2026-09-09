@@ -38,7 +38,7 @@ class CMake(BuildSystem):
         args.extend(self.config_args or [])
         args.extend(config_args or [])
 
-        recipe.ctx.run(args, cwd=build_dir)
+        recipe.ctx.run(args, cwd=build_dir, recipe=recipe)
         
     def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
@@ -56,7 +56,8 @@ class CMake(BuildSystem):
                 "--parallel",
                 str(recipe.ctx.num_jobs),
                 *(self.build_args or [])
-            ]
+            ],
+            recipe=recipe
         )
 
     def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -82,4 +83,4 @@ class CMake(BuildSystem):
         cmd.append("install")
 
 
-        recipe.ctx.run(cmd, cwd=build_dir)
+        recipe.ctx.run(cmd, cwd=build_dir, recipe=recipe)

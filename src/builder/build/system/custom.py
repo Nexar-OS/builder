@@ -22,14 +22,15 @@ class CustomBuildSystem(BuildSystem):
         self._install = install
         self.disable_fakeroot = disable_fakeroot        
 
-    def _invoke(self, ctx: BuildContext, script: str | None, dir: Path, env: dict[str, str]):
+    def _invoke(self, ctx: BuildContext, script: str | None, dir: Path, env: dict[str, str], recipe: BuildRecipe):
         if not script:
             return
 
         ctx.run(
             [ "sh", "-c", script ],
             cwd=dir,
-            env={ **ctx.env, **env}
+            env={ **ctx.env, **env},
+            recipe=recipe
         )
 
     def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
@@ -40,7 +41,7 @@ class CustomBuildSystem(BuildSystem):
             "BUILD": str(build_dir),
             "SOURCE": str(source_dir),
             "DESTDIR": str(dest_dir),
-        })
+        }, recipe)
 
     def configure(self,
                   recipe: BuildRecipe,
@@ -63,7 +64,7 @@ class CustomBuildSystem(BuildSystem):
             "BUILD": str(build_dir),
             "SOURCE": str(source_dir),
             "DESTDIR": str(dest_dir),
-        })
+        }, recipe)
         
         
     def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -78,7 +79,7 @@ class CustomBuildSystem(BuildSystem):
             "BUILD": str(build_dir),
             "SOURCE": str(source_dir),
             "DESTDIR": str(dest_dir),
-        })
+        }, recipe)
 
     def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
@@ -96,4 +97,4 @@ class CustomBuildSystem(BuildSystem):
             "BUILD": str(build_dir),
             "SOURCE": str(source_dir),
             "DESTDIR": str(dest_dir),
-        })
+        }, recipe)

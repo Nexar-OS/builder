@@ -79,7 +79,8 @@ class Meson(BuildSystem):
                 "--prefer-static"
             ],
             cwd=build_dir,
-            use_fakeroot=not self.disable_fakeroot
+            use_fakeroot=not self.disable_fakeroot,
+            recipe=recipe
         )
         
     def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -93,7 +94,8 @@ class Meson(BuildSystem):
         recipe.ctx.run(
             [recipe.ctx.toolchain.ninja, *(self.build_args or []), "-C", str(build_dir)],
             cwd=build_dir,
-            use_fakeroot=not self.disable_fakeroot
+            use_fakeroot=not self.disable_fakeroot,
+            recipe=recipe
         )
 
     def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -125,5 +127,6 @@ class Meson(BuildSystem):
             cmd,
             cwd=build_dir,
             use_fakeroot=not self.disable_fakeroot,
-            env=env
+            env=env,
+            recipe=recipe
         )

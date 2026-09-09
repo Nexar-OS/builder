@@ -25,7 +25,8 @@ ctx = BuildContext(
     toolchain               = NativeToolchain(),
     toolchain_dir           = Path("build/toolchain/binaries").resolve(),
     toolchain_sysroot       = Path("build/toolchain/sysroot").resolve(),
-    num_jobs                = num_jobs
+    num_jobs                = num_jobs,
+    verbose_build_logs      = False,
 )
 
 ctx.toolchain = load_or_build_cross_toolchain(ctx)

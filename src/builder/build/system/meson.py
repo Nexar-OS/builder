@@ -1,8 +1,6 @@
 from pathlib import Path
 from builder.recipe import BuildRecipe
 from .buildsystem import BuildSystem
-from builder.build.context import BuildContext
-from builder.utils.logger import error, info
 from dataclasses import dataclass
 
 @dataclass
@@ -67,7 +65,7 @@ class Meson(BuildSystem):
 
         # No config args were passed means no configuration will be invoked
         if not args:
-            info("No config args passed. Skipping configuration.")
+            recipe.logger.info("No config args passed. Skipping configuration.")
             return
 
         # Invoke setup

@@ -16,7 +16,7 @@ from builder.build.context import BuildContext
 if TYPE_CHECKING:
     from builder.build.system import BuildSystem
 
-from builder.utils.logger import info, warn
+from builder.utils import logger
 from builder.utils.file import rmtree, merge_trees
 from .dependencies import Dependencies
 
@@ -121,6 +121,12 @@ class BuildRecipe(ABC):
 
         self.build_role = role
         self.ctx = ctx
+
+        self.logger = logger.create(
+            name="Recipe " + self.__repr__(),
+            use_std_out=ctx.verbose_build_logs,
+            log_file=self.work_dir / "builder.log"
+        )
 
     dependencies: Dependencies = Dependencies.none()
 
@@ -363,7 +369,7 @@ class BuildRecipe(ABC):
         build: bool = self.needs_rebuild or force_rebuild
 
         if build:
-            info(f"Building recipe '{self.name}'...")
+            self.logger.info(f"Building recipe '{self.name}'...")
 
             # Ensure a fresh empty build directory
             if build_dir.is_dir():
@@ -379,7 +385,7 @@ class BuildRecipe(ABC):
             build_dir.mkdir(exist_ok=True, parents=True)
             source_dir.mkdir(exist_ok=True, parents=True)
 
-            info(f"Building recipe '{self}' using \n{work_dir=}\n{build_dir=}\n{source_dir=}\n{dest_dir=}")
+            self.logger.info(f"Building recipe '{self}' using \n{work_dir=}\n{build_dir=}\n{source_dir=}\n{dest_dir=}")
 
             self._resolve_sources(source_dir, build_dir)
 
@@ -406,7 +412,7 @@ class BuildRecipe(ABC):
             self.mark_built()
 
         else:
-            info(f"Skipping build for recipe '{self}' (Up to date).")
+            self.logger.info(f"Skipping build for recipe '{self}' (Up to date).")
 
         # Install to sysroot
         # This must run even when the recipe is already marked as built
@@ -481,8 +487,6 @@ class GenericRecipe(BuildRecipe):
                  prepare_script: str|None = None,
                  post_install_script: str|None = None,
                  ) -> None:
-        super().__init__(ctx, role)
-
         self.name = name
         self.version = version
         self.sources = sources
@@ -492,6 +496,8 @@ class GenericRecipe(BuildRecipe):
         self.patches = patches or []
         self.prepare_script = prepare_script
         self.post_install_script = post_install_script
+
+        super().__init__(ctx, role)
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """
@@ -504,7 +510,7 @@ class GenericRecipe(BuildRecipe):
             source_dir (Path): The directory to where the source was installed into.
         """
         for patch in self.patches:
-            info(f"Applying patch '{patch}' to recipe '{self.name}'")
+            self.logger.info(f"Applying patch '{patch}' to recipe '{self.name}'")
 
             ctx.run(
                 [
@@ -537,7 +543,7 @@ class GenericRecipe(BuildRecipe):
             build_dir (Path): Directory where the recipe will be build in.
         """
         if not self.prepare_script:
-            info(f"No prepare install script for {self.name}.")
+            self.logger.info(f"No prepare install script for {self.name}.")
             return
 
         ctx.run(
@@ -565,7 +571,7 @@ class GenericRecipe(BuildRecipe):
             dest_dir (Path): The directory to where the program was built into.
         """
         if not self.post_install_script:
-            info(f"No post install script for {self.name}.")
+            self.logger.info(f"No post install script for {self.name}.")
             return
 
         ctx.run(

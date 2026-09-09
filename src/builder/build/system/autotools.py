@@ -2,7 +2,6 @@ from pathlib import Path
 from .buildsystem import BuildSystem
 from builder.recipe import BuildRecipe, BuildRole
 from builder.build.context import BuildContext
-from builder.utils.logger import error, info
 from dataclasses import dataclass
 
 @dataclass
@@ -63,7 +62,7 @@ class Autotools(BuildSystem):
 
         # No config args were passed means no configuration will be invoked
         if not args:
-            info("No config args passed. Skipping configuration.")
+            recipe.logger.info("No config args passed. Skipping configuration.")
             return
 
         # Find config script
@@ -77,7 +76,7 @@ class Autotools(BuildSystem):
 
         # Edge case: if the last checked entry doesn't exist
         if config_script and not config_script.is_file():
-            error(f"Autotools failed to find config script in '{source_dir}'")
+            recipe.logger.error(f"Autotools failed to find config script in '{source_dir}'")
             return
 
         # Execute config script

@@ -33,6 +33,7 @@ class BuildContext:
 
         num_jobs (int): The amount of concurrent build jobs.
         sysroot_lock (Lock): A global lock on recipes installing to sysroot.
+        verbose_build_logs (bool): If ``True``, more detailed steps of build logs will be printed to ``stdout``.
     """
     registry: "RecipeRegistry"
 
@@ -51,6 +52,8 @@ class BuildContext:
     num_jobs: int
 
     sysroot_lock: Lock = field(default_factory=Lock)
+
+    verbose_build_logs: bool = False
 
     @property
     def env(self) -> dict[str, str]:

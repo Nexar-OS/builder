@@ -12,14 +12,18 @@ dependencies:
     - libpsl
     - util-linux
     - zlib
+    - openssl
   
   optional:
     - ca-certificates
-  
+
+  build:
+    - openssl
+
 sources:
   - type: tarball
     name: wget
-    url: https://ftpmirror.gnu.org/gnu/wget/wget-${version}.tar.gz
+    url: ${mirrors.gnu}/wget/wget-${version}.tar.gz
     md5hash: c70ba58b36f944e8ba1d655ace552881
 
 build:

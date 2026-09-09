@@ -6,7 +6,8 @@ def download_url(
         url: str,
         dest: Path,
         chunk_size: int = 8192,
-        max_retries: int = 3
+        max_retries: int = 3,
+        timeout: tuple[int, int] = (20, 60)
     ) -> None:
     """Download a file from a URL into a specific path on disk.
 
@@ -21,7 +22,7 @@ def download_url(
             response = requests.get(
                 url,
                 stream=True,
-                timeout=(10, 60)
+                timeout=timeout
             )
         
             response.raise_for_status()

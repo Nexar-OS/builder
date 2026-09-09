@@ -5,5 +5,7 @@ from .machine import (
     Target,
     detect_triple,
     detect_machine,
-    nproc
+    detect_ram,
+    detect_parallelism,
+    nproc,
 )

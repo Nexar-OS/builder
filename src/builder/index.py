@@ -56,7 +56,7 @@ stage = Stage(
         "iputils",
         "wget",
         "curl",
-        "grup",
+        "grub",
         "efibootmgr",
         "networkmanager",
         "kernel"

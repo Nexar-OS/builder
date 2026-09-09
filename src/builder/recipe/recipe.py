@@ -411,7 +411,8 @@ class BuildRecipe(ABC):
         # Install to sysroot
         # This must run even when the recipe is already marked as built
         if self.build_role == BuildRole.SYSROOT:
-            self._install_to_sysroot()
+            with self.ctx.sysroot_lock:
+                self._install_to_sysroot()
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """

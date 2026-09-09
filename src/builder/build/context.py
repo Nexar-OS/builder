@@ -1,6 +1,8 @@
 import subprocess
 from pathlib import Path
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+from threading import Lock
 
 from .machine import MachineSpec
 
@@ -30,6 +32,7 @@ class BuildContext:
         toolchain_sysroot (Path): Directory where the (cross-)toolchains sysroot will be located.
 
         num_jobs (int): The amount of concurrent build jobs.
+        sysroot_lock (Lock): A global lock on recipes installing to sysroot.
     """
     registry: "RecipeRegistry"
 
@@ -46,6 +49,8 @@ class BuildContext:
     toolchain_sysroot: Path
 
     num_jobs: int
+
+    sysroot_lock: Lock = field(default_factory=Lock)
 
     @property
     def env(self) -> dict[str, str]:

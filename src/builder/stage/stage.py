@@ -133,7 +133,7 @@ class Stage:
             copy=copy
         )
 
-    def export(self) -> None:
+    def export(self, copy: bool = True) -> None:
         """
         Exports all recipes of this stage into a shared stage-dir.
         """
@@ -154,7 +154,7 @@ class Stage:
 
         for recipe in recipes:
             info(f"Exporting recipe '{recipe.name}' to '{str(out)}'")
-            self._export_recipe(recipe, out)
+            self._export_recipe(recipe, out, copy)
         
 
     def build(self) -> list[BuildRecipe]:

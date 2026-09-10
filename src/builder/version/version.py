@@ -24,6 +24,7 @@ class Version:
         Returns:
             Version: The parsed version. None if invalid format.
         """
+        value = value.replace("_", ".")
         match = re.search(r"(?<!\d)(\d+(?:\.\d+){0,2})(?!\d)", value)
 
         if not match:

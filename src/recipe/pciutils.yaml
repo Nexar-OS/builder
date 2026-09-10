@@ -1,0 +1,41 @@
+name: pciutils
+homepage: https://github.com/pciutils/pciutils
+license: GPL-2.0
+description: Collection of programs for inspecting and manipulating the configuration of PCI devices
+
+version: "3.15.0"
+
+version_source:
+  type: web
+  url: https://www.kernel.org/pub/software/utils/pciutils/
+  regex: pciutils-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  required:
+    - glibc
+    - hwdata
+    - kmod
+  
+  optional:
+    - curl
+    - grep
+    - wget
+
+sources:
+  - type: tarball
+    name: wget
+    url: https://www.kernel.org/pub/software/utils/pciutils/pciutils-${version}.tar.xz
+    md5hash: 03d151c0ba42527701ba28aca34093e7
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: custom
+
+    build: |
+      make PREFIX=/usr HOST=${target.triple} CROSS_COMPILE={target.triple}- all
+    
+    install: |
+      cd $BUILD
+      make PREFIX=/usr DESTDIR="$DESTDIR" install

@@ -2,7 +2,7 @@ from typing import TypeVar, Any
 from pathlib import Path
 
 from builder.recipe.schema import *
-from builder.recipe import GenericRecipe, BuildRole
+from builder.recipe import GenericRecipe, BuildRole, BuildMethod
 from builder.utils.data import (
     load_yaml,
     interpolate
@@ -147,6 +147,9 @@ def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSc
     Returns:
         GenericRecipe: The loaded recipe
     """
+
+    build = schema.build
+    
     return GenericRecipe(
         ctx=ctx,
         role=role,
@@ -156,11 +159,11 @@ def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSc
         sources=[ load_source_from_schema(source_schema)
                   for source_schema in schema.sources ],
         dependencies=schema.dependencies,
-        build_method=schema.build.method,
-        build_system=load_build_system_from_schema(schema.build.build_system),
-        patches=schema.build.patches,
-        prepare_script=schema.build.prepare,
-        post_install_script=schema.build.post_install
+        build_method=build.method if build else BuildMethod.OUT_OF_SOURCE,
+        build_system=load_build_system_from_schema(build.build_system) if build else None,
+        patches=build.patches if build else [],
+        prepare_script=build.prepare if build else None,
+        post_install_script=build.post_install if build else None
     )
 
 

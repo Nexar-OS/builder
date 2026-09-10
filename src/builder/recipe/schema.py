@@ -105,5 +105,5 @@ class RecipeSchema(Schema):
     version: str
     version_source: VersionSourceSchema | None = None
     dependencies: Dependencies | None = None
-    sources: list[SourceSchema]
-    build: BuildSchema
+    sources: list[SourceSchema] = []
+    build: BuildSchema | None = None

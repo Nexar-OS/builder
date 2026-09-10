@@ -2,12 +2,20 @@
 MOUNT="build/disk"
 
 if [ ! -d "$MOUNT" ] || ! mountpoint -q "$MOUNT"; then
-    sh script/stages_to_disk.sh
+    source script/stages_to_disk.sh
 fi
 
 # Generate fstab
+ROOT_PART="$(findmnt -n -o SOURCE $MOUNT)"
+EFI_PART="$(findmnt -n -o SOURCE $MOUNT/boot/efi)"
+EFI_UUID="$(sudo blkid -s UUID -o value $EFI_PART)"
+ROOT_UUID="$(sudo blkid -s UUID -o value $ROOT_PART)"
+
 echo ">> Generating fstab..."
-genfstab -U $MOUNT | sudo tee $MOUNT/etc/fstab
+cat <<EOF | sudo tee "$MOUNT/etc/fstab"
+UUID=$ROOT_UUID            /               ext4            rw,relatime     0 1
+UUID=$EFI_UUID            /boot/efi       vfat            rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro   0 2
+EOF
 
 # Mount sys partitions
 echo ">> Mounting system partitions..."

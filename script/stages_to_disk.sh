@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sh script/umount.sh
+
 DISK_SIZE=3072
 DISK_IMG="build/disk.img"
 MOUNT="build/disk"
@@ -15,6 +17,7 @@ dd if=/dev/zero of=$DISK_IMG bs=1MiB count=$DISK_SIZE &> /dev/null
 
 echo ">> Mounting disk..."
 LOOP="$(sudo losetup --find --show $DISK_IMG)"
+export LOOP
 echo " | LOOP: $LOOP"
 
 # Create partitions

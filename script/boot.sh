@@ -1,7 +1,9 @@
 #!/bin/bash
-sh script/stages_to_disk.sh
-
 MOUNT="build/disk"
+
+if [ ! -d "$MOUNT" ] || ! mountpoint -q "$MOUNT"; then
+    sh script/stages_to_disk.sh
+fi
 
 # Generate fstab
 echo ">> Generating fstab..."
@@ -36,11 +38,7 @@ menuentry "Linux" {
 EOF
 
 # Delete mount
-echo ">> Deleting mounts..."
-sudo umount -R $MOUNT/* &> /dev/null
-sudo umount -R $MOUNT &> /dev/null
-sudo losetup -D
-rm -rf $MOUNT
+sh script/umount.sh
 
 # Boot
 echo ">> Booting..."

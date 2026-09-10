@@ -39,7 +39,7 @@ sudo mount "$LOOP"p1 $MOUNT/boot/efi
 # Compress stages
 sh script/compress_stages.sh
 
-echo " | Extracting stages..."
+echo ">> Extracting stages..."
 for tar in build/staging/*.tar; do
     sudo tar -xpf "$tar" -C $MOUNT
 done

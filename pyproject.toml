@@ -11,5 +11,8 @@ authors = [ ]
 description = ""
 readme = "README.md"
 
+[project.scripts]
+builder = "app.index:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]

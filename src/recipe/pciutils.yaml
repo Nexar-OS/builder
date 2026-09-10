@@ -28,13 +28,17 @@ sources:
     md5hash: 03d151c0ba42527701ba28aca34093e7
 
 build:
-  method: OUT_OF_SOURCE
+  method: IN_SOURCE
 
   build_system:
     type: custom
 
     build: |
-      make PREFIX=/usr HOST=${target.triple} CROSS_COMPILE={target.triple}- all
+      make \
+        PREFIX=/usr \
+        HOST=${target.triple} \
+        CROSS_COMPILE=${target.triple}- \
+        all
     
     install: |
       cd $BUILD

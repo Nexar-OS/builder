@@ -5,6 +5,11 @@ description: Grep searches one or more input files for lines containing a match 
 
 version: "3.12"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/grep
+  regex: grep-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

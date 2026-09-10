@@ -5,6 +5,10 @@ description: Library implementing Pluggable Authentication Modules (PAM)
 
 version: "1.7.2"
 
+version_source:
+  type: github
+  repo: linux-pam/linux-pam
+
 dependencies:
   required:
     - glibc

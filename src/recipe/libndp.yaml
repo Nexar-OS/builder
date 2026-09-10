@@ -5,6 +5,11 @@ description: Library for working with the Neighbor Discovery Protocol
 
 version: "1.9"
 
+version_source:
+  type: web
+  url: http://libndp.org/files/
+  regex: libndp-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

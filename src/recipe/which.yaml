@@ -5,6 +5,11 @@ description: Utility for displaying the full path of a command
 
 version: "2.25"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/wget/
+  regex: wget-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - bash

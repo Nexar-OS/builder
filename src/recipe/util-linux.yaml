@@ -5,6 +5,19 @@ description: Collection of miscellaneous system utilities
 
 version: "2.42.1"
 
+version_source:
+  type: nested
+
+  parent:
+    type: web
+    url: https://www.kernel.org/pub/linux/utils/util-linux/
+    regex: v(?P<version>\d+\.\d+)/
+  
+  child:
+    type: web
+    url: https://www.kernel.org/pub/linux/utils/util-linux/v{version}/
+    regex: util-linux-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - coreutils
@@ -30,7 +43,7 @@ dependencies:
 sources:
   - type: tarball
     name: util-linux
-    url: https://www.kernel.org/pub/linux/utils/util-linux/v2.42/util-linux-${version}.tar.xz
+    url: https://www.kernel.org/pub/linux/utils/util-linux/v${version.major}.${version.minor}/util-linux-${version}.tar.xz
     md5hash: 575bf65577d9bd0e65aeb073e8f61343
 
 build:

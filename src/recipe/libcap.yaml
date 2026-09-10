@@ -5,6 +5,11 @@ description: Library providing POSIX 1003.1e process capabilities
 
 version: "2.78"
 
+version_source:
+  type: web
+  url: https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/
+  regex: libcap-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

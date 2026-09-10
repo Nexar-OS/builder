@@ -5,6 +5,10 @@ description: Collection of firmware binaries
 
 version: "20260810"
 
+version_source:
+  type: gitlab
+  repo: kernel-firmware/linux-firmware
+
 dependencies:
   
 sources:

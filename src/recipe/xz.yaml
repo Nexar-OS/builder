@@ -5,6 +5,10 @@ description: Library and command-line tools for XZ and LZMA compression
 
 version: "5.8.3"
 
+version_source:
+  type: github
+  repo: tukaani-project/xz
+
 dependencies:
   required:
     - glibc

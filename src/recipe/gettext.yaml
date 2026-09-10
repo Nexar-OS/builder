@@ -5,6 +5,11 @@ description: GNU translation library
 
 version: "1.0"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/gettext
+  regex: gettext-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - attr

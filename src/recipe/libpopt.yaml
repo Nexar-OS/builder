@@ -5,6 +5,19 @@ description: Library for parsing command-line options
 
 version: "1.19"
 
+version_source:
+  type: nested
+  
+  parent:
+    type: web
+    url: https://ftp.osuosl.org/pub/rpm/popt/releases/
+    regex: popt-(?P<version>[0-9][A-Za-z0-9._+-]*)
+  
+  child:
+    type: web
+    url: https://ftp.osuosl.org/pub/rpm/popt/releases/popt-{version}/
+    regex: popt-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

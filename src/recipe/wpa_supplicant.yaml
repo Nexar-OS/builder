@@ -5,6 +5,11 @@ description: Utility for handling WPA authentication on wireless networks
 
 version: "2.12"
 
+version_source:
+  type: web
+  url: https://w1.fi/releases/
+  regex: wpa_supplicant-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

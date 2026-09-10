@@ -5,6 +5,10 @@ description: Open-source toolkit for cryptography and Transport Layer Security
 
 version: "3.6.3"
 
+version_source:
+  type: github
+  repo: openssl/openssl
+
 dependencies:
   required:
     - glibc

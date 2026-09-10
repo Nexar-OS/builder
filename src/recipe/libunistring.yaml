@@ -5,6 +5,11 @@ description: Library for handling Unicode and C strings
 
 version: "1.4.2"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/libunistring
+  regex: libunistring-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

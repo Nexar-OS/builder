@@ -5,6 +5,11 @@ description: Allows authorized users to execute commands with elevated privilege
 
 version: "1.9.17p2"
 
+version_source:
+  type: web
+  url: https://www.sudo.ws/dist/
+  regex: sudo-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

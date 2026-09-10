@@ -5,6 +5,11 @@ description: A utility used to manage extended attributes on filesystem objects 
 
 version: "2.6.0"
 
+version_source:
+  type: web
+  url: https://download-mirror.savannah.gnu.org/releases/attr/
+  regex: attr-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

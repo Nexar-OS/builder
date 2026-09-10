@@ -5,6 +5,10 @@ description: C library for parsing and handling JSON data
 
 version: "0.19-20260627"
 
+version_source:
+  type: github
+  repo: json-c/json-c
+
 dependencies:
   required:
     - glibc

@@ -5,6 +5,11 @@ description: Utilities and libraries to read, create and modify ELF binary files
 
 version: latest
 
+version_source:
+  type: web
+  url: https://sourceware.org/elfutils/ftp/
+  regex: elfutils-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.bz2
+
 dependencies:
   required:
     - glibc

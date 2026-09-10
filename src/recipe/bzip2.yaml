@@ -5,6 +5,11 @@ description: A high-quality data compressor
 
 version: 1.0.8 # or 'latest'
 
+version_source:
+  type: web
+  url: https://sourceware.org/pub/bzip2/
+  regex: bzip2-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

@@ -5,6 +5,11 @@ description: Library providing native asynchronous I/O support
 
 version: "0.3.113"
 
+version_source:
+  type: web
+  url: https://releases.pagure.org/libaio/
+  regex: libaio-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

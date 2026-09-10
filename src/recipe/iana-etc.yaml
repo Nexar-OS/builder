@@ -5,6 +5,10 @@ description: System files that map network services and protocols to their offic
 
 version: "20260817"
 
+version_source:
+  type: github
+  repo: Mic92/iana-etc
+
 dependencies:
 
 sources:

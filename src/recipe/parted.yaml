@@ -5,6 +5,11 @@ description: Utility for creating, modifying, checking, resizing, and copying pa
 
 version: "3.7"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/parted/
+  regex: parted-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - util-linux

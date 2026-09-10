@@ -5,6 +5,10 @@ description: User-space application to modify the Intel Extensible Firmware Inte
 
 version: "9.11"
 
+version_source:
+  type: github
+  repo: rhboot/efibootmgr
+
 dependencies:
   required:
     - efivar

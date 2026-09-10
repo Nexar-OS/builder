@@ -5,6 +5,11 @@ description: Command-line utility for configuring wireless devices through nl802
 
 version: "6.17"
 
+version_source:
+  type: web
+  url: https://www.kernel.org/pub/software/network/iw/iw-${version}.tar.xz
+  regex: iw-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - libnl

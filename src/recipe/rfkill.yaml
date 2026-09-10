@@ -5,6 +5,11 @@ description: Utilities for controlling and querying wireless device status
 
 version: "1.0"
 
+version_source:
+  type: web
+  url: https://mirrors.edge.kernel.org/pub/software/network/rfkill/
+  regex: rfkill-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - coreutils

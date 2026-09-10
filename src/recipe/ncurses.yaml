@@ -5,6 +5,11 @@ description: Library providing System V curses-compatible terminal interfaces
 
 version: "6.6"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/ncurses
+  regex: ncurses-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

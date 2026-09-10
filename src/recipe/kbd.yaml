@@ -5,6 +5,11 @@ description: Keyboard utilities and keytable files
 
 version: "2.9.0"
 
+version_source:
+  type: web
+  url: https://www.kernel.org/pub/linux/utils/kbd/
+  regex: kbd-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

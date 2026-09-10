@@ -3,7 +3,12 @@ homepage: https://gitlab.com/man-db/man-db
 license: GPL-2.0-or-later
 description: Utility for processing and maintaining man page databases
 
-version: "6.19.0"
+version: "2.13.1"
+
+version_source:
+  type: web
+  url: https://download.savannah.nongnu.org/releases/man-db/
+  regex: man-db-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
 
 dependencies:
   required:
@@ -21,7 +26,7 @@ dependencies:
 sources:
   - type: tarball
     name: mandb
-    url: https://download.savannah.nongnu.org/releases/man-db/man-db-2.13.1.tar.xz
+    url: https://download.savannah.nongnu.org/releases/man-db/man-db-${version}.tar.xz
     md5hash: b6335533cbeac3b24cd7be31fdee8c83
 
 build:

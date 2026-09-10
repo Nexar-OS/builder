@@ -5,6 +5,11 @@ description: Collection of command-line utilities for configuring and monitoring
 
 version: 6.19.0
 
+version_source:
+  type: web
+  url: https://www.kernel.org/pub/linux/utils/net/iproute2/
+  regex: iproute2-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

@@ -5,6 +5,10 @@ description: Driver for accessing NTFS filesystems
 
 version: "2026.7.7"
 
+version_source:
+  type: github
+  repo: tuxera/ntfs-3g
+
 dependencies:
   required:
     - glibc

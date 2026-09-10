@@ -5,6 +5,11 @@ description: Collection of miscellaneous procfs utilities
 
 version: "23.7"
 
+version_source:
+  type: web
+  url: https://sourceforge.net/projects/psmisc/files/psmisc/
+  regex: psmisc-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - ncurses

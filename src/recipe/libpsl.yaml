@@ -5,6 +5,10 @@ description: Library for working with the Public Suffix List
 
 version: "0.23.3"
 
+version_source:
+  type: github
+  repo: rockdaboot/libpsl
+
 dependencies:
   required:
     - libidn2

@@ -5,6 +5,10 @@ description: Command line tool and library for transferring data with URLs
 
 version: 8.21.0
 
+version_source:
+  type: github
+  repo: curl/curl
+
 dependencies:
   required:
     - ca-certificates

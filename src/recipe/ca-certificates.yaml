@@ -5,6 +5,11 @@ description: A collection of ca-certificates by curl
 
 version: "2026-08-13"
 
+version_source:
+  type: web
+  url: https://curl.se/docs/caextract.html
+  regex: /ca/cacert-(?P<version>[0-9][A-Za-z0-9._+-]*)\.pem
+
 dependencies:
   
 sources:

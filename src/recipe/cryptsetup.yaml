@@ -5,6 +5,19 @@ description: Utility for conveniently setting up disk encryption based on the dm
 
 version: 2.3.2
 
+version_source:
+  type: nested
+
+  parent:
+    type: web
+    url: https://www.kernel.org/pub/linux/utils/cryptsetup/
+    regex: v(?P<version>[0-9][A-Za-z0-9._+-]*)
+
+  child:
+    type: web
+    url: https://www.kernel.org/pub/linux/utils/cryptsetup/v{version}/
+    regex: cryptsetup-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

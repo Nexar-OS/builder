@@ -5,6 +5,11 @@ description: Database sources containing time zone and daylight saving informati
 
 version: "2026c"
 
+version_source:
+  type: web
+  url: https://data.iana.org/time-zones/releases/
+  regex: tzdb-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   optional:
     - bash

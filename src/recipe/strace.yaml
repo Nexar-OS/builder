@@ -5,6 +5,11 @@ description: Userspace tool for tracing and diagnosing system calls
 
 version: "7.2"
 
+version_source:
+  type: web
+  url: https://strace.io/files/
+  regex: (?P<version>[0-9][A-Za-z0-9._+-]*)/
+
 dependencies:
   required:
     - glibc

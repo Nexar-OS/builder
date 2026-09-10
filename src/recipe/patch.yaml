@@ -5,6 +5,11 @@ description: Utility for applying patch files to source files
 
 version: "2.8"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/patch
+  regex: patch-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - attr

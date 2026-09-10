@@ -5,6 +5,11 @@ description: GNU C++ standard library
 
 version: "16.1.0"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/gcc
+  regex: gcc-(?P<version>[0-9][A-Za-z0-9._+-]*)
+
 dependencies:
   required:
     - glibc

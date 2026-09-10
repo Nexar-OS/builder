@@ -5,6 +5,11 @@ description: Data compression program
 
 version: "1.14"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/gzip
+  regex: gzip-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - bash

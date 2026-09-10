@@ -5,6 +5,10 @@ description: An arbitrary precision calculator language
 
 version: "7.0.3"
 
+version_source:
+  type: github
+  repo: gavinhoward/bc
+
 dependencies:
   required:
     - glibc

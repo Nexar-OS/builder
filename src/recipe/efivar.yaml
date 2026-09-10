@@ -5,6 +5,10 @@ description: Tools and libraries to work with EFI variables
 
 version: "39"
 
+version_source:
+  type: github
+  repo: rhboot/efivar
+
 dependencies:
   required:
     - glibc

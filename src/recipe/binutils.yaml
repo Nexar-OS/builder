@@ -5,6 +5,11 @@ description: A collection of GNU binary tools
 
 version: "2.47"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/binutils/
+  regex: binutils-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

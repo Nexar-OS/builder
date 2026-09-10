@@ -5,6 +5,10 @@ description: Library for parsing XML documents
 
 version: "2.44"
 
+version_source:
+  type: github
+  repo: libexpat/libexpat
+
 dependencies:
   required:
     - glibc

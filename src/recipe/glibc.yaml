@@ -5,6 +5,11 @@ description: GNU C library
 
 version: "2.44"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/glibc
+  regex: glibc-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - tzdb

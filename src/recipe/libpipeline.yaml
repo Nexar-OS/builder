@@ -5,6 +5,11 @@ description: C library for conveniently managing pipelines of subprocesses
 
 version: "20260512-3.1"
 
+version_source:
+  type: web
+  url: https://download.savannah.nongnu.org/releases/libpipeline/
+  regex: libpipeline-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

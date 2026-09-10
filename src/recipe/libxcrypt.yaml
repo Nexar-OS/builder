@@ -5,6 +5,10 @@ description: Modern library for one-way password hashing
 
 version: "4.5.2"
 
+version_source:
+  type: github
+  repo: besser82/libxcrypt
+
 dependencies:
   required:
     - glibc

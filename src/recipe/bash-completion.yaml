@@ -5,6 +5,10 @@ description: Programmable completion functions for bash
 
 version: "2.18.0"
 
+version_source:
+  type: github
+  repo: scop/bash-completion
+
 dependencies:
   required:
     - bash

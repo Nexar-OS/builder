@@ -5,6 +5,10 @@ description: Network utilities for monitoring and testing connectivity
 
 version: "20250605"
 
+version_source:
+  type: github
+  repo: iputils/iputils
+
 dependencies:
   required:
     - libcap

@@ -5,6 +5,11 @@ description: GNU's 'perfect hash function generator'
 
 version: "3.3"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/gperf
+  regex: gperf-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

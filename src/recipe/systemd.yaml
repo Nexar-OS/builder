@@ -5,6 +5,10 @@ description: System and service manager
 
 version: "259.8"
 
+version_source:
+  type: github
+  repo: systemd/systemd
+
 dependencies:
   required:
     - bash

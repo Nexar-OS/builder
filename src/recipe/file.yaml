@@ -5,6 +5,11 @@ description: Command for reporting the type of data contained in a file
 
 version: "5.48"
 
+version_source:
+  type: web
+  url: https://astron.com/pub/file/
+  regex: file-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

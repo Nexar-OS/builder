@@ -5,6 +5,11 @@ description: Copies files into or out of a cpio or tar archive
 
 version: "2.15"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/cpio/
+  regex: cpio-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

@@ -5,6 +5,11 @@ description: Terminal utility for viewing text files
 
 version: "704"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/less
+  regex: less-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

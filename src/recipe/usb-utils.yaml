@@ -5,6 +5,11 @@ description: Collection of tools for inspecting connected USB devices
 
 version: "018"
 
+version_source:
+  type: web
+  url: https://www.kernel.org/pub/linux/utils/usb/usbutils/
+  regex: usbutils-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

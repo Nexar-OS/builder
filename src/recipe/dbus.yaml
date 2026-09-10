@@ -5,6 +5,11 @@ description: A simple way for applications to talk to one another
 
 version: 1.16.2
 
+version_source:
+  type: web
+  url: https://dbus.freedesktop.org/releases/dbus/
+  regex: dbus-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - libexpat

@@ -5,6 +5,10 @@ description: Contains various hardware identification and configuration data
 
 version: "0.410"
 
+version_source:
+  type: github
+  repo: vcrhonek/hwdata
+
 dependencies:
   
 sources:

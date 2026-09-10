@@ -5,6 +5,10 @@ description: Library providing enhanced support for seccomp filtering
 
 version: "2.6.1"
 
+version_source:
+  type: github
+  repo: seccomp/libseccomp
+
 dependencies:
   required:
     - glibc

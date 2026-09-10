@@ -5,6 +5,11 @@ description: GNU's awk
 
 version: 5.4.1
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/gawk
+  regex: gawk-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

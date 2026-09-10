@@ -5,6 +5,11 @@ description: Basic file, shell and text manipulation utilities
 
 version: "9.11"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/coreutils/
+  regex: coreutils-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - attr

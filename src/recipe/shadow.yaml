@@ -5,6 +5,10 @@ description: Tools for managing accounts, passwords, shadow files, and PAM
 
 version: "4.20.2"
 
+version_source:
+  type: github
+  repo: shadow-maint/shadow
+
 dependencies:
   required:
     - glibc

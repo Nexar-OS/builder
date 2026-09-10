@@ -5,6 +5,11 @@ description: Utilities for managing Logical Volume Manager 2 storage
 
 version: "2.03.42"
 
+version_source:
+  type: web
+  url: https://sourceware.org/ftp/lvm2/
+  regex: LVM2.(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.tgz
+
 dependencies:
   required:
     - bash

@@ -5,6 +5,11 @@ description: GNU macro processing utility
 
 version: "1.4.21"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/m4
+  regex: m4-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

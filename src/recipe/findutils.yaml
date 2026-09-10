@@ -5,6 +5,11 @@ description: Basic directory searching utilities
 
 version: 4.11.0
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/findutils
+  regex: findutils-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

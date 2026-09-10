@@ -5,6 +5,19 @@ description: Enhanced command-line text editor based on Pico
 
 version: "9.2"
 
+version_source:
+  type: nested
+  
+  parent:
+    type: web
+    url: https://www.nano-editor.org/dist/
+    regex: v(?P<version>[0-9])/
+  
+  child:
+    type: web
+    url: https://www.nano-editor.org/dist/v{version}/
+    regex: nano-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - file

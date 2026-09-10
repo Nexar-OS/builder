@@ -5,6 +5,11 @@ description: Implementation of IDNA2008, Punycode, and TR46 standards
 
 version: "2.3.8"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/libidn/
+  regex: libidn-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - libunistring

@@ -5,6 +5,11 @@ description: Small userspace library designed for Netlink development
 
 version: "1.0.5"
 
+version_source:
+  type: web
+  url: https://www.netfilter.org/pub/libmnl/
+  regex: libmnl-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.bz2
+
 dependencies:
   required:
     - glibc

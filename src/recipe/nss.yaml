@@ -5,6 +5,11 @@ description: Network Security Services library and utilities
 
 version: "3.127"
 
+version_source:
+  type: web
+  url: https://ftp.mozilla.org/pub/security/nss/releases/
+  regex: NSS_(?P<version>\d+(?:_\d+){1,2})_RTM/
+
 dependencies:
   required:
     - glibc

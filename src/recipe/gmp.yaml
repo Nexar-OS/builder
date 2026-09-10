@@ -5,6 +5,11 @@ description: Library for arbitrary precision arithmetic, operating on signed int
 
 version: 6.3.0
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/gmp
+  regex: gmp-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
 dependencies:
   required:
     - glibc

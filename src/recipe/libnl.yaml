@@ -5,6 +5,10 @@ description: Library for applications that use Netlink sockets
 
 version: "3.12.0"
 
+version_source:
+  type: github
+  repo: thom311/libnl
+
 dependencies:
   required:
     - libgcc

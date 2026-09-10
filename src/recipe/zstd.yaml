@@ -5,6 +5,10 @@ description: Fast library and tools for Zstandard data compression
 
 version: "1.5.7"
 
+version_source:
+  type: github
+  repo: facebook/zstd
+
 dependencies:
   required:
     - glibc

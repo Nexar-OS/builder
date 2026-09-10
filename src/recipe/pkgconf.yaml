@@ -5,6 +5,10 @@ description: Toolkit for managing compiler and linker package metadata
 
 version: "3.12"
 
+version_source:
+  type: github
+  repo: pkgconf/pkgconfig
+
 dependencies:
   required:
     - glibc

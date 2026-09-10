@@ -5,6 +5,10 @@ description: Library providing generic access to USB devices
 
 version: "1.0.30"
 
+version_source:
+  type: github
+  repo: libusb/libusb
+
 dependencies:
   required:
     - glibc

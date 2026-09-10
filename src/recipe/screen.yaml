@@ -5,6 +5,11 @@ description: Terminal multiplexer for managing multiple sessions in one terminal
 
 version: "5.0.2"
 
+version_source:
+  type: web
+  url: ${mirror.gnu}/screen
+  regex: screen-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - ncurses

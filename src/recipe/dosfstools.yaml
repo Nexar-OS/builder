@@ -5,6 +5,10 @@ description: Programs like mkfs.fat, fsck.fat and fatlabel to create, check and 
 
 version: "4.2"
 
+version_source:
+  type: github
+  repo: dosfstools/dosfstools
+
 dependencies:
   required:
     - glibc

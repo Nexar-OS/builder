@@ -5,6 +5,11 @@ description: SSH implementation for remote access, command execution, and file t
 
 version: "9.9p2"
 
+version_source:
+  type: web
+  url: https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/
+  regex: openssh-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
 dependencies:
   required:
     - glibc

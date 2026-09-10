@@ -15,6 +15,9 @@ dependencies:
     - glibc
     - ncurses
   
+  build:
+    - ncurses
+  
 sources:
   - type: tarball
     name: less

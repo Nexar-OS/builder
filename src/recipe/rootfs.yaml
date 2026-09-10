@@ -40,7 +40,7 @@ build:
       ln -sf lib usr/${target.libdir.name}
 
       # Create passwd file
-      cat > etc/passwd <<EOF
+      cat > etc/passwd <<'EOF'
       root:x:0:0::/root:/usr/bin/bash
 
       EOF
@@ -48,7 +48,7 @@ build:
       chmod 644 etc/passwd
 
       # Create group file
-      cat > etc/group <<EOF
+      cat > etc/group <<'EOF'
       root:x:0:
       mail:x:12:
       
@@ -57,35 +57,34 @@ build:
       chmod 644 etc/group
 
       # Create shadow file
-      cat > etc/shadow <<EOF
+      cat > etc/shadow <<'EOF'
       root:*:2000::::::
 
       EOF
       chown 0:0 etc/shadow
       chmod 644 etc/shadow
 
-      # Create nsswich file
-      cat > etc/nsswich.conf <<EOF
+      # Create nsswitch file
+      cat > etc/nsswitch.conf <<'EOF'
       passwd: files
       group: files
       shadow: files
 
       EOF
-      chown 0:0 etc/nsswich.conf
-      chmod 644 etc/nsswich.conf
+      chown 0:0 etc/nsswitch.conf
+      chmod 644 etc/nsswitch.conf
 
       # Create os-release file
-      cat > etc/os-release <<EOF
+      cat > etc/os-release <<'EOF'
       NAME="NexarOS"
       PRETTY_NAME="NexarOS"
       ID=nexar
-      BUILD_ID=rolling
       ANSI_COLOR="38;2;23;147;209"
       HOME_URL=""
       DOCUMENTATION_URL=""
       SUPPORT_URL=""
       BUG_REPORT_URL=""
       PRIVACY_POLICY_URL=""
-      LOGO=archlinux-logo
+      LOGO=logo
 
       EOF

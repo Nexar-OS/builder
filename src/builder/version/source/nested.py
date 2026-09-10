@@ -22,7 +22,6 @@ class NestedVersionSource(VersionSource):
         Each version discovered by the parent source is passed as the
         ``version`` context to the child source.
         """
-        print(self.parent)
         for version in self.parent.versions:
             yield from self.child.with_context(
                 version=version.raw

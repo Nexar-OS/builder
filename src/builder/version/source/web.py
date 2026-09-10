@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Any
 from builder.version.version import Version
 from .source import VersionSource
 from dataclasses import dataclass
@@ -17,12 +17,11 @@ class WebVersionSource(VersionSource):
         url (str): The url of the upstream web-page.
         regex (str): The regex identifying the version string.
     """
-    def __init__(self,
-                 url: str,
-                 regex: str
-                ) -> None:
-        self.url = url
-        self.regex = re.compile(regex)
+
+    url: str
+    regex: str
+
+    def __post_init__(self) -> None:
         self._webpage_content = None
 
     @property
@@ -51,7 +50,8 @@ class WebVersionSource(VersionSource):
         """
         found: set[Version] = set()
 
-        for match in self.regex.finditer(self.webpage_content):
+        regex = re.compile(self.regex)
+        for match in regex.finditer(self.webpage_content):
             raw = match.group("version")
 
             version = Version.from_version_string(raw)

@@ -80,8 +80,13 @@ class GithubVersionSourceSchema(Schema):
     repo: str
     include_prereleases: bool = False
 
+class NestedVersionSourceSchema(Schema):
+    type: Literal["nested"]
+    parent: "VersionSourceSchema"
+    child: "VersionSourceSchema"
+
 VersionSourceSchema = Annotated[
-    Union[WebVersionSourceSchema, GithubVersionSourceSchema],
+    Union[WebVersionSourceSchema, GithubVersionSourceSchema, NestedVersionSourceSchema],
     Field(discriminator="type")
 ]
 

@@ -1,7 +1,7 @@
 from tests.vars import ctx
 from builder.recipe import BuildRole
 
-recipe = ctx.registry.getOrThrow("version_source_test", BuildRole.TARGET, ctx)
+recipe = ctx.registry.getOrThrow("cryptsetup", BuildRole.TARGET, ctx)
 
 source = recipe.version_source
 assert source

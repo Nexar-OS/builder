@@ -93,6 +93,19 @@ def load_version_source_from_schema(schema: VersionSourceSchema | None) -> Versi
     if not schema:
         return None
     
+    # Nested version source needs custom handling
+    if isinstance(schema, NestedVersionSourceSchema):
+        parent = load_version_source_from_schema(schema.parent)
+        child = load_version_source_from_schema(schema.child)
+
+        if not parent or not child:
+            return None
+
+        return NestedVersionSource(
+            parent=parent,
+            child=child,
+        )
+
     return _load_class_from_schema(schema, {
         WebVersionSourceSchema: WebVersionSource,
         GithubVersionSourceSchema: GithubVersionSource

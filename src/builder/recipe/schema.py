@@ -70,12 +70,23 @@ SourceSchema = Annotated[
     Field(discriminator="type")
 ]
 
+class WebVersionSourceSchema(Schema):
+    type: Literal["web"]
+    url: str
+    regex: str
+
+VersionSourceSchema = Annotated[
+    Union[WebVersionSourceSchema],
+    Field(discriminator="type")
+]
+
 class RecipeSchema(Schema):
     name: str
     homepage: str
     license: str | list[str]
     description: str
     version: str
+    version_source: VersionSourceSchema | None = None
     dependencies: Dependencies | None = None
     sources: list[SourceSchema]
     build: BuildSchema

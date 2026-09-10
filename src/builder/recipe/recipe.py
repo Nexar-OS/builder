@@ -15,6 +15,7 @@ from builder.build.context import BuildContext
 
 if TYPE_CHECKING:
     from builder.build.system import BuildSystem
+    from builder.version.source import VersionSource
 
 from builder.utils import logger
 from builder.utils.file import rmtree, merge_trees
@@ -132,6 +133,7 @@ class BuildRecipe(ABC):
 
     name: str
     version: str
+    version_source: VersionSource | None
 
     sources: list[Source]
 
@@ -484,15 +486,17 @@ class GenericRecipe(BuildRecipe):
                  name: str,
                  version: str,
                  sources: list[Source],
+                 version_source: VersionSource | None = None,
                  dependencies: Dependencies|None = None,
                  build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE,
                  build_system: BuildSystem|None = None,
                  patches: list[Path]|None = None,
                  prepare_script: str|None = None,
                  post_install_script: str|None = None,
-                 ) -> None:
+                ) -> None:
         self.name = name
         self.version = version
+        self.version_source = version_source
         self.sources = sources
         self.dependencies = dependencies or Dependencies.none()
         self.build_method = build_method

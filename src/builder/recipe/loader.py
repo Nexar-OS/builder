@@ -9,7 +9,8 @@ from builder.utils.data import (
 )
 from builder.utils.logger import warn
 from builder.source import *
-from builder.build.version import Version
+from builder.version import Version
+from builder.version.source import *
 from builder.build.system import *
 from builder.build.context import BuildContext
 
@@ -82,6 +83,21 @@ def _load_class_from_schema(schema: SchemaT, types: dict[type[SchemaT], type[Res
     dump.pop("type")
     return source_class(**dump)
 
+def load_version_source_from_schema(schema: VersionSourceSchema | None) -> VersionSource | None:
+    """
+    Loads a version source from its schema.
+
+    Args:
+        schema (VersionSourceSchema | None): The schema to load.
+    """
+    if not schema:
+        return None
+    
+    return _load_class_from_schema(schema, {
+        WebVersionSourceSchema: WebVersionSource
+    })
+
+
 def load_source_from_schema(schema: SourceSchema) -> Source:
     """
     Loads a source from its schema.
@@ -121,6 +137,7 @@ def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSc
         role=role,
         name=schema.name,
         version=schema.version,
+        version_source=load_version_source_from_schema(schema.version_source),
         sources=[ load_source_from_schema(source_schema)
                   for source_schema in schema.sources ],
         dependencies=schema.dependencies,

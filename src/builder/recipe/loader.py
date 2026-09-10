@@ -108,7 +108,8 @@ def load_version_source_from_schema(schema: VersionSourceSchema | None) -> Versi
 
     return _load_class_from_schema(schema, {
         WebVersionSourceSchema: WebVersionSource,
-        GithubVersionSourceSchema: GithubVersionSource
+        GithubVersionSourceSchema: GithubVersionSource,
+        GitlabVersionSourceSchema: GitlabVersionSource,
     })
 
 

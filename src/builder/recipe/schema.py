@@ -80,13 +80,19 @@ class GithubVersionSourceSchema(Schema):
     repo: str
     include_prereleases: bool = False
 
+class GitlabVersionSourceSchema(Schema):
+    type: Literal["gitlab"]
+    repo: str
+    include_prereleases: bool = False
+    base_url: str | None = None
+
 class NestedVersionSourceSchema(Schema):
     type: Literal["nested"]
     parent: "VersionSourceSchema"
     child: "VersionSourceSchema"
 
 VersionSourceSchema = Annotated[
-    Union[WebVersionSourceSchema, GithubVersionSourceSchema, NestedVersionSourceSchema],
+    Union[WebVersionSourceSchema, GithubVersionSourceSchema, GitlabVersionSourceSchema, NestedVersionSourceSchema],
     Field(discriminator="type")
 ]
 

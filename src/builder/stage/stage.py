@@ -132,8 +132,28 @@ class Stage:
             stage_dir,
             copy=copy
         )
+    
+    @classmethod
+    def for_recipe(cls, ctx: BuildContext, recipe: str, **kwargs) -> "Stage":
+        """
+        Construct a stage for just one recipe and its runtime dependencies.
 
-    def export(self, copy: bool = True) -> None:
+        Args:
+            ctx (BuildContext): The context used for building.
+            recipe (str): The recipe to build.
+
+        Returns:
+            Stage: A stage for this recipe and its dependencies.
+        """
+        return cls(
+            ctx=ctx,
+            name=recipe,
+            recipes=[ recipe ],
+            add_runtime_dependencies=True,
+            **kwargs
+        )
+
+    def export(self, copy: bool = True) -> "Stage":
         """
         Exports all recipes of this stage into a shared stage-dir.
         """
@@ -156,8 +176,9 @@ class Stage:
             info(f"Exporting recipe '{recipe.name}' to '{str(out)}'")
             self._export_recipe(recipe, out, copy)
         
+        return self
 
-    def build(self) -> list[BuildRecipe]:
+    def build(self) -> "Stage":
         """
         Build all recipes associated with this stage.
 
@@ -165,4 +186,5 @@ class Stage:
         the provided build context
         """
 
-        return self.sequencer.build()
+        self.sequencer.build()
+        return self

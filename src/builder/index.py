@@ -16,6 +16,7 @@ max_workers, num_jobs = detect_parallelism()
 ctx = BuildContext(
     registry                = RecipeRegistry([
                                     Path(__file__).parent.parent / "recipe",
+                                    Path(__file__).parent.parent / "bundle",
                                 ]),
     build_dir               = Path("build").resolve(),
     staging_dir             = Path("build/staging").resolve(),
@@ -31,45 +32,6 @@ ctx = BuildContext(
 
 ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
-stage = Stage(
-    ctx=ctx,
-    name="test",
-    recipes=[
-        "rootfs",
-        "bash",
-        "bzip2",
-        "file",
-        "findutils",
-        "grep",
-        "shadow",
-        "systemd",
-        "coreutils",
-        "pciutils",
-        "procps",
-        "psmisc",
-        "tar",
-        "util-linux",
-        "xz",
-        "sed",
-        "gettext",
-        "iproute2",
-        "iputils",
-        "wget",
-        "curl",
-        "grub",
-        "efibootmgr",
-        "networkmanager",
-        "kernel",
-        "tzdb",
-        "less",
-        "nano",
-        "gawk",
-    ],
-    add_runtime_dependencies=True,
-    ignore_dependency_errors=False,
-    max_workers=max_workers
-)
-
-
-stage.build()
-stage.export()
+Stage.for_recipe(ctx, "core") \
+    .build() \
+    .export()

@@ -90,8 +90,8 @@ class RecipeRegistry:
                 return None
 
             self._loaded[key] = recipe
-        else:
-            debug(f"Using cached recipe for '{name} ({role.name})'")
+        # else:
+        #     debug(f"Using cached recipe for '{name} ({role.name})'")
 
         return self._loaded[key]
 

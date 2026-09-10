@@ -75,8 +75,13 @@ class WebVersionSourceSchema(Schema):
     url: str
     regex: str
 
+class GithubVersionSourceSchema(Schema):
+    type: Literal["github"]
+    repo: str
+    include_prereleases: bool = False
+
 VersionSourceSchema = Annotated[
-    Union[WebVersionSourceSchema],
+    Union[WebVersionSourceSchema, GithubVersionSourceSchema],
     Field(discriminator="type")
 ]
 

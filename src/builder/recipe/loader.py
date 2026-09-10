@@ -94,7 +94,8 @@ def load_version_source_from_schema(schema: VersionSourceSchema | None) -> Versi
         return None
     
     return _load_class_from_schema(schema, {
-        WebVersionSourceSchema: WebVersionSource
+        WebVersionSourceSchema: WebVersionSource,
+        GithubVersionSourceSchema: GithubVersionSource
     })
 
 

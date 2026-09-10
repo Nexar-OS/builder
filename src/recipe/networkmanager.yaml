@@ -6,8 +6,9 @@ description: Network connection manager and related user applications
 version: "1.58.0"
 
 version_source:
-  type: github
-  repo: NetworkManager/NetworkManager
+  type: web
+  url: https://api.github.com/repos/NetworkManager/NetworkManager/tags
+  regex: /tags/(?P<version>[0-9][A-Za-z0-9._+-]*)
 
 dependencies:
   required:

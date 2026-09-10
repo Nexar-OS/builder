@@ -8,7 +8,7 @@ version: "2.03.42"
 version_source:
   type: web
   url: https://sourceware.org/ftp/lvm2/
-  regex: LVM2.(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.tgz
+  regex: LVM2.(?P<version>[0-9][A-Za-z0-9._+-]*)\.tgz
 
 dependencies:
   required:

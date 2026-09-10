@@ -7,8 +7,8 @@ version: "2026c"
 
 version_source:
   type: web
-  url: https://data.iana.org/time-zones/releases/
-  regex: tzdb-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+  url: https://data.iana.org/time-zones/
+  regex: tzdb-(?P<version>[0-9][A-Za-z0-9._+-]*)
 
 dependencies:
   optional:

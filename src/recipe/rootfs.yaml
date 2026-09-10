@@ -6,6 +6,8 @@ description: The core filesystem layout
 version: "1.0"
 
 dependencies:
+  required:
+    - iana-etc
 
 sources: []
 

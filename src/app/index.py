@@ -19,6 +19,7 @@ subparsers = parser.add_subparsers(
 )
 
 BuildCommand.add_to_parser(subparsers)
+CheckCommand.add_to_parser(subparsers)
 
 args = parser.parse_args()
 

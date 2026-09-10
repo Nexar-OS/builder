@@ -77,10 +77,11 @@ class GithubVersionSource(VersionSource):
             if release.get("prerelease") and not self.include_prereleases:
                 continue
 
-            value = release.get("tag_name")
-
-            if not value:
+            if "tag_name" not in release:
                 continue
+
+            value: str = release["tag_name"]
+            value = value.lstrip("v")
 
             version = Version.from_version_string(value)
 

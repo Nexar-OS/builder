@@ -1,3 +1,5 @@
+from builder.build import BuildContext
+
 from typing import (
     ClassVar,
     TypeVar,
@@ -9,7 +11,8 @@ from typing import (
 from argparse import (
     ArgumentParser,
     _SubParsersAction,
-    Namespace
+    Namespace,
+    Action
 )
 
 from dataclasses import (
@@ -41,10 +44,18 @@ class CLIArgument(Generic[T, R]):
         positional (bool): Whether the argument should accept positional values.
     """
 
-    type: type[T]
-    help: str
-    flags: tuple[str, ...] = tuple()
-    positional: bool = False
+    def __init__(self,
+                 type: type[T],
+                 help: str,
+                 flags: tuple[str, ...] = tuple(),
+                 positional: bool = False,
+                 **kwargs
+                ):
+        self.type = type
+        self.help = help
+        self.flags = flags
+        self.positional = positional
+        self.additional = kwargs
 
     def arg(self, parse: Type[R] | None = None) -> R:
         """
@@ -74,7 +85,8 @@ class CLIArgument(Generic[T, R]):
                             ``ArgumentParser.add_argument()``
         """
         kwargs: dict[str, Any] = {
-            "help": self.help,
+            **self.additional,
+            "help": self.help
         }
 
         if self.type is bool:
@@ -161,8 +173,7 @@ class CLICommand(ABC):
             }
         )
     
-    @abstractmethod
-    def handle(self):
+    def handle(self, ctx: BuildContext):
         """
         Execute the command.
 

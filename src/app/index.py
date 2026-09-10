@@ -67,7 +67,25 @@ def create_default_parser() -> ArgumentParser:
         default=Path("build/toolchain")
     )
 
+    parser.add_argument(
+        "--max-workers",
+        "-w",
+        type=int,
+        help="Set maximum amount of recipes that can be built concurrently. (-1 means 'auto').",
+        default=-1
+    )
+
+    parser.add_argument(
+        "--num-jobs",
+        "-j",
+        type=int,
+        help="The maximum amount of make jobs. (-1 means 'auto').",
+        default=-1
+    )
+
     return parser
+
+def 
 
 parser = create_default_parser()
 

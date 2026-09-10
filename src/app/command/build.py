@@ -1,8 +1,7 @@
-from argparse import ArgumentParser
+from dataclasses import dataclass
 
+from builder.build import BuildContext
 from .command import CLICommand, CLIArgument
-
-from dataclasses import dataclass, field
 
 @dataclass
 class BuildCommand(CLICommand):
@@ -20,5 +19,10 @@ class BuildCommand(CLICommand):
         flags=("--all", "-a")
     ).arg()
 
-    def handle(self):
-        print("Recipes: " + ", ".join(self.recipes))
+    def handle(self, ctx: BuildContext):
+        if self.use_all:
+            recipes: list[str] = list(ctx.registry.all)
+        else:
+            recipes: list[str] = self.recipes
+        
+        print(recipes)

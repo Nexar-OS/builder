@@ -67,7 +67,6 @@ class GithubVersionSource(VersionSource):
             Iterable[Version]: A stream yielding all versions matching the configured regex.
         """
         json: list[dict] = self._fetch_api()
-        print(json)
 
         found: set[Version] = set()
 

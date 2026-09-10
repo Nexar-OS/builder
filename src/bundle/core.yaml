@@ -1,0 +1,38 @@
+name: core
+homepage: None
+license: None
+description: A bundle of core packages.
+
+version: "1.0"
+
+dependencies:
+  required:
+    - rootfs
+    - bash
+    - bzip2
+    - file
+    - findutils
+    - grep
+    - shadow
+    - systemd
+    - coreutils
+    - pciutils
+    - procps
+    - psmisc
+    - tar
+    - util-linux
+    - xz
+    - sed
+    - gettext
+    - iproute2
+    - iputils
+    - wget
+    - curl
+    - grub
+    - efibootmgr
+    - networkmanager
+    - kernel
+    - tzdb
+    - less
+    - nano
+    - gawk

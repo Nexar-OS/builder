@@ -109,7 +109,7 @@ class CLICommand(ABC):
     name: ClassVar[str]
 
     @classmethod
-    def _populate_parser(cls, parser: ArgumentParser) -> None:
+    def populate_parser(cls, parser: ArgumentParser) -> None:
         """
         Register the command's CLIArguments with an argparse parser.
 
@@ -149,7 +149,7 @@ class CLICommand(ABC):
         # Store parsed data in command class
         parser.set_defaults(command_class=cls)
 
-        cls._populate_parser(parser)
+        cls.populate_parser(parser)
 
         return parser
 

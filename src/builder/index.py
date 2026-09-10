@@ -12,6 +12,7 @@ from builder.build import (
 from builder.recipe import *
 
 max_workers, num_jobs = detect_parallelism()
+Stage.DEFAULT_MAX_WORKERS = max_workers
 
 ctx = BuildContext(
     registry                = RecipeRegistry([

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable
+from typing import Callable, ClassVar
 from dataclasses import dataclass
 
 from builder.utils.logger import warn, info
@@ -45,6 +45,8 @@ class Stage:
 
     pre_build_hook: Callable | None = None
     post_build_hook: Callable | None = None
+
+    DEFAULT_MAX_WORKERS: ClassVar[int] = 1
 
     def _load_recipes(self):
         """
@@ -134,13 +136,14 @@ class Stage:
         )
     
     @classmethod
-    def for_recipe(cls, ctx: BuildContext, recipe: str, **kwargs) -> "Stage":
+    def for_recipe(cls, ctx: BuildContext, recipe: str, max_workers: int | None = None, **kwargs) -> "Stage":
         """
         Construct a stage for just one recipe and its runtime dependencies.
 
         Args:
             ctx (BuildContext): The context used for building.
             recipe (str): The recipe to build.
+            max_workers (int): The maximum workers amount. (Defaults to ``Stage.DEFAULT_MAX_WORKERS``).
 
         Returns:
             Stage: A stage for this recipe and its dependencies.
@@ -150,6 +153,7 @@ class Stage:
             name=recipe,
             recipes=[ recipe ],
             add_runtime_dependencies=True,
+            max_workers=max_workers or Stage.DEFAULT_MAX_WORKERS,
             **kwargs
         )
 

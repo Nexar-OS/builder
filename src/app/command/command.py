@@ -106,7 +106,7 @@ class CLICommand(ABC):
 
     Subclasses define their command name and arguments required.
     """
-    name: ClassVar[str]
+    name: ClassVar[str] = ""
 
     @classmethod
     def populate_parser(cls, parser: ArgumentParser) -> None:

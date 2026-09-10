@@ -79,6 +79,7 @@ class GithubVersionSourceSchema(Schema):
     type: Literal["github"]
     repo: str
     include_prereleases: bool = False
+    identifier: str = "releases"
 
 class GitlabVersionSourceSchema(Schema):
     type: Literal["gitlab"]

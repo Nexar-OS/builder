@@ -15,9 +15,11 @@ class GithubVersionSource(VersionSource):
     Attributes:
         repo (str): The github repository (Format: user/name)
         include_prereleases (bool): Whether prereleases should be included.
+        identifier (str): The identifier of the releases. (Usually releases or tags)
     """
     repo: str
     include_prereleases: bool = False
+    identifier: str = "releases"
 
     API_URL = "https://api.github.com"
 
@@ -40,7 +42,7 @@ class GithubVersionSource(VersionSource):
             "Accept": "application/vnd.github+json"
         }
 
-        url = f"{self.API_URL}/repos/{self.repo}/releases"
+        url = f"{self.API_URL}/repos/{self.repo}/{self.identifier}"
 
         params = {
             "per_page": 100
@@ -65,6 +67,7 @@ class GithubVersionSource(VersionSource):
             Iterable[Version]: A stream yielding all versions matching the configured regex.
         """
         json: list[dict] = self._fetch_api()
+        print(json)
 
         found: set[Version] = set()
 

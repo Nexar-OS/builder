@@ -59,7 +59,11 @@ stage = Stage(
         "grub",
         "efibootmgr",
         "networkmanager",
-        "kernel"
+        "kernel",
+        "tzdb",
+        "less",
+        "nano",
+        "gawk",
     ],
     add_runtime_dependencies=True,
     ignore_dependency_errors=False,

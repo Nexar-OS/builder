@@ -15,6 +15,18 @@ class VersionSource(ABC):
     """
 
     @property
+    def latest_version(self) -> Version:
+        """
+        Get the latest upstream version of this source.
+
+        Returns:
+            Version: The latest upstream version.
+        """
+        return max(
+            self.versions
+        )
+
+    @property
     @abstractmethod
     def versions(self) -> Iterable[Version]:
         """

@@ -28,8 +28,7 @@ dependencies:
     - iputils
     - wget
     - curl
-    - grub
-    - efibootmgr
+    - boot
     - networkmanager
     - kernel
     - tzdb

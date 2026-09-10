@@ -1,0 +1,11 @@
+name: core
+homepage: None
+license: None
+description: A bundle of core packages.
+
+version: "1.0"
+
+dependencies:
+  required:
+    - grub
+    - efibootmgr

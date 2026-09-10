@@ -12,8 +12,9 @@ class VersionSource(ABC):
     Actual implementation depends on sub-class.
     """
 
+    @property
     @abstractmethod
-    def get_versions(self) -> Iterable[Version]:
+    def versions(self) -> Iterable[Version]:
         """
         Discover available versions from the upstream source.
 

@@ -41,8 +41,8 @@ class WebVersionSource(VersionSource):
         
         return self._webpage_content
 
-
-    def get_versions(self) -> Iterable[Version]:
+    @property
+    def versions(self) -> Iterable[Version]:
         """
         Retrieve and parse versions from the configured web resource.
 

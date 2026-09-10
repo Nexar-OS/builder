@@ -128,6 +128,16 @@ class RecipeRegistry:
         """
         return self._paths[name]
     
+    @property
+    def all(self) -> set[str]:
+        """
+        Returns a list of all discoverable recipes.
+
+        Returns:
+            set[str]: All available recipes.
+        """
+        return set(self._paths.keys())
+
     def cached(self, name: str, role: BuildRole) -> GenericRecipe | None:
         """
         Returns the cached value for a recipe with a certain name.

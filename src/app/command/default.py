@@ -22,7 +22,7 @@ class DefaultArguments(CLICommand):
     build_dir: Path = CLIArgument(
         type=Path,
         help="Set the build directory.",
-        flags=("--build", "-b"),
+        flags=("--build-dir", "-b"),
         default=Path("build/")
     ).arg()
     

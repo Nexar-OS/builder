@@ -48,17 +48,40 @@ def create(
     
     return logger
 
+def create_default_logger(logfile: Path | None) -> None:
+    """Create the default logger instance.
 
-# Global logger
-global_logger = create(
-    name="builder",
-    use_std_out=True,
-    log_file=Path("build/builder.log").resolve()
-)
+    Args:
+        logfile (Path): The path to the log file.
+    """
 
-warn      = global_logger.warning
-info      = global_logger.info
-debug     = global_logger.debug
-critical  = global_logger.critical
-exception = global_logger.exception
-error     = global_logger.error
+    global global_logger
+
+    global_logger = create(
+        name="builder",
+        use_std_out=True,
+        log_file=logfile.resolve() if logfile else None
+    )
+
+global_logger = None
+
+def invoke(function, *args, **kwargs):
+    if not global_logger:
+        print("Global logger not initialized!")
+
+    getattr(global_logger, function)(*args, **kwargs)
+
+def warn(*args, **kwargs):
+    invoke("warning", *args, **kwargs)
+
+def info(*args, **kwargs):
+    invoke("info", *args, **kwargs)
+
+def debug(*args, **kwargs):
+    invoke("debug", *args, **kwargs)
+
+def exception(*args, **kwargs):
+    invoke("exception", *args, **kwargs)
+
+def error(*args, **kwargs):
+    invoke("error", *args, **kwargs)

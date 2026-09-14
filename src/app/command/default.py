@@ -22,8 +22,8 @@ class DefaultArguments(CLICommand):
     build_dir: Path = CLIArgument(
         type=Path,
         help="Set the build directory.",
-        flags=("--build-dir", "-b"),
-        default=Path("build/")
+        flags=("--builddir", "-b"),
+        default=Path("build/").resolve()
     ).arg()
     
     staging_dir: Path = CLIArgument(
@@ -122,14 +122,14 @@ class DefaultArguments(CLICommand):
                     Path(__file__).parent.parent.parent / "bundle",
                     *self.registry,
                 ]),
-                build_dir=self.build_dir,
-                staging_dir=self.staging_dir,
-                metadata_dir=self.build_dir / ".metadata",
+                build_dir=self.build_dir.resolve(),
+                staging_dir=self.staging_dir.resolve(),
+                metadata_dir=self.build_dir.resolve() / ".metadata",
                 build_machine=detect_machine(),
                 target_machine=target,
                 toolchain=NativeToolchain(),
-                toolchain_dir=self.toolchain_dir / "binaries",
-                toolchain_sysroot=self.toolchain_dir / "sysroot",
+                toolchain_dir=self.toolchain_dir.resolve() / "binaries",
+                toolchain_sysroot=self.toolchain_dir.resolve() / "sysroot",
                 num_jobs=self.num_jobs
             )
         

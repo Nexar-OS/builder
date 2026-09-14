@@ -34,6 +34,9 @@ def create(
         logger.addHandler(stdout_handler)
     
     if log_file:
+        # Ensure parent dir exists
+        log_file.parent.mkdir(exist_ok=True, parents=True)
+
         # Ensure log file will be new
         if log_file.is_file():
             log_file.unlink(missing_ok=True)

@@ -5,7 +5,7 @@ from builder.toolchain import *
 from builder.build import *
 from builder.recipe import *
 from builder.stage import Stage
-from builder.utils.logger import create_default_logger
+from builder.utils.logger import create_default_logger, info
 from .command import CLICommand, CLIArgument
 
 
@@ -38,6 +38,12 @@ class DefaultArguments(CLICommand):
         help="Set the directory to store toolchains in.",
         flags=("--toolchain", "-t"),
         default=Path("build/toolchain")
+    ).arg()
+
+    use_native_toolchain: bool = CLIArgument(
+        type=bool,
+        help="Use the system-native toolchain rather than a custom-built cross-toolchain to build recipes.",
+        flags=("--native-toolchain", "-nt")
     ).arg()
     
     max_workers: int = CLIArgument(
@@ -77,6 +83,25 @@ class DefaultArguments(CLICommand):
 
         # Set max workers
         Stage.DEFAULT_MAX_WORKERS = self.max_workers
+
+        # Build toolchain
+        if not self.use_native_toolchain:
+            self.build_cross_toolchain()
+        
+        else:
+            info("Using native toolchain rather than cross-toolchain!")
+
+    def build_cross_toolchain(self) -> BuildContext:
+        """
+        Build the cross toolchain and set it as the toolchain of self.ctx.
+        """
+        ctx = self.ctx
+
+        load_or_build_cross_toolchain(ctx)
+
+        self._ctx = ctx
+
+        return ctx
 
     @property
     def ctx(self) -> BuildContext:

@@ -21,7 +21,7 @@ class DefaultArguments(CLICommand):
         type=Path,
         help="Set the build directory.",
         flags=("--build", "-b"),
-        default=Path("build/build")
+        default=Path("build/")
     ).arg()
     
     staging_dir: Path = CLIArgument(
@@ -35,7 +35,7 @@ class DefaultArguments(CLICommand):
         type=Path,
         help="Set the directory to store toolchains in.",
         flags=("--toolchain", "-t"),
-        default=Path("build/staging")
+        default=Path("build/toolchain")
     ).arg()
     
     max_workers: int = CLIArgument(

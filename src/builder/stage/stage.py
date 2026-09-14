@@ -41,7 +41,7 @@ class Stage:
     build_role: BuildRole = BuildRole.TARGET
     add_runtime_dependencies: bool = False
     ignore_dependency_errors: bool = False
-    max_workers: int = 1
+    max_workers: int | None = None
 
     pre_build_hook: Callable | None = None
     post_build_hook: Callable | None = None
@@ -106,7 +106,7 @@ class Stage:
         self.sequencer = Sequencer(
             build_graph=self.build_dependencies,
             runtime_graph=self.runtime_dependencies,
-            max_workers=self.max_workers
+            max_workers=self.max_workers or Stage.DEFAULT_MAX_WORKERS
         )
     
     @property

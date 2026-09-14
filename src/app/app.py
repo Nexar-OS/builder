@@ -1,7 +1,5 @@
 from argparse import ArgumentParser
 from .command import *
-from builder.stage import Stage
-from builder.utils.logger import create_default_logger
 
 def build_parser() -> ArgumentParser:
     # Create default parser
@@ -29,12 +27,7 @@ def cli():
 
     # Load default arguments
     default_args = DefaultArguments.from_namespace(args)
-    
-    default_args.build_dir.mkdir(exist_ok=True, parents=True)
-
-    Stage.DEFAULT_MAX_WORKERS = default_args.max_workers
-
-    create_default_logger(default_args.build_dir / "build.log")
+    default_args.prepare_environment()
 
     # Invoke subcommand
     commandClass: CLICommand = args.command_class.from_namespace(args)

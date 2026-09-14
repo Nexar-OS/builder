@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from builder.toolchain import *
 from builder.build import *
 from builder.recipe import *
+from builder.stage import Stage
+from builder.utils.logger import create_default_logger
 from .command import CLICommand, CLIArgument
 
 
@@ -58,6 +60,20 @@ class DefaultArguments(CLICommand):
         flags=("--target", "-tgt"),
         default=detect_machine().arch
     ).arg()
+
+    def prepare_environment(self) -> None:
+        """
+        Prepare a proper build environment.
+        """
+
+        # Ensure build dir exists
+        self.build_dir.mkdir(exist_ok=True, parents=True)
+
+        # Create logger
+        create_default_logger(self.build_dir / "build.log")
+
+        # Set max workers
+        Stage.DEFAULT_MAX_WORKERS = self.max_workers
 
     @property
     def ctx(self) -> BuildContext:

@@ -61,6 +61,9 @@ class DefaultArguments(CLICommand):
         default=detect_machine().arch
     ).arg()
 
+    def __post_init__(self) -> None:
+        self._ctx = None
+
     def prepare_environment(self) -> None:
         """
         Prepare a proper build environment.
@@ -83,23 +86,26 @@ class DefaultArguments(CLICommand):
         Returns:
             BuildContext: The passed context.
         """
-        target = getattr(Target, self.target.upper(), None)
-        if not target:
-            raise RuntimeError(f"Invalid target '{self.target}'")
+        if not self._ctx:
+            target = getattr(Target, self.target.upper(), None)
+            if not target:
+                raise RuntimeError(f"Invalid target '{self.target}'")
 
-        return BuildContext(
-            registry=RecipeRegistry([
-                Path(__file__).parent.parent.parent / "recipe",
-                Path(__file__).parent.parent.parent / "bundle",
-                *self.registry,
-            ]),
-            build_dir=self.build_dir,
-            staging_dir=self.staging_dir,
-            metadata_dir=self.build_dir / ".metadata",
-            build_machine=detect_machine(),
-            target_machine=target,
-            toolchain=NativeToolchain(),
-            toolchain_dir=self.toolchain_dir / "binaries",
-            toolchain_sysroot=self.toolchain_dir / "sysroot",
-            num_jobs=self.num_jobs
-        )
+            self._ctx = BuildContext(
+                registry=RecipeRegistry([
+                    Path(__file__).parent.parent.parent / "recipe",
+                    Path(__file__).parent.parent.parent / "bundle",
+                    *self.registry,
+                ]),
+                build_dir=self.build_dir,
+                staging_dir=self.staging_dir,
+                metadata_dir=self.build_dir / ".metadata",
+                build_machine=detect_machine(),
+                target_machine=target,
+                toolchain=NativeToolchain(),
+                toolchain_dir=self.toolchain_dir / "binaries",
+                toolchain_sysroot=self.toolchain_dir / "sysroot",
+                num_jobs=self.num_jobs
+            )
+        
+        return self._ctx

@@ -17,6 +17,7 @@ def build_parser() -> ArgumentParser:
 
     BuildCommand.add_to_parser(subparsers)
     CheckCommand.add_to_parser(subparsers)
+    PackageCommand.add_to_parser(subparsers)
 
     return parser
 

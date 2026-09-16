@@ -154,6 +154,7 @@ def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSc
         ctx=ctx,
         role=role,
         name=schema.name,
+        description=schema.description,
         version=schema.version,
         version_source=load_version_source_from_schema(schema.version_source),
         sources=[ load_source_from_schema(source_schema)

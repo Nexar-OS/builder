@@ -132,6 +132,7 @@ class BuildRecipe(ABC):
     dependencies: Dependencies = Dependencies.none()
 
     name: str
+    description: str | None = None
     version: str
     version_source: VersionSource | None
 
@@ -484,6 +485,7 @@ class GenericRecipe(BuildRecipe):
                  ctx: BuildContext,
                  role: BuildRole,
                  name: str,
+                 description: str,
                  version: str,
                  sources: list[Source],
                  version_source: VersionSource | None = None,
@@ -495,6 +497,7 @@ class GenericRecipe(BuildRecipe):
                  post_install_script: str|None = None,
                 ) -> None:
         self.name = name
+        self.description = description
         self.version = version
         self.version_source = version_source
         self.sources = sources

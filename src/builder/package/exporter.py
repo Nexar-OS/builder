@@ -13,21 +13,8 @@ class PackageExporter(ABC):
     Implementations should not modify the Package itself.
     """
 
-    @property
-    @abstractmethod
-    def format(self) -> str:
-        """
-        Return the unique identifier of this package format.
-        """
-        raise NotImplementedError
-    
-    @property
-    @abstractmethod
-    def extension(self) -> str:
-        """
-        Return the file extension used by this package format.
-        """
-        raise NotImplementedError
+    format: str
+    extension: str
     
     @abstractmethod
     def export(self, package: Package, destination: Path) -> Artifact:

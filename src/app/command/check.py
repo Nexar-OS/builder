@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from builder.build import BuildContext
 from builder.recipe import BuildRole
+from builder.utils.logger import error
 from .command import CLICommand, CLIArgument
 
 @dataclass
@@ -32,6 +33,9 @@ class CheckCommand(CLICommand):
         else:
             recipe_names: list[str] = self.recipes
         
+        if not recipe_names:
+            error("Please pass one or more recipes to package.")
+
         recipes = [
             ctx.registry.getOrThrow(
                 name=recipe,

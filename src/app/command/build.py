@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from builder.stage import Stage
 
 from uuid import uuid4
+from builder.utils.logger import error
 from builder.build import BuildContext
 from builder.recipe import BuildRole
 from .command import CLICommand, CLIArgument
@@ -46,6 +47,9 @@ class BuildCommand(CLICommand):
             recipes: list[str] = list(ctx.registry.all)
         else:
             recipes: list[str] = self.recipes
+
+        if not recipes:
+            error("Please pass one or more recipes to package.")
         
         stage = Stage(
             ctx=ctx,

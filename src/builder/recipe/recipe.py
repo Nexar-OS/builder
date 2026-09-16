@@ -2,11 +2,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pathlib import Path
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass, asdict
 from enum import Enum, StrEnum, auto
 
-import time
 import json
 from hashlib import sha256
 
@@ -16,45 +15,41 @@ from builder.build.context import BuildContext
 if TYPE_CHECKING:
     from builder.build.system import BuildSystem
     from builder.version.source import VersionSource
+    from builder.build import MachineSpec
 
 from builder.utils import logger
 from builder.utils.file import rmtree, merge_trees
 from .dependencies import Dependencies
 
-@dataclass(frozen=True)
+@dataclass
 class RecipeMetadata:
     """
-    A ``RecipeMetadata`` stores build specific metadata for the builder to
-    decide if a rebuild is necessary.
+    Contains the metadata describing a recipe.
+
+    This class represents the logical identity and relationships of a recipe.
+
+    Attributes:
+        name (str): Canonical recipe name.
+        version (str): Recipe version.
+        architecture (MachineSpec): Target architecture.
+        description (str): Human-readable recipe description.
+        dependencies (list[str]): List of runtime dependencies required by this recipe.
+        sources (list[str]): List of web-sources.
+        license (list[str]): License(s) of the recipe.
+        homepage (str): Upstream homepage of the recipe/project.
     """
 
     name: str
-    fingerprint: str
-    last_build: str
-
-    @classmethod
-    def from_dict(cls, data: dict[str, str]) -> "RecipeMetadata":
-        """Create metadata from a dictionary."""
-        return cls(
-            name=data["name"],
-            fingerprint=data["fingerprint"],
-            last_build=data["last_build"]
-        )
-
-    @classmethod
-    def load(cls, path: Path):
-        """Load a recipe's metadata from a savefile.
-
-        Returns:
-            "RecipeMetadata"|None: Returns None if passes file isn't a metadata file.
-                                   Otherwise the metadata object will be returned.
-        """
-        if not path.is_file():
-            return None
-        
-        return cls.from_dict(
-            json.loads(path.read_text())
-        )
+    description: str | None
+    version: str
+    version_source: VersionSource | None
+    architecture: MachineSpec
+    license: list[str] | None = None
+    homepage: str | None = None
+    dependencies: Dependencies | None = None
+    sources: list[str] | None = None
+    last_build: str | None = None
+    fingerprint: str | None = None
 
 class BuildMethod(StrEnum):
     """
@@ -129,18 +124,24 @@ class BuildRecipe(ABC):
             log_file=self.logfile
         )
 
-    dependencies: Dependencies = Dependencies.none()
+    def __post_init__(self) -> None:
+        self.metadata.fingerprint = self.fingerprint
+        self.metadata.sources = [
+            source.url
+            for source in self.sources
+        ]
 
-    name: str
-    description: str | None = None
-    version: str
-    version_source: VersionSource | None
-
+    metadata: RecipeMetadata
     sources: list[Source]
-
     build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE  # most recipes are build out-of-source
-    
     build_system: BuildSystem|None = None
+
+    @property
+    def name(self) -> str:
+        """
+        Return the name of this recipe.
+        """
+        return self.metadata.name
 
     @property
     def logfile(self) -> Path:
@@ -225,15 +226,7 @@ class BuildRecipe(ABC):
         Record the current recipe fingerprint as successfully built.
         """
         path = self.metadata_path
-        path.write_text(
-            json.dumps(
-                asdict(RecipeMetadata(
-                    name=self.name,
-                    fingerprint=self.fingerprint,
-                    last_build=str(time.time())
-                ))
-            )
-        )
+        path.write_text(json.dumps(asdict(self.metadata)))
 
     def _resolve_sources(self, source_dir: Path, build_dir: Path):
         """
@@ -272,7 +265,7 @@ class BuildRecipe(ABC):
         Returns:
             Path: Absolute path where the build takes place
         """
-        work_dir = self.ctx.build_dir / "recipe" / (self.name + "-" + self.version)
+        work_dir = self.ctx.build_dir / "recipe" / (self.name + "-" + self.metadata.version)
         work_dir.mkdir(exist_ok=True, parents=True)
 
         return work_dir.resolve()
@@ -467,7 +460,7 @@ class BuildRecipe(ABC):
         ...
     
     def __repr__(self) -> str:
-        return f"{self.name}-{self.version} ({self.build_role.name.upper()})"
+        return f"{self.name}-{self.metadata.version} ({self.build_role.name.upper()})"
 
 @dataclass
 class GenericRecipe(BuildRecipe):
@@ -484,26 +477,20 @@ class GenericRecipe(BuildRecipe):
     def __init__(self,
                  ctx: BuildContext,
                  role: BuildRole,
-                 name: str,
-                 description: str,
-                 version: str,
+                 metadata: RecipeMetadata,
                  sources: list[Source],
-                 version_source: VersionSource | None = None,
-                 dependencies: Dependencies|None = None,
                  build_method: BuildMethod = BuildMethod.OUT_OF_SOURCE,
                  build_system: BuildSystem|None = None,
                  patches: list[Path]|None = None,
                  prepare_script: str|None = None,
                  post_install_script: str|None = None,
                 ) -> None:
-        self.name = name
-        self.description = description
-        self.version = version
-        self.version_source = version_source
+        
+        self.metadata = metadata
         self.sources = sources
-        self.dependencies = dependencies or Dependencies.none()
         self.build_method = build_method
         self.build_system = build_system
+        
         self.patches = patches or []
         self.prepare_script = prepare_script
         self.post_install_script = post_install_script
@@ -539,7 +526,7 @@ class GenericRecipe(BuildRecipe):
     def env(self) -> dict[str, str]:
         return {
             "NAME": self.name,
-            "VERSION": self.version
+            "VERSION": self.metadata.version
         }
 
     def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
@@ -623,7 +610,7 @@ class SysrootRecipe(BuildRecipe):
     """
     def __init__(self, ctx: BuildContext) -> None:
         super().__init__(ctx, BuildRole.SYSROOT)
-    
+
 class TargetRecipe(BuildRecipe):
     """
     Base class describing how packages targeting the final operating

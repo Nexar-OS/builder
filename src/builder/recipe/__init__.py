@@ -6,6 +6,7 @@ from .recipe import (
     SysrootRecipe,
     TargetRecipe,
     BuildMethod,
+    RecipeMetadata
 )
 
 from .dependencies import (

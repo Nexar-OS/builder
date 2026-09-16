@@ -1,8 +1,8 @@
-from typing import TypeVar, Any
+from typing import TypeVar
 from pathlib import Path
 
 from builder.recipe.schema import *
-from builder.recipe import GenericRecipe, BuildRole, BuildMethod
+from builder.recipe import GenericRecipe, BuildRole, BuildMethod, RecipeMetadata
 from builder.utils.data import (
     load_yaml,
     interpolate
@@ -153,13 +153,20 @@ def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSc
     return GenericRecipe(
         ctx=ctx,
         role=role,
-        name=schema.name,
-        description=schema.description,
-        version=schema.version,
-        version_source=load_version_source_from_schema(schema.version_source),
-        sources=[ load_source_from_schema(source_schema)
-                  for source_schema in schema.sources ],
-        dependencies=schema.dependencies,
+        metadata=RecipeMetadata(
+            name=schema.name,
+            description=schema.description,
+            version=schema.version,
+            version_source=load_version_source_from_schema(schema.version_source),
+            architecture=ctx.target_machine,
+            license=[ schema.license ] if isinstance(schema.license, str) else schema.license,
+            homepage=schema.homepage,
+            dependencies=schema.dependencies,
+        ),
+        sources=[
+            load_source_from_schema(source_schema)
+            for source_schema in schema.sources
+        ],
         build_method=build.method if build else BuildMethod.OUT_OF_SOURCE,
         build_system=load_build_system_from_schema(build.build_system) if build else None,
         patches=build.patches if build else [],

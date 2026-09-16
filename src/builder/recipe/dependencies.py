@@ -172,6 +172,8 @@ class DependencyGraph():
         """
         from .recipe import BuildRole
         
+        dependencies = recipe.metadata.dependencies or Dependencies.none()
+
         match self.kind:
             case DependencyKind.BUILD:
                 yield from (
@@ -179,7 +181,7 @@ class DependencyGraph():
                         name=dependency,
                         role=BuildRole.SYSROOT
                     )
-                    for dependency in (recipe.dependencies.build or [])
+                    for dependency in (dependencies.build or [])
                 )
             
             case DependencyKind.RUNTIME:
@@ -188,7 +190,7 @@ class DependencyGraph():
                         name=dependency,
                         role=BuildRole.TARGET
                     )
-                    for dependency in (recipe.dependencies.required or [])
+                    for dependency in (dependencies.required or [])
                 )
         
             case _:

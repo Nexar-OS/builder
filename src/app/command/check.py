@@ -35,6 +35,7 @@ class CheckCommand(CLICommand):
         
         if not recipe_names:
             error("Please pass one or more recipes to package.")
+            return
 
         recipes = [
             ctx.registry.getOrThrow(

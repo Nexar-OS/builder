@@ -50,6 +50,7 @@ class BuildCommand(CLICommand):
 
         if not recipes:
             error("Please pass one or more recipes to package.")
+            return
         
         stage = Stage(
             ctx=ctx,

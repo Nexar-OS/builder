@@ -44,7 +44,7 @@ class CheckCommand(CLICommand):
         print(f"{'Recipe':<30} {'Current version':<20} {'Latest version':<20} {'Status':<15}")
 
         for recipe in recipes:
-            version_source = recipe.version_source
+            version_source = recipe.metadata.version_source
 
             latest = "unknown"
             if version_source:
@@ -59,7 +59,7 @@ class CheckCommand(CLICommand):
             if not latest:
                 status = "Failed."
             
-            elif recipe.version == latest:
+            elif recipe.metadata.version == latest:
                 status = "Up to date."
             
             else:
@@ -71,7 +71,7 @@ class CheckCommand(CLICommand):
 
             print(
                 f"{recipe.name:<30} "
-                f"{recipe.version:<20} "
+                f"{recipe.metadata.version:<20} "
                 f"{latest:<20} "
                 f"{status:<15}"
             )

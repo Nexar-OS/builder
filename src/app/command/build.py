@@ -49,7 +49,7 @@ class BuildCommand(CLICommand):
             recipes: list[str] = self.recipes
 
         if not recipes:
-            error("Please pass one or more recipes to package.")
+            error("Please pass one or more recipes to build.")
             return
         
         stage = Stage(

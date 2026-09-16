@@ -11,7 +11,7 @@ class CheckCommand(CLICommand):
 
     recipes: list[str] = CLIArgument(
         type=str,
-        help="Pass one or multiple recipe(s) to build.",
+        help="Pass one or multiple recipe(s) to check.",
         positional=True
     ).arg(parse=list[str])
 
@@ -34,7 +34,7 @@ class CheckCommand(CLICommand):
             recipe_names: list[str] = self.recipes
         
         if not recipe_names:
-            error("Please pass one or more recipes to package.")
+            error("Please pass one or more recipes to check.")
             return
 
         recipes = [

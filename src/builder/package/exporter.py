@@ -1,6 +1,7 @@
 from pathlib import Path
 from abc import ABC, abstractmethod
 from .package import Package
+from .artifact import Artifact
 
 class PackageExporter(ABC):
     """
@@ -29,7 +30,7 @@ class PackageExporter(ABC):
         raise NotImplementedError
     
     @abstractmethod
-    def export(self, package: Package, destination: Path) -> Path:
+    def export(self, package: Package, destination: Path) -> Artifact:
         """
         Serialize a Package into the target package format.
 

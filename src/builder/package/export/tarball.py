@@ -11,7 +11,7 @@ class TarballExporter(PackageExporter):
     package.
     """
     format = "tarball"
-    extension = ".tar"
+    extension = "tar"
     
     def _create_tarball(self, paths: list[Path], tarball: Path) -> None:
         """

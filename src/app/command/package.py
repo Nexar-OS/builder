@@ -74,7 +74,9 @@ class PackageCommand(CLICommand):
                 warn(f"Cannot export recipe '{recipe.name}'. Recipe hasn't been built yet!")
                 continue
 
-            exporter.export(
+            artifact = exporter.export(
                 package=package,
                 destination=self.export_path or ctx.build_dir / "exported"
             )
+
+            print(f"Successfully packaged '{package.metadata.name}' into '{artifact.path}'")

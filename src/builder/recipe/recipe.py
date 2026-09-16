@@ -124,8 +124,6 @@ class BuildRecipe(ABC):
             log_file=self.logfile
         )
 
-    def __post_init__(self) -> None:
-        self.metadata.fingerprint = self.fingerprint
         self.metadata.sources = [
             source.url
             for source in self.sources
@@ -217,7 +215,7 @@ class BuildRecipe(ABC):
 
         if not path.exists():
             return True
-        
+
         old = json.loads(path.read_text())["fingerprint"]
         return old != self.fingerprint
 
@@ -226,6 +224,7 @@ class BuildRecipe(ABC):
         Record the current recipe fingerprint as successfully built.
         """
         path = self.metadata_path
+        self.metadata.fingerprint = self.fingerprint
         path.write_text(json.dumps(asdict(self.metadata)))
 
     def _resolve_sources(self, source_dir: Path, build_dir: Path):

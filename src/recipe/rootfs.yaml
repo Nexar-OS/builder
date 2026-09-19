@@ -25,57 +25,111 @@ build:
             usr/{bin,include,lib,${target.libdir.name}} \
             usr/share/{man,info,doc} \
             var/{cache,lib,log,tmp,run,mail} \
-            run/{lock,user}
+            run/{lock,user} \
+            etc/{profile.d,}
       
-      chmod 1777 tmp
-      chmod 755 var/mail
-      chmod 1777 var/tmp
+      # Kernel/runtime mountpoints
+      chmod 0555 proc sys
 
-      # Create symlinks
-      ln -sf usr/bin bin
-      ln -sf usr/bin sbin
-      ln -sf bin usr/sbin
-      ln -sf usr/lib ${target.libdir.name}
-      ln -sf usr/lib lib
-      ln -sf lib usr/${target.libdir.name}
+      # Root's home directory
+      chmod 0700 root
+
+      # Runtime locking
+      chmod 0775 run/lock
+
+      # Tmp directories
+      chmod 1777 tmp var/tmp
+
+      # Mail directory
+      chmod 755 var/mail
+
+      # Merged /usr compatibility symlinks
+      ln -sfn usr/bin bin
+      ln -sfn usr/bin sbin
+      ln -sfn bin usr/sbin
+      ln -sfn usr/lib lib
+      ln -sfn usr/lib ${target.libdir.name}
+      ln -sfn lib usr/${target.libdir.name}
+
+      # Runtime compatibility
+      ln -sfn /run var/run
+      ln -sfn /run/lock var/lock
+
+      create_file() {
+          local name="$1"
+          local owner="${2:-root:root}"
+          local mode="${3:-0644}"
+
+          mkdir -p "$(dirname "$name")"
+          cat > "$name"
+          echo "\n" >> "$name"
+          chown "$owner" "$name"
+          chmod "$mode" "$name"
+      }
 
       # Create passwd file
-      cat > etc/passwd <<'EOF'
-      root:x:0:0::/root:/usr/bin/bash
-
+      create_file etc/passwd <<'EOF'
+      root:x:0:0:root:/root:/bin/sh
       EOF
-      chown 0:0 etc/passwd
-      chmod 644 etc/passwd
 
       # Create group file
-      cat > etc/group <<'EOF'
+      create_file etc/group <<'EOF'
       root:x:0:
       mail:x:12:
-      
       EOF
-      chown 0:0 etc/group
-      chmod 644 etc/group
 
       # Create shadow file
-      cat > etc/shadow <<'EOF'
+      create_file etc/shadow root:root 0600 <<'EOF'
       root:*:2000::::::
-
       EOF
-      chown 0:0 etc/shadow
-      chmod 644 etc/shadow
+      
+      # Create gshadow file
+      create_file etc/gshadow root:root 0600 <<'EOF'
+      root:::
+      mail:::
+      EOF
 
       # Create nsswitch file
-      cat > etc/nsswitch.conf <<'EOF'
+      create_file etc/nsswitch.conf <<'EOF'
       passwd: files
       group: files
       shadow: files
 
+      hosts: files dns
+      networks: files
+      protocols: files
+      services: files
+      ethers: files
+      rpc: files
       EOF
-      chown 0:0 etc/nsswitch.conf
-      chmod 644 etc/nsswitch.conf
+
+      # Create hosts file
+      create_file etc/hosts root:root 0644 <<'EOF'
+      127.0.0.1     localhost
+      ::1           localhost
+      EOF
+
+      # Create shells file
+      create_file etc/shells root:root 0644 <<'EOF'
+      /bin/sh
+      /usr/bin/sh
+      /bin/bash
+      /usr/bin/bash
+      EOF
+
+      # Create shells file
+      create_file etc/profile root:root 0644 <<'EOF'
+      export PATH="/usr/local/sbin/:/usr/local/bin/:/usr/sbin:/usr/bin"
+
+      if [-d /etc/profile.d ]; then
+        for f in /etc/profile.d/*.sh; do
+          [ -r "$f" ] && . "$f"
+        done
+      fi
+      EOF
 
       # Create os-release file
-      cat > etc/os-release <<'EOF'
+      create_file etc/os-release <<'EOF'
       NAME="NexarOS"
       PRETTY_NAME="NexarOS"
       ID=nexar
@@ -85,6 +139,5 @@ build:
       SUPPORT_URL=""
       BUG_REPORT_URL=""
       PRIVACY_POLICY_URL=""
-      LOGO=logo
-
+      LOGO=nexar-logo
       EOF

@@ -32,6 +32,7 @@ class RecipeMetadata:
         name (str): Canonical recipe name.
         version (str): Recipe version.
         architecture (MachineSpec): Target architecture.
+        maintainers (list[str]): List of active maintainers of this package.
         description (str): Human-readable recipe description.
         dependencies (list[str]): List of runtime dependencies required by this recipe.
         sources (list[str]): List of web-sources.
@@ -44,6 +45,7 @@ class RecipeMetadata:
     version: str
     version_source: VersionSource | None
     architecture: MachineSpec
+    maintainers: list[str] | None
     license: list[str] | None = None
     homepage: str | None = None
     dependencies: Dependencies | None = None

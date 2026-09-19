@@ -159,6 +159,7 @@ def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSc
             version=schema.version,
             version_source=load_version_source_from_schema(schema.version_source),
             architecture=ctx.target_machine,
+            maintainers=schema.maintainers,
             license=[ schema.license ] if isinstance(schema.license, str) else schema.license,
             homepage=schema.homepage,
             dependencies=schema.dependencies,

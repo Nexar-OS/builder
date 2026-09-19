@@ -1,5 +1,12 @@
 from .tarball import TarballExporter
+from .debian import DebianExporter
 
 EXPORTERS = {
-    TarballExporter.format: TarballExporter
+    clazz.format: clazz
+
+    for clazz in [
+        TarballExporter,
+        DebianExporter,
+
+    ]
 }

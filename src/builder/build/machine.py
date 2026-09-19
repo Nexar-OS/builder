@@ -53,7 +53,7 @@ class MachineSpec:
         
         return "usr/lib"
 
-triple_suffix = "placeholder-linux-gnu"
+triple_suffix = "nexar-linux-gnu"
 class Target:
     """
     A collection of different target architectures.

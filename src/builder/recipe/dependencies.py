@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, TYPE_CHECKING
+from typing import Iterable, TYPE_CHECKING, Generator
 from dataclasses import dataclass
 from enum import Enum, auto
 
@@ -43,6 +43,11 @@ class DependencyKind(Enum):
     Dependencies only needed at runtime.
     """
 
+    OPTIONAL = auto()
+    """
+    Dependencies optionally needed at runtime.
+    """
+
     BUILD = auto()
     """
     Dependencies needed to build a recipe.
@@ -60,7 +65,7 @@ class DependencyKind(Enum):
         from .recipe import BuildRole
 
         match self:
-            case DependencyKind.RUNTIME:
+            case DependencyKind.RUNTIME | DependencyKind.OPTIONAL:
                 return BuildRole.TARGET
             
             case DependencyKind.BUILD:
@@ -174,23 +179,32 @@ class DependencyGraph():
         
         dependencies = recipe.metadata.dependencies or Dependencies.none()
 
+        def _dependencies(role: BuildRole, list: list[str]) -> Generator[RecipeKey]:
+            return (
+                RecipeKey(
+                    name=dependency,
+                    role=role
+                )
+                for dependency in list
+            )
+        
         match self.kind:
             case DependencyKind.BUILD:
-                yield from (
-                    RecipeKey(
-                        name=dependency,
-                        role=BuildRole.SYSROOT
-                    )
-                    for dependency in (dependencies.build or [])
+                yield from _dependencies(
+                    role=BuildRole.SYSROOT,
+                    list=dependencies.build or []
                 )
             
+            case DependencyKind.OPTIONAL:
+                yield from _dependencies(
+                    role=BuildRole.TARGET,
+                    list=dependencies.optional or []
+                )
+
             case DependencyKind.RUNTIME:
-                yield from (
-                    RecipeKey(
-                        name=dependency,
-                        role=BuildRole.TARGET
-                    )
-                    for dependency in (dependencies.required or [])
+                yield from _dependencies(
+                    role=BuildRole.TARGET,
+                    list=dependencies.required or []
                 )
         
             case _:

@@ -107,6 +107,9 @@ class BuildContext:
                 exc_info=True,
                 stack_info=True
             )
-            raise
+            raise RuntimeError(
+                f"Command {' '.join(cmd)} failed:\n"
+                f"{result.stderr}"
+            )
         
         return result

@@ -33,6 +33,12 @@ class PackageCommand(CLICommand):
         flags=("--with-deps", "-d")
     ).arg()
 
+    with_optional_dependencies: bool = CLIArgument(
+        type=bool,
+        help="Export optional runtime dependencies of packages.",
+        flags=("--with-opt-deps", "-od")
+    ).arg()
+
     export_path: Path | None = CLIArgument(
         type=Path,
         help="The path to put the exportet artifacts.",
@@ -75,17 +81,27 @@ class PackageCommand(CLICommand):
             for recipe_name in recipe_names
         ]
 
-        # Add runtime dependencies
-        if self.with_dependencies:
+        def _with_dependencies(kind: DependencyKind, allow_cycles: bool) -> list[BuildRecipe]:
             graph = DependencyGraph(
                 recipes=recipes,
                 registry=ctx.registry,
-                kind=DependencyKind.RUNTIME,
-                allow_cycles=True
+                kind=kind,
+                allow_cycles=allow_cycles
             )
             
-            recipes = list(
-                graph.recipes.values()
+            return list(graph.recipes.values())
+
+        # Add dependencies
+        if self.with_dependencies:
+            recipes = _with_dependencies(
+                DependencyKind.RUNTIME,
+                True
+            )
+        
+        if self.with_optional_dependencies:
+            recipes = _with_dependencies(
+                DependencyKind.OPTIONAL,
+                True
             )
 
         with ThreadPoolExecutor() as executor:

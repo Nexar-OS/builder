@@ -97,7 +97,7 @@ class DefaultArguments(CLICommand):
         """
         ctx = self.ctx
 
-        load_or_build_cross_toolchain(ctx)
+        ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
         self._ctx = ctx
 

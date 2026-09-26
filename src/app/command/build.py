@@ -24,6 +24,19 @@ class BuildCommand(CLICommand):
         flags=("--all", "-a")
     ).arg()
 
+    throw_on_fail: bool = CLIArgument(
+        type=bool,
+        help="Pass to exit the builder when a single recipe cannot be built.",
+        flags=("--throw-on-fail", "-tof"),
+    ).arg()
+
+    max_retries: int = CLIArgument(
+        type=int,
+        help="The maximum amount to retry building each recipe if it fails.",
+        flags=("--max-retries", "-r"),
+        default=3
+    ).arg()
+
     no_runtime_dependencies: bool = CLIArgument(
         type=bool,
         help="If passed, runtime dependencies won't be added to recipe list.",
@@ -59,6 +72,8 @@ class BuildCommand(CLICommand):
             build_role=BuildRole.TARGET,
             add_runtime_dependencies=not self.no_runtime_dependencies,
             ignore_dependency_errors=self.ignore_dependency_errors,
+            max_retries=self.max_retries,
+            throw_on_fail=self.throw_on_fail,
         )
 
         stage.build()

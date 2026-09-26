@@ -29,6 +29,8 @@ class Stage:
         build_role (BuildRole): The role in which recipes should be built.
         add_runtime_dependencies (bool): When set to ``True``, runtime dependencies will be built as well.
         ignore_dependency_errors (bool): When set to ``True``, missing dependencies will be tollerated.
+        max_retries (int): The maximum amount to retry building each recipe if it fails.
+        throw_on_fail (bool): Make the sequencer throw a ``RuntimeError`` if a recipe cannot be built.
         pre_build_hook (Callable[BuildContext]): An optional pre-build hook.
         post_build_hook (Callable[BuildContext]): An optional post-build hook.
     """
@@ -41,6 +43,8 @@ class Stage:
     build_role: BuildRole = BuildRole.TARGET
     add_runtime_dependencies: bool = False
     ignore_dependency_errors: bool = False
+    max_retries: int = 3
+    throw_on_fail: bool = False
     max_workers: int | None = None
 
     pre_build_hook: Callable | None = None
@@ -190,5 +194,8 @@ class Stage:
         the provided build context
         """
 
-        self.sequencer.build()
+        self.sequencer.build(
+            max_retries=self.max_retries,
+            throw_on_fail=self.throw_on_fail
+        )
         return self

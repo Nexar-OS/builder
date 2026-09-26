@@ -96,7 +96,7 @@ class Sequencer:
         for recipe, dependencies in self._dependencies.items():
             debug(f"{recipe} depends on {', '.join([ f'{dep.name} ({dep.role.name.upper()})' for dep in dependencies] or [ '/' ])}")
         
-    def _build(self, recipe: BuildRecipe, max_retries: int = 3) -> BuildRecipe:
+    def _build(self, recipe: BuildRecipe, max_retries: int = 3, throw_on_fail: bool = False) -> BuildRecipe:
         """
         Invokes the build of a recipe if it hasn't
         been built or is flagged as out-of-date.
@@ -104,6 +104,7 @@ class Sequencer:
         Args:
             recipe (BuildRecipe): The recipe to build.
             max_retries (int): The amount of tries to build the recipe.
+            throw_on_fail (bool): Throws a ``RuntimeError`` when the recipe cannot be built.
 
         Returns:
             BuildRecipe: The recipe that has been built.
@@ -121,17 +122,26 @@ class Sequencer:
                     )
 
                     warn(f"Build of recipe '{recipe}' failed! Look at '{recipe.logfile}' for more info.")
+
+                    if throw_on_fail:
+                        raise RuntimeError(
+                            f"Build of recipe '{recipe}' failed!\n"
+                            f"Logfile: '{recipe.logfile}'\n"
+                            f"Error: {e}"
+                        )
                     
                     break
 
         return recipe
     
-    def build(self) -> list[BuildRecipe]:
+    def build(self, max_retries: int = 3, throw_on_fail: bool = False) -> list[BuildRecipe]:
         """
         Build all recipes concurrently while respecting BUILD dependencies.
 
         Returns:
             list[BuildRecipe]: Recipes in the order in which they are completed.
+            max_retries (int): The amount of tries to build the recipe.
+            throw_on_fail (bool): Throws a ``RuntimeError`` when the recipe cannot be built.
         """
 
         # The number of unfinished prerequesites for every task/recipe.
@@ -163,6 +173,8 @@ class Sequencer:
                     future = executor.submit(
                         self._build,
                         task,
+                        max_retries,
+                        throw_on_fail
                     )
 
                     debug(f"Build started: {task}")

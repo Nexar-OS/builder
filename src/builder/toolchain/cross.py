@@ -218,7 +218,9 @@ def build_cross_toolchain(ctx: BuildContext) -> "CrossToolchain":
         triple=toolchain.target.triple
     ):
         warn("Freshly build toolchain doesn't pass validation!")
-        raise RuntimeError()
+        raise RuntimeError(
+            "Toolchain doesn't pass validation!"
+        )
 
     return toolchain
 

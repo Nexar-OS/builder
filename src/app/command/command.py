@@ -124,10 +124,12 @@ class CLICommand(ABC):
 
             argument: CLIArgument = metadata["arg"]
 
+            kwargs = argument.kwargs
+            kwargs.setdefault("dest", field.name)
+
             parser.add_argument(
                 *argument.flags,
-                dest=field.name,
-                **argument.kwargs
+                **kwargs
             )
 
     @classmethod

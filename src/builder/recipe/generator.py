@@ -439,3 +439,15 @@ class RecipeGenerator():
                 raise ValueError("Cannot resolve md5hashes automatically without a version.")
 
             source.md5hash = url_file_to_md5(source.url.replace("${version}", self.schema.version))
+    
+    def dump(self) -> dict[str, Any]:
+        """Create a dump of the recipe schema to serialize.
+
+        Returns:
+            dict[str, Any]: Mapping of all values.
+        """
+        return self.schema.model_dump(
+            exclude_none=True,
+            mode="json",
+            exclude_defaults=True,
+        )

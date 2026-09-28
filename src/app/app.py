@@ -34,7 +34,8 @@ def build_parser() -> ArgumentParser:
         description="Create, manage and modify package recipes directly from the cli.",
         parent=subparsers,
         commands=[
-            CheckCommand
+            CheckCommand,
+            CreateRecipeCommand
         ]
     )
 

@@ -1,3 +1,4 @@
+from pathlib import Path
 from dataclasses import dataclass
 
 from builder.build.context import BuildContext
@@ -131,13 +132,27 @@ class CreateRecipeCommand(CLICommand):
         metavar="[name-{version}.tar.xz]"
     ).arg()
 
-    def _generator(self) -> RecipeGenerator | None:
-        if not self.template:
-            return RecipeGenerator.empty(name=self.recipe_name)
-        
+    in_source: bool = CLIArgument(
+        type=bool,
+        help="Set the build method to IN_SOURCE.",
+        flags=("--in-source", "-is")
+    ).arg()
+
+    patches: list[Path] = CLIArgument(
+        type=Path,
+        help="Add a patch to the recipe.",
+        flags=("--add-patch", "-p"),
+        action="append",
+        default=[]
+    ).arg()
+
+    def _generator(self) -> RecipeGenerator | None:        
         generator = None
 
-        match self.template.lower():            
+        match (self.template or "default").lower():
+            case "default":
+                generator = RecipeGenerator.empty(name=self.recipe_name)
+
             case "web":
                 if not self.url:
                     error(f"'Web' template needs '--url' to run.")
@@ -206,6 +221,9 @@ class CreateRecipeCommand(CLICommand):
                 optional=self.optional_runtime_dependencies,
                 build=self.build_dependencies
             )) \
+
+        for patch in self.patches:
+            generator.add_patch(patch)
         
         # Either use the version passed
         # or try to find the latest upstream version

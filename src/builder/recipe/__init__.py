@@ -32,3 +32,5 @@ from .sequencing import (
     Sequencer,
     SequencerError,
 )
+
+from .generator import RecipeGenerator

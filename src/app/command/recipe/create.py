@@ -135,6 +135,8 @@ class CreateRecipeCommand(CLICommand):
         if not self.template:
             return RecipeGenerator.empty(name=self.recipe_name)
         
+        generator = None
+
         match self.template.lower():            
             case "web":
                 if not self.url:
@@ -145,7 +147,7 @@ class CreateRecipeCommand(CLICommand):
                     error(f"'Web' template needs '--filename' to run.")
                     return
 
-                return RecipeGenerator.web(
+                generator = RecipeGenerator.web(
                     url=self.url,
                     filename=self.filename,
                     name=self.recipe_name
@@ -160,7 +162,7 @@ class CreateRecipeCommand(CLICommand):
                     error(f"'Github' template needs '--filename' to run.")
                     return
 
-                return RecipeGenerator.github(
+                generator = RecipeGenerator.github(
                     repository=self.repo,
                     include_prereleases=self.include_prereleases,
                     identifier=self.release_identifier,
@@ -178,7 +180,7 @@ class CreateRecipeCommand(CLICommand):
                     error(f"'Github' template needs '--filename' to run.")
                     return
 
-                return RecipeGenerator.gitlab(
+                generator = RecipeGenerator.gitlab(
                     repository=self.repo,
                     include_prereleases=self.include_prereleases,
                     tag_format=self.tag_format,
@@ -190,15 +192,15 @@ class CreateRecipeCommand(CLICommand):
             case _:
                 error(f"Unrecognized template '{self.template}'!")
 
-    def handle(self, ctx: BuildContext):
-        gen = self._generator()
-        if not gen:
-            return        
+        if generator:
+            return self._complete_generator(generator)
 
-        gen \
-            .set("license", self.licenses) \
+    def _complete_generator(self, generator: RecipeGenerator) -> RecipeGenerator:
+        generator \
+            .set("license", self.licenses)        \
             .set("description", self.description) \
             .set("maintainers", self.maintainers) \
+            .set("homepage", self.homepage or generator.schema.homepage) \
             .set("dependencies", Dependencies(
                 required=self.runtime_dependencies,
                 optional=self.optional_runtime_dependencies,
@@ -208,10 +210,17 @@ class CreateRecipeCommand(CLICommand):
         # Either use the version passed
         # or try to find the latest upstream version
         if self.version:
-            gen.set("version", self.version)
+            generator.set("version", self.version)
         else:
-            gen.latest_version()
+            generator.latest_version()
 
-        gen._resolve_auto_hashes()
+        generator._resolve_auto_hashes()
         
-        print(gen.schema)
+        return generator
+
+    def handle(self, ctx: BuildContext):
+        generator = self._generator()
+        if not generator:
+            return
+
+        print(generator.schema)

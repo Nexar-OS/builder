@@ -2,7 +2,7 @@ from typing import Literal, Any
 import re
 from builder.recipe.schema import *
 from builder.build import BuildContext
-from builder.recipe.recipe import GenericRecipe, BuildRole
+from builder.recipe.recipe import GenericRecipe, BuildRole, BuildMethod
 from builder.recipe.loader import load_recipe_from_schema, load_version_source_from_schema
 from builder.utils.download import url_file_to_md5
 
@@ -290,6 +290,104 @@ class RecipeGenerator():
         self.schema.build = build
         return self
     
+    def autotools(
+            self,
+            install_target: str = "install",
+            config_args: list[str] | None = None,
+            build_args: list[str] | None = None,
+            install_args: list[str] | None = None,
+            build_method: BuildMethod | None = None,
+            disable_fakeroot: bool = False,
+            skip_build: bool = False,
+        ) -> "RecipeGenerator":
+        """Configure the autotools build system."""
+
+        self.schema.build = BuildSchema(
+            method=build_method or BuildMethod.OUT_OF_SOURCE,
+            build_system=AutotoolsSchema(
+                type="autotools",
+                disable_fakeroot=disable_fakeroot,
+                skip_build=skip_build,
+                install_target=install_target,
+                config_args=config_args,
+                build_args=build_args,
+                install_args=install_args
+            )
+        )
+
+        return self
+    
+    def cmake(
+            self,
+            config_args: list[str] | None = None,
+            build_args: list[str] | None = None,
+            install_args: list[str] | None = None,
+            build_method: BuildMethod | None = None,
+            generator: str | None = None
+        ) -> "RecipeGenerator":
+        """Configure the cmake build system."""
+
+        self.schema.build = BuildSchema(
+            method=build_method or BuildMethod.OUT_OF_SOURCE,
+            build_system=CMakeSchema(
+                type="cmake",
+                config_args=config_args,
+                build_args=build_args,
+                install_args=install_args,
+                generator=generator
+            )
+        )
+
+        return self
+    
+    def meson(
+            self,
+            config_args: list[str] | None = None,
+            build_args: list[str] | None = None,
+            install_args: list[str] | None = None,
+            disable_fakeroot: bool = False,
+            build_method: BuildMethod | None = None,
+        ) -> "RecipeGenerator":
+        """Configure the meson build system."""
+
+        self.schema.build = BuildSchema(
+            method=build_method or BuildMethod.OUT_OF_SOURCE,
+            build_system=MesonSchema(
+                type="meson",
+                disable_fakeroot=disable_fakeroot,
+                config_args=config_args,
+                build_args=build_args,
+                install_args=install_args
+            )
+        )
+
+        return self
+    
+    def custom_build_system(
+            self,
+            prepare: str | None = None,
+            configure: str | None = None,
+            build: str | None = None,
+            install: str | None = None,
+            disable_fakeroot: bool = False,
+            build_method: BuildMethod | None = None,
+        ) -> "RecipeGenerator":
+        """Configure the recipe to use a custom build system."""
+
+        self.schema.build = BuildSchema(
+            method=build_method or BuildMethod.OUT_OF_SOURCE,
+            build_system=CustomBuildSystemSchema(
+                type="custom",
+                prepare=prepare,
+                configure=configure,
+                build=build,
+                install=install,
+                disable_fakeroot=disable_fakeroot,
+            )
+        )
+
+        return self
+
     def add_patch(self, patch: Path) -> "RecipeGenerator":
         """Add a patch to the recipe.
 

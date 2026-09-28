@@ -75,11 +75,53 @@ class CreateRecipeCommand(CLICommand):
         flags=("--version", "-v")
     ).arg()
 
-    format_web: str = CLIArgument(
+    template: str | None = CLIArgument(
         type=str,
-        help="Template for recipes with upstream source being a web-archive.",
-        flags=("--web", ),
-        metavar="[url to web-archive]"
+        help="Select an optional recipe template",
+        flags=("--template", "-t"),
+        metavar="[template]"
+    ).arg()
+
+    url: str | None = CLIArgument(
+        type=str,
+        help="URL pointing to a public web-archive.",
+        flags=("--url", "-u"),
+        metavar="[name-{version}.tar.xz]"
+    ).arg()
+
+    repo: str | None = CLIArgument(
+        type=str,
+        help="The repository to use with --template=github|gitlab",
+        flags=("--repo", "-r"),
+        metavar="owner/repo"
+    ).arg()
+
+    include_prereleases: bool = CLIArgument(
+        type=bool,
+        help="When passed, prereleases will be considered with version discovery.",
+        flags=("--include-prereleases", "-ipr")
+    ).arg()
+
+    release_identifier: str = CLIArgument(
+        type=str,
+        help="The github release identifier. (Usually either tags or releases)",
+        flags=("--release-identifier", "-ri"),
+        default="releases"
+    ).arg()
+
+    tag_format: str = CLIArgument(
+        type=str,
+        help="The format of gitlab-tags (Allows for ``{version}`` placeholder.)",
+        flags=("--tag-format", "-tf"),
+        default="{version}",
+        metavar="[{version}, v{version}, version-{version}, etc.]"
+    ).arg()
+
+    gitlab_url: str | None = CLIArgument(
+        type=str,
+        help="The url of the gitlab instance.",
+        flags=("--gitlab", "-gl"),
+        metavar="https://gitlab.com"
     ).arg()
 
     filename: str | None = CLIArgument(
@@ -90,20 +132,63 @@ class CreateRecipeCommand(CLICommand):
     ).arg()
 
     def _generator(self) -> RecipeGenerator | None:
-        if self.format_web:
-            if not self.filename:
-                error("'--web' requires '--filename' to be passed!")
-                return None
-            
-            return RecipeGenerator.web(
-                url=self.format_web,
-                name=self.recipe_name,
-                filename=self.filename
-            )
+        if not self.template:
+            return RecipeGenerator.empty(name=self.recipe_name)
         
-        else:
-            return RecipeGenerator.empty(name=self.recipe_name) \
-                .set("homepage", self.homepage) \
+        match self.template.lower():            
+            case "web":
+                if not self.url:
+                    error(f"'Web' template needs '--url' to run.")
+                    return
+                
+                if not self.filename:
+                    error(f"'Web' template needs '--filename' to run.")
+                    return
+
+                return RecipeGenerator.web(
+                    url=self.url,
+                    filename=self.filename,
+                    name=self.recipe_name
+                )
+            
+            case "github":
+                if not self.repo:
+                    error(f"'Github' template needs '--repo' to run.")
+                    return
+                
+                if not self.filename:
+                    error(f"'Github' template needs '--filename' to run.")
+                    return
+
+                return RecipeGenerator.github(
+                    repository=self.repo,
+                    include_prereleases=self.include_prereleases,
+                    identifier=self.release_identifier,
+                    tag_format=self.tag_format,
+                    filename=self.filename,
+                    name=self.recipe_name
+                )
+            
+            case "gitlab":
+                if not self.repo:
+                    error(f"'Github' template needs '--repo' to run.")
+                    return
+                
+                if not self.filename:
+                    error(f"'Github' template needs '--filename' to run.")
+                    return
+
+                return RecipeGenerator.gitlab(
+                    repository=self.repo,
+                    include_prereleases=self.include_prereleases,
+                    tag_format=self.tag_format,
+                    filename=self.filename,
+                    name=self.recipe_name,
+                    base_url=self.gitlab_url
+                )
+            
+            case _:
+                error(f"Unrecognized template '{self.template}'!")
 
     def handle(self, ctx: BuildContext):
         gen = self._generator()

@@ -290,6 +290,25 @@ class RecipeGenerator():
         self.schema.build = build
         return self
     
+    def add_patch(self, patch: Path) -> "RecipeGenerator":
+        """Add a patch to the recipe.
+
+        Args:
+            patch (str): The relative path to the patch file.
+
+        Returns:
+            RecipeGenerator: This generator, allowing for method chaining.
+        """
+        if not self.schema.build:
+            raise ValueError("Cannot add patch to a recipe without a build system.")
+
+        patches: list[Path] = self.schema.build.patches or []
+        patches.append(patch)
+
+        self.schema.build.patches = list(set(patches))
+
+        return self
+    
     def recipe(self, ctx: BuildContext, role: BuildRole | None = None) -> GenericRecipe:
         """Generate the runtime recipe from the declarative representation.
 

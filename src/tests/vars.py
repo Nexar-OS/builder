@@ -7,6 +7,9 @@ from builder.build import (
     Target
 )
 from builder.recipe import RecipeRegistry
+from builder.utils.logger import create_default_logger
+
+create_default_logger(None)
 
 max_workers, num_jobs = detect_parallelism()
 

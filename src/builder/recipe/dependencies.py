@@ -23,6 +23,10 @@ class Dependencies:
     optional: list[str] | None = None
     build: list[str] | None = None
     
+    def is_empty(self) -> bool:
+        """Check if the dependencies are empty."""
+        return not (self.required or self.optional or self.build)
+
     @classmethod
     def none(cls):
         """

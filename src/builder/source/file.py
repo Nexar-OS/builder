@@ -7,7 +7,7 @@ import hashlib
 
 from builder.utils.download import download_url
 from builder.utils.logger import debug, warn
-from builder.utils.file import merge_trees
+from builder.utils.file import merge_trees, file_to_md5
 
 @dataclass
 class FileSource(Source):
@@ -42,12 +42,7 @@ class FileSource(Source):
             return False
         
         # Compute hash
-        md5 = hashlib.md5()
-        with file.open("rb") as file:
-            for chunk in iter(lambda: file.read(8912), b""):
-                md5.update(chunk)
-        
-        computed = md5.hexdigest().lower()
+        computed = file_to_md5(file)
 
         passed = computed == self.md5hash.lower()
 

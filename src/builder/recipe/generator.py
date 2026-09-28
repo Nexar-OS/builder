@@ -44,7 +44,8 @@ class RecipeGenerator():
         cls,
         name: str,
         version_source: VersionSourceSchema,
-        download_url: str | None = None
+        download_url: str | None = None,
+        homepage: str | None = None,
     ) -> "RecipeGenerator":
         """Construct a recipe generator from a specific type of ``VersionSource``.
 
@@ -54,6 +55,7 @@ class RecipeGenerator():
             name (str): The name of the recipe.
             version_source (VersionSourceSchema): The version source to use.
             download_url (str | None, optional): An optional tarball source. Defaults to None.
+            homepage (str | None, optional): Optional upstream homepage.
         """
         generator = RecipeGenerator.empty(name)
         generator.set("version_source", version_source)
@@ -63,6 +65,9 @@ class RecipeGenerator():
                 url=download_url,
                 name=name,
             )
+        
+        if homepage:
+            generator.schema.homepage = homepage
 
         return generator
     
@@ -106,7 +111,8 @@ class RecipeGenerator():
                 include_prereleases=include_prereleases,
                 identifier=identifier
             ),
-            download_url=f"https://github.com/{repository}/releases/download/{tag_format}/{filename}"
+            download_url=f"https://github.com/{repository}/releases/download/{tag_format}/{filename}",
+            homepage=f"https://github.com/{repository}/"
         )
         
     
@@ -150,7 +156,8 @@ class RecipeGenerator():
                 include_prereleases=include_prereleases,
                 base_url=base_url
             ),
-            download_url=f"https://gitlab.com/{repository}/-/archive/{tag_format}/{filename}"
+            download_url=f"https://gitlab.com/{repository}/-/archive/{tag_format}/{filename}",
+            homepage=f"https://gitlab.com/{repository}/"
         )
 
     @classmethod
@@ -190,7 +197,8 @@ class RecipeGenerator():
             download_url=(
                 f"{url.rstrip('/')}/"
                 f"{filename.replace('{version}', '${version}')}"
-            )
+            ),
+            homepage=url
         )
 
     def latest_version(self) -> "RecipeGenerator":

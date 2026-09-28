@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from builder.build import BuildContext
 from builder.recipe import BuildRole
 from builder.utils.logger import error
-from .command import CLICommand, CLIArgument
+from ..command import CLICommand, CLIArgument
 
 @dataclass
 class CheckCommand(CLICommand):

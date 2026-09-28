@@ -1,6 +1,20 @@
 from argparse import ArgumentParser, _SubParsersAction
 from .command import *
 
+def _create_group(name: str, description: str, parent: _SubParsersAction, commands: list[type[CLICommand]]):
+    parser = parent.add_parser(
+        name=name,
+        help=description
+    )
+
+    subparsers = parser.add_subparsers(
+        title="command",
+        required=True
+    )
+
+    for command in commands:
+        command.add_to_parser(subparsers)
+
 def build_parser() -> ArgumentParser:
     # Create default parser
     parser = ArgumentParser(
@@ -15,26 +29,19 @@ def build_parser() -> ArgumentParser:
         required=True
     )
 
-    build_recipe_parser(subparsers)
+    _create_group(
+        name="recipe",
+        description="Create, manage and modify package recipes directly from the cli.",
+        parent=subparsers,
+        commands=[
+            CheckCommand
+        ]
+    )
 
     BuildCommand.add_to_parser(subparsers)
     PackageCommand.add_to_parser(subparsers)
 
     return parser
-
-def build_recipe_parser(parent: _SubParsersAction):
-    # builder recipe ...
-    parser = parent.add_parser(
-        name="recipe",
-        help="Create, manage and modify package recipes directly from the cli."
-    )
-
-    subparsers = parser.add_subparsers(
-        title="command",
-        required=True
-    )
-
-    CheckCommand.add_to_parser(subparsers)
 
 def cli():
     # Load parser

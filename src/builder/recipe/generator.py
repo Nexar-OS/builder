@@ -1,8 +1,9 @@
 from typing import Literal, Any
+import re
 from builder.recipe.schema import *
-from builder.build.context import BuildContext
+from builder.build import BuildContext
 from builder.recipe.recipe import GenericRecipe, BuildRole
-from builder.recipe.loader import load_recipe_from_schema
+from builder.recipe.loader import load_recipe_from_schema, load_version_source_from_schema
 from builder.utils.download import url_file_to_md5
 
 class RecipeGenerator():
@@ -13,6 +14,8 @@ class RecipeGenerator():
 
     The generator operates entirely on the declarative recipe schema.
     """
+    VERSION_PATTERN = r"(?P<version>[0-9][A-Za-z0-9._+-]*)"
+
     def __init__(self, schema: RecipeSchema) -> None:
         self.schema = schema
 
@@ -22,10 +25,6 @@ class RecipeGenerator():
 
         Args:
             name (str): Name of the package.
-            homepage (str): Optional homepage value (Defaults to "").
-            license (str): Optional license (Defaults to "").
-            description (str): Optional human-readable package description (Defaults to "").
-            version (str): Optional default-version (Defaults to "").
 
         Returns:
             RecipeGenerator: A generator containing a minimal recipe.
@@ -40,6 +39,69 @@ class RecipeGenerator():
             )
         )
     
+    @classmethod
+    def web(
+        cls,
+        url: str,
+        filename: str,
+        *,
+        name: str
+    ) -> "RecipeGenerator":
+        """Create a recipe using a generic web version source.
+
+        This constructor is useful when a project's upstream source
+        is a web-archive.
+
+        Returns:
+            RecipeGenerator: A generator containing a web-based recipe source.
+        """
+
+        if filename.count("{version}") != 1:
+            raise ValueError("source_format must contain exactly one '{version}' placeholder!")
+
+        prefix, suffix = filename.split("{version}")
+        version_regex = (
+            f"{re.escape(prefix)}"
+            f"{cls.VERSION_PATTERN}"
+            f"{re.escape(suffix)}"
+        )
+
+        source_url = (
+            f"{url.rstrip('/')}/"
+            f"{filename.replace('{version}', '${version}')}"
+        )
+
+        version_source = WebVersionSourceSchema(
+            type="web",
+            url=url,
+            regex=version_regex
+        )
+
+        generator = RecipeGenerator.empty(name)
+        generator.set("version_source", version_source)
+
+        generator.add_tarball(
+            url=source_url,
+            name=name,
+        )
+
+        return generator
+
+    def latest_version(self) -> "RecipeGenerator":
+        """Set the version field to the latest upstream version.
+        
+        Uses the ``version_source`` of the schema to detect
+        the latest upstream version.
+        """
+        source = load_version_source_from_schema(self.schema.version_source)
+        if not source:
+            return self
+        
+        latest = source.latest_version
+        self.schema.version = latest.raw
+
+        return self
+
     def add_source(self, source: SourceSchema) -> "RecipeGenerator":
         """Add a source to the recipe.
 
@@ -58,21 +120,21 @@ class RecipeGenerator():
                            *,
                            name: str | None = None,
                            filename: str | None = None,
-                           md5hash: str | Literal["auto"] | None = None,
+                           md5hash: str | None = None,
                            strip_top_level: bool = True) -> "RecipeGenerator":
         """Add a tarball source to the recipe.
 
         Args:
-            source (SourceSchema): The source schema to add.
+            url (str): The url to the tarball (supports ${version} placeholder).
+            name (str | None): The name of the source (defaults to ``self.schema.name``).
+            filename (str | None): Name of the downloaded file.
+            md5hash (str | None): md5hash of the file (defaults to "none" and will be resolved with ``._resolve_auto_hashes``)
 
         Returns:
             RecipeGenerator: This generator, allowing for method chaining.
         """
         if name is None:
             name = self.schema.name
-
-        if md5hash == "auto":
-            md5hash = url_file_to_md5(url)
 
         return self.add_source(
             TarballSourceSchema(
@@ -129,3 +191,20 @@ class RecipeGenerator():
             role=role or BuildRole.TARGET,
             schema=self.schema
         )
+    
+    def _resolve_auto_hashes(self):
+        """Calculate deferred source hashes after the source is known."""
+        for source in self.schema.sources:
+            if not any(isinstance(source, schema) for schema in [
+                FileSourceSchema,
+                TarballSourceSchema
+            ]):
+                continue
+
+            if source.md5hash:
+                continue
+
+            if not self.schema.version:
+                raise ValueError("Cannot resolve md5hashes automatically without a version.")
+
+            source.md5hash = url_file_to_md5(source.url.replace("${version}", self.schema.version))

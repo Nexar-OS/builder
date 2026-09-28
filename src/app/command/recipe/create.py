@@ -69,24 +69,64 @@ class CreateRecipeCommand(CLICommand):
         default=[]
     ).arg(parse=list[str])
 
-    version: str = CLIArgument(
+    version: str | None = CLIArgument(
         type=str,
         help="The upstream-version to build the package from.",
-        flags=("--version", "-v"),
-        default=""
+        flags=("--version", "-v")
     ).arg()
 
+    format_web: str = CLIArgument(
+        type=str,
+        help="Template for recipes with upstream source being a web-archive.",
+        flags=("--web", ),
+        metavar="[url to web-archive]"
+    ).arg()
+
+    filename: str | None = CLIArgument(
+        type=str,
+        help="The source filename to search for.",
+        flags=("--filename", "-fn"),
+        metavar="[name-{version}.tar.xz]"
+    ).arg()
+
+    def _generator(self) -> RecipeGenerator | None:
+        if self.format_web:
+            if not self.filename:
+                error("'--web' requires '--filename' to be passed!")
+                return None
+            
+            return RecipeGenerator.web(
+                url=self.format_web,
+                name=self.recipe_name,
+                filename=self.filename
+            )
+        
+        else:
+            return RecipeGenerator.empty(name=self.recipe_name) \
+                .set("homepage", self.homepage) \
+
     def handle(self, ctx: BuildContext):
-        gen = RecipeGenerator.empty(name=self.recipe_name) \
-            .set("homepage", self.homepage) \
+        gen = self._generator()
+        if not gen:
+            return        
+
+        gen \
             .set("license", self.licenses) \
             .set("description", self.description) \
-            .set("version", self.version) \
             .set("maintainers", self.maintainers) \
             .set("dependencies", Dependencies(
                 required=self.runtime_dependencies,
                 optional=self.optional_runtime_dependencies,
                 build=self.build_dependencies
             )) \
+        
+        # Either use the version passed
+        # or try to find the latest upstream version
+        if self.version:
+            gen.set("version", self.version)
+        else:
+            gen.latest_version()
 
+        gen._resolve_auto_hashes()
+        
         print(gen.schema)

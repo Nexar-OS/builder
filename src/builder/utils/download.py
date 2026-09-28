@@ -1,6 +1,7 @@
 from pathlib import Path
 import requests
 import time
+from urllib.request import urlopen
 
 def download_url(
         url: str,
@@ -39,3 +40,16 @@ def download_url(
                 raise
 
             time.sleep(2 ** attempt)
+
+def url_file_to_md5(url: str) -> str | None:
+    """Generate an md5hash of a file on a server.
+
+    Args:
+        url (str): The url pointing to the file to hash.
+
+    Returns:
+        str | None: The hash. None if file doesn't exist.
+    """
+    from builder.utils.data import calculcate_md5
+    with urlopen(url) as response:
+        return calculcate_md5(iter(lambda: response.read(8912), b""))

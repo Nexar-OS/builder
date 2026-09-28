@@ -4,6 +4,8 @@ from typing import Any, TypeVar
 from builder.utils.logger import warn
 from yaml import safe_load
 from yaml.parser import ParserError
+from typing import Iterable
+import hashlib
 import re
 
 T = TypeVar("T")
@@ -129,3 +131,20 @@ def load_yaml(path: Path) -> Any | None:
             f"{e}"
         )
         return None
+    
+def calculcate_md5(generator: Iterable[bytes]) -> str:
+    """Calculate the md5-hashsum of a byte stream.
+
+    Args:
+        generator: The stream of bytes.
+
+    Returns:
+        str: The hash string.
+    """
+
+    md5 = hashlib.md5()
+
+    for chunk in generator:
+        md5.update(chunk)
+    
+    return md5.hexdigest().lower()

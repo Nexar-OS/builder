@@ -66,3 +66,19 @@ def merge_trees(source: Path, dest: Path, copy: bool = False, skip_extensions: l
             source.rmdir()
         except OSError:
             pass
+
+def file_to_md5(path: Path) -> str | None:
+    """Generate an md5hash of a local file.
+
+    Args:
+        path (Path): The file to hash.
+
+    Returns:
+        str | None: The hash. None if file doesn't exist.
+    """
+    if not path.is_file():
+        return None
+
+    from builder.utils.data import calculcate_md5
+    with path.open("rb") as file:
+        return calculcate_md5(iter(lambda: file.read(8912), b""))

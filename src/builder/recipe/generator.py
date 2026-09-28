@@ -58,6 +58,11 @@ class RecipeGenerator():
         Args:
             repository (str): The repository.
             name (str | None, optional): Package name. Defaults to the repository name.
+            include_prereleases (bool): Whether prerelease versions should be considered
+                                        when discovering versions.
+            tag_format (str): The format of gitlab-tags (Allows for ``{version}`` placeholder.)
+            filename (str): The filename to download (Allows for ``{version}`` placeholder.)
+            identifier (str): GitHub release identifier used by the version source.
         """
         if "/" not in repository:
             raise ValueError("Github repository must be in 'owner/repository' format!")
@@ -81,6 +86,58 @@ class RecipeGenerator():
 
         generator.add_tarball(
             url=f"https://github.com/{repository}/releases/download/{tag_format}/{filename}",
+            name=name,
+        )
+
+        return generator
+    
+    @classmethod
+    def gitlab(
+        cls,
+        repository: str,
+        include_prereleases: bool = False,
+        tag_format: str = "{version}",
+        *,
+        filename: str,
+        name: str | None = None,
+        base_url: str | None = None,
+    ) -> "RecipeGenerator":
+        """Create a recipe from a Gitlab repository.
+
+        The repository should be specified using the convnetional
+        ``namespace/project`` format.
+
+        Args:
+            repository (str): The repository.
+            name (str | None, optional): Package name. Defaults to the repository name.
+            include_prereleases (bool): Whether prerelease versions should be considered
+                                        when discovering versions.
+            tag_format (str): The format of gitlab-tags (Allows for ``{version}`` placeholder.)
+            filename (str): The filename to download (Allows for ``{version}`` placeholder.)
+            base_url (str | None, optional): GitLab instance URL. ``None`` uses the default GitLab instance.
+        """
+        if "/" not in repository:
+            raise ValueError("Gitlab repository must be in 'namespace/project' format!")
+        
+        repository_name = repository.rsplit("/", 1)[1]
+        tag_format = tag_format.replace("{version}", "${version}")
+        filename = filename.replace("{version}", "${version}")
+
+        if name is None:
+            name = repository_name
+        
+        version_source = GitlabVersionSourceSchema(
+            type="gitlab",
+            repo=repository,
+            include_prereleases=include_prereleases,
+            base_url=base_url
+        )
+
+        generator = RecipeGenerator.empty(name)
+        generator.set("version_source", version_source)
+
+        generator.add_tarball(
+            url=f"https://gitlab.com/{repository}/-/archive/{tag_format}/{filename}",
             name=name,
         )
 

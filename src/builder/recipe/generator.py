@@ -17,13 +17,7 @@ class RecipeGenerator():
         self.schema = schema
 
     @classmethod
-    def base(cls,
-            name: str,
-            homepage: str = "",
-            license: str = "",
-            description: str = "",
-            version: str = ""
-        ) -> "RecipeGenerator":
+    def empty(cls, name: str) -> "RecipeGenerator":
         """Create a minimal recipe for a package.
 
         Args:
@@ -39,10 +33,10 @@ class RecipeGenerator():
         return cls(
             schema=RecipeSchema(
                 name=name,
-                homepage=homepage,
-                license=license,
-                description=description,
-                version=version
+                homepage="",
+                license="",
+                description="",
+                version=""
             )
         )
     
@@ -91,7 +85,9 @@ class RecipeGenerator():
             )
         )
 
-    def _set_field(self, field: str, value: Any) -> "RecipeGenerator":
+    def set(self,
+            field: Literal["name", "homepage", "license", "description", "version", "version_source", "maintainers", "dependencies", "sources", "build"],
+            value: Any) -> "RecipeGenerator":
         """Set a field of this recipe.
 
         Args:
@@ -101,7 +97,9 @@ class RecipeGenerator():
         Returns:
             RecipeGenerator: This generator, allowing for method chaining.
         """
-        setattr(self, field, value)
+        data = self.schema.model_dump()
+        data[field] = value
+        self.schema = RecipeSchema.model_validate(data)
         return self
 
     def set_build(self, build: BuildSchema) -> "RecipeGenerator":

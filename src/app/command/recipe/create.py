@@ -5,6 +5,7 @@ from builder.build.context import BuildContext
 from builder.utils.logger import error
 from ..command import CLICommand, CLIArgument
 from builder.recipe import RecipeGenerator, Dependencies, BuildMethod
+import yaml
 
 @dataclass
 class CreateRecipeCommand(CLICommand):
@@ -264,9 +265,9 @@ class CreateRecipeCommand(CLICommand):
         match (self.build_system or "none").lower():
             case "meson":
                 generator.meson(
-                    config_args=self.config_args,
-                    build_args=self.build_args,
-                    install_args=self.install_args,
+                    config_args=self.config_args or None,
+                    build_args=self.build_args or None,
+                    install_args=self.install_args or None,
                     disable_fakeroot=self.disable_fakeroot,
                     build_method=method
                 )
@@ -274,18 +275,18 @@ class CreateRecipeCommand(CLICommand):
             case "autotools":
                 generator.autotools(
                     install_target=self.install_target,
-                    config_args=self.config_args,
-                    build_args=self.build_args,
-                    install_args=self.install_args,
+                    config_args=self.config_args or None,
+                    build_args=self.build_args or None,
+                    install_args=self.install_args or None,
                     build_method=method,
                     disable_fakeroot=self.disable_fakeroot
                 )
             
             case "cmake":
                 generator.cmake(
-                    config_args=self.config_args,
-                    build_args=self.build_args,
-                    install_args=self.install_args,
+                    config_args=self.config_args or None,
+                    build_args=self.build_args or None,
+                    install_args=self.install_args or None,
                     build_method=method,
                     generator=self.generator
                 )
@@ -304,15 +305,19 @@ class CreateRecipeCommand(CLICommand):
 
     def _complete_generator(self, generator: RecipeGenerator) -> RecipeGenerator:
         generator \
-            .set("license", self.licenses)        \
-            .set("description", self.description) \
-            .set("maintainers", self.maintainers) \
-            .set("homepage", self.homepage or generator.schema.homepage) \
-            .set("dependencies", Dependencies(
-                required=self.runtime_dependencies,
-                optional=self.optional_runtime_dependencies,
-                build=self.build_dependencies
-            )) \
+            .set("license", self.licenses or "unknown")        \
+            .set("description", self.description or "empty") \
+            .set("maintainers", self.maintainers or None) \
+            .set("homepage", self.homepage or generator.schema.homepage or "unknown") \
+        
+        dependencies = Dependencies(
+            required=self.runtime_dependencies or None,
+            optional=self.optional_runtime_dependencies or None,
+            build=self.build_dependencies or None
+        )
+        if not dependencies.is_empty():
+            generator.set("dependencies", dependencies)
+        
 
         # Set build system
         self._parse_build_system(generator)
@@ -335,5 +340,7 @@ class CreateRecipeCommand(CLICommand):
         generator = self._generator()
         if not generator:
             return
-
-        print(generator.schema)
+        
+        print(yaml.dump(
+            generator.dump()
+        ))

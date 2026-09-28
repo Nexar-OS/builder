@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from builder.build.context import BuildContext
 from builder.utils.logger import error
 from ..command import CLICommand, CLIArgument
-
-from builder.recipe import RecipeGenerator, Dependencies
+from builder.recipe import RecipeGenerator, Dependencies, BuildMethod
 
 @dataclass
 class CreateRecipeCommand(CLICommand):
@@ -132,6 +131,56 @@ class CreateRecipeCommand(CLICommand):
         metavar="[name-{version}.tar.xz]"
     ).arg()
 
+    build_system: str | None = CLIArgument(
+        type=str,
+        help="The build system to use.",
+        flags=("--build-system", "-bs"),
+    ).arg()
+
+    config_args: list[str] = CLIArgument(
+        type=str,
+        help="Add one or more configuration args to the build system.",
+        flags=("--config-arg", "-c"),
+        action="append",
+        default=[]
+    ).arg()
+
+    build_args: list[str] = CLIArgument(
+        type=str,
+        help="Add one or more build args to the build system.",
+        flags=("--build-arg", "-b"),
+        action="append",
+        default=[]
+    ).arg()
+
+    install_args: list[str] = CLIArgument(
+        type=str,
+        help="Add one or more install args to the build system.",
+        flags=("--install-arg", "-i"),
+        action="append",
+        default=[]
+    ).arg()
+
+    disable_fakeroot: bool = CLIArgument(
+        type=bool,
+        help="Force the builder to break out of fakeroot when building the package.",
+        flags=("--disable-fakeroot", "-dfr")
+    ).arg()
+
+    install_target: str = CLIArgument(
+        type=str,
+        help="Override the make install command.",
+        flags=("--install-target",),
+        metavar="make <install>",
+        default="install"
+    ).arg()
+
+    generator: str = CLIArgument(
+        type=str,
+        help="Override the cmake generator.",
+        flags=("--generator",)
+    ).arg()
+
     in_source: bool = CLIArgument(
         type=bool,
         help="Set the build method to IN_SOURCE.",
@@ -210,6 +259,49 @@ class CreateRecipeCommand(CLICommand):
         if generator:
             return self._complete_generator(generator)
 
+    def _parse_build_system(self, generator: RecipeGenerator) -> None:
+        method = BuildMethod.IN_SOURCE if self.in_source else BuildMethod.OUT_OF_SOURCE
+        match (self.build_system or "none").lower():
+            case "meson":
+                generator.meson(
+                    config_args=self.config_args,
+                    build_args=self.build_args,
+                    install_args=self.install_args,
+                    disable_fakeroot=self.disable_fakeroot,
+                    build_method=method
+                )
+            
+            case "autotools":
+                generator.autotools(
+                    install_target=self.install_target,
+                    config_args=self.config_args,
+                    build_args=self.build_args,
+                    install_args=self.install_args,
+                    build_method=method,
+                    disable_fakeroot=self.disable_fakeroot
+                )
+            
+            case "cmake":
+                generator.cmake(
+                    config_args=self.config_args,
+                    build_args=self.build_args,
+                    install_args=self.install_args,
+                    build_method=method,
+                    generator=self.generator
+                )
+            
+            case "custom":
+                generator.custom_build_system(
+                    disable_fakeroot=self.disable_fakeroot,
+                    build_method=method
+                )
+            
+            case "none":
+                ...
+            
+            case _:
+                raise ValueError(f"Unknown build system '{self.build_system}'!")
+
     def _complete_generator(self, generator: RecipeGenerator) -> RecipeGenerator:
         generator \
             .set("license", self.licenses)        \
@@ -222,9 +314,12 @@ class CreateRecipeCommand(CLICommand):
                 build=self.build_dependencies
             )) \
 
+        # Set build system
+        self._parse_build_system(generator)
+
         for patch in self.patches:
             generator.add_patch(patch)
-        
+
         # Either use the version passed
         # or try to find the latest upstream version
         if self.version:

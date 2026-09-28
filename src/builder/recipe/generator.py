@@ -40,6 +40,33 @@ class RecipeGenerator():
         )
     
     @classmethod
+    def from_source(
+        cls,
+        name: str,
+        version_source: VersionSourceSchema,
+        download_url: str | None = None
+    ) -> "RecipeGenerator":
+        """Construct a recipe generator from a specific type of ``VersionSource``.
+
+        If ``download_url`` is passed, it will be added as a tarball source.
+
+        Args:
+            name (str): The name of the recipe.
+            version_source (VersionSourceSchema): The version source to use.
+            download_url (str | None, optional): An optional tarball source. Defaults to None.
+        """
+        generator = RecipeGenerator.empty(name)
+        generator.set("version_source", version_source)
+
+        if download_url:
+            generator.add_tarball(
+                url=download_url,
+                name=name,
+            )
+
+        return generator
+    
+    @classmethod
     def github(
         cls,
         repository: str,
@@ -71,25 +98,17 @@ class RecipeGenerator():
         tag_format = tag_format.replace("{version}", "${version}")
         filename = filename.replace("{version}", "${version}")
 
-        if name is None:
-            name = repository_name
+        return cls.from_source(
+            name=name or repository_name,
+            version_source=GithubVersionSourceSchema(
+                type="github",
+                repo=repository,
+                include_prereleases=include_prereleases,
+                identifier=identifier
+            ),
+            download_url=f"https://github.com/{repository}/releases/download/{tag_format}/{filename}"
+        )
         
-        version_source = GithubVersionSourceSchema(
-            type="github",
-            repo=repository,
-            include_prereleases=include_prereleases,
-            identifier=identifier
-        )
-
-        generator = RecipeGenerator.empty(name)
-        generator.set("version_source", version_source)
-
-        generator.add_tarball(
-            url=f"https://github.com/{repository}/releases/download/{tag_format}/{filename}",
-            name=name,
-        )
-
-        return generator
     
     @classmethod
     def gitlab(
@@ -123,25 +142,16 @@ class RecipeGenerator():
         tag_format = tag_format.replace("{version}", "${version}")
         filename = filename.replace("{version}", "${version}")
 
-        if name is None:
-            name = repository_name
-        
-        version_source = GitlabVersionSourceSchema(
-            type="gitlab",
-            repo=repository,
-            include_prereleases=include_prereleases,
-            base_url=base_url
+        return cls.from_source(
+            name=name or repository_name,
+            version_source = GitlabVersionSourceSchema(
+                type="gitlab",
+                repo=repository,
+                include_prereleases=include_prereleases,
+                base_url=base_url
+            ),
+            download_url=f"https://gitlab.com/{repository}/-/archive/{tag_format}/{filename}"
         )
-
-        generator = RecipeGenerator.empty(name)
-        generator.set("version_source", version_source)
-
-        generator.add_tarball(
-            url=f"https://gitlab.com/{repository}/-/archive/{tag_format}/{filename}",
-            name=name,
-        )
-
-        return generator
 
     @classmethod
     def web(
@@ -170,26 +180,18 @@ class RecipeGenerator():
             f"{re.escape(suffix)}"
         )
 
-        source_url = (
-            f"{url.rstrip('/')}/"
-            f"{filename.replace('{version}', '${version}')}"
-        )
-
-        version_source = WebVersionSourceSchema(
-            type="web",
-            url=url,
-            regex=version_regex
-        )
-
-        generator = RecipeGenerator.empty(name)
-        generator.set("version_source", version_source)
-
-        generator.add_tarball(
-            url=source_url,
+        return cls.from_source(
             name=name,
+            version_source=WebVersionSourceSchema(
+                type="web",
+                url=url,
+                regex=version_regex
+            ),
+            download_url=(
+                f"{url.rstrip('/')}/"
+                f"{filename.replace('{version}', '${version}')}"
+            )
         )
-
-        return generator
 
     def latest_version(self) -> "RecipeGenerator":
         """Set the version field to the latest upstream version.

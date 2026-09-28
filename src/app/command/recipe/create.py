@@ -5,7 +5,7 @@ from builder.build.context import BuildContext
 from builder.utils.logger import error
 from ..command import CLICommand, CLIArgument
 from builder.recipe import RecipeGenerator, Dependencies, BuildMethod
-import yaml
+import sys
 
 @dataclass
 class CreateRecipeCommand(CLICommand):
@@ -341,6 +341,4 @@ class CreateRecipeCommand(CLICommand):
         if not generator:
             return
         
-        print(yaml.dump(
-            generator.dump()
-        ))
+        sys.stdout.write(generator.yaml())

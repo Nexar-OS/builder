@@ -1,3 +1,4 @@
+import yaml
 from typing import TypeVar
 from pathlib import Path
 
@@ -213,3 +214,48 @@ def load_recipe(recipe_path: Path, role: BuildRole, ctx: BuildContext) -> Generi
         return None
 
     return load_recipe_from_schema(ctx, role, schema)
+
+def recipe_schema_to_yaml(schema: RecipeSchema) -> str:
+    """Encode a ``RecipeSchema`` into yaml format.
+
+    Args:
+        schema (RecipeSchema): The schema to encode.
+    """
+    class IndentDumper(yaml.SafeDumper):
+        def increase_indent(self, flow: bool = False, indentless: bool = False) -> None:
+            return super().increase_indent(flow, indentless=False)
+    
+    text = yaml.dump(
+        schema.model_dump(
+            exclude_none=True,
+            mode="json",
+            exclude_defaults=True,
+        ),
+        Dumper=IndentDumper,
+        sort_keys=False,
+        default_flow_style=False,
+        allow_unicode=True
+    )
+
+    lines = text.splitlines()
+    result = []
+
+    sections = [
+        "version:",
+        "version_source:",
+        "build:",
+        "sources:",
+        "dependencies:",
+        "  build_system:",
+        "    config_args:",
+        "    build_args:",
+        "    install_args:",
+    ]
+
+    for line in lines:
+        if any(line.startswith(s) for s in sections) and result and result[-1] != "":
+            result.append("")
+        
+        result.append(line)
+
+    return "\n".join(result) + "\n"

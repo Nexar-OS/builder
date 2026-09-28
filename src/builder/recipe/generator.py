@@ -5,6 +5,8 @@ from builder.build import BuildContext
 from builder.recipe.recipe import GenericRecipe, BuildRole, BuildMethod
 from builder.recipe.loader import load_recipe_from_schema, load_version_source_from_schema
 from builder.utils.download import url_file_to_md5
+import jinja2
+import yaml
 
 class RecipeGenerator():
     """Generate new package recipes.
@@ -451,3 +453,12 @@ class RecipeGenerator():
             mode="json",
             exclude_defaults=True,
         )
+    
+    def yaml(self) -> str:
+        """Dumps the recipe in yaml representation.
+
+        Returns:
+            str: The yaml code.
+        """
+        from .loader import recipe_schema_to_yaml
+        return recipe_schema_to_yaml(self.schema)

@@ -20,6 +20,7 @@ from .loader import (
     load_recipe,
     load_schema,
     load_recipe_from_schema,
+    recipe_schema_to_yaml
 )
 
 from .schema import *

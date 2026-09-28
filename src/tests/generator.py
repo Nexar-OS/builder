@@ -1,10 +1,12 @@
 # from tests.vars import ctx
 from builder.recipe import *
 
-gen = RecipeGenerator.empty(name="test")
-gen.add_tarball(
-    url="https://download-mirror.savannah.gnu.org/releases/attr/attr-2.6.0.tar.xz",
-    md5hash="auto"
-)
+gen = RecipeGenerator.github(
+    repository="scop/bash-completion",
+    filename="bash-completion-{version}.tar.xz"
+).set("description", "Bash completion")
+
+gen.latest_version()
+gen._resolve_auto_hashes()
 
 print(gen.schema)

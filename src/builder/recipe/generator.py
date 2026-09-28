@@ -40,6 +40,53 @@ class RecipeGenerator():
         )
     
     @classmethod
+    def github(
+        cls,
+        repository: str,
+        include_prereleases: bool = False,
+        identifier: str = "releases",
+        tag_format: str = "{version}",
+        *,
+        filename: str,
+        name: str | None = None
+    ) -> "RecipeGenerator":
+        """Create a recipe from a Github repository.
+
+        The repository should be specified using the convnetional
+        ``owner/repository`` format.
+
+        Args:
+            repository (str): The repository.
+            name (str | None, optional): Package name. Defaults to the repository name.
+        """
+        if "/" not in repository:
+            raise ValueError("Github repository must be in 'owner/repository' format!")
+        
+        repository_name = repository.rsplit("/", 1)[1]
+        tag_format = tag_format.replace("{version}", "${version}")
+        filename = filename.replace("{version}", "${version}")
+
+        if name is None:
+            name = repository_name
+        
+        version_source = GithubVersionSourceSchema(
+            type="github",
+            repo=repository,
+            include_prereleases=include_prereleases,
+            identifier=identifier
+        )
+
+        generator = RecipeGenerator.empty(name)
+        generator.set("version_source", version_source)
+
+        generator.add_tarball(
+            url=f"https://github.com/{repository}/releases/download/{tag_format}/{filename}",
+            name=name,
+        )
+
+        return generator
+
+    @classmethod
     def web(
         cls,
         url: str,

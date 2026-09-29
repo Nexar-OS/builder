@@ -1,5 +1,5 @@
 import yaml
-from typing import TypeVar
+from typing import TypeVar, Any
 from pathlib import Path
 
 from builder.recipe.schema import *
@@ -225,34 +225,50 @@ def recipe_schema_to_yaml(schema: RecipeSchema) -> str:
         def increase_indent(self, flow: bool = False, indentless: bool = False) -> None:
             return super().increase_indent(flow, indentless=False)
     
+    # Custom representation using the "|" syntax for multi-line strings.
+    class LiteralString(str):...
+    IndentDumper.add_representer(
+        LiteralString, 
+        lambda dumper, data:
+            dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
+    )
+
+    data = schema.model_dump(
+        exclude_none=True,
+        mode="json",
+        exclude_defaults=True,
+    )
+
+    # Convert specific keys to "LiteralString"s to encode them
+    # with the `literal_string_representation`.
+    def _convert_keys_to_literal(mapping: dict[str, Any], keys: list[str]):
+        for key in keys:
+            if isinstance(mapping.get(key), str) and "\n" in mapping[key]:
+                mapping[key] = LiteralString(mapping[key])
+
+    _convert_keys_to_literal(mapping=data.get("build", {}),
+                             keys=[ "prepare", "post_install" ])
+
+    _convert_keys_to_literal(mapping=data.get("build", {}).get("build_system", {}),
+                             keys=[ "configure", "build", "install", "prepare" ])
+
     text = yaml.dump(
-        schema.model_dump(
-            exclude_none=True,
-            mode="json",
-            exclude_defaults=True,
-        ),
+        data,
         Dumper=IndentDumper,
         sort_keys=False,
         default_flow_style=False,
         allow_unicode=True
     )
 
+    # Apply custom padding between general "sections"
     lines = text.splitlines()
     result = []
 
     sections = [
-        "version:",
-        "version_source:",
-        "build:",
-        "sources:",
-        "dependencies:",
-        "  build_system:",
-        "    config_args:",
-        "    build_args:",
-        "    install_args:",
-        "  post_install:",
-        "  prepare:",
-        "  patches:",
+        "version:", "version_source:", "build:", "sources:", "dependencies:",
+        "  build_system:", "    config_args:", "    build_args:", "    install_args:",
+        "  post_install:", "  prepare:", "  patches:", "    build:", "    configure:",
+        "    install:", "    prepare:"
     ]
 
     for line in lines:

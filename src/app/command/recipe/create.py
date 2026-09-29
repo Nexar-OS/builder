@@ -6,6 +6,7 @@ from builder.utils.logger import error
 from ..command import CLICommand, CLIArgument
 from builder.recipe import RecipeGenerator, Dependencies, BuildMethod
 import sys
+from app.utils.editor import open_editor
 
 @dataclass
 class CreateRecipeCommand(CLICommand):
@@ -212,6 +213,16 @@ class CreateRecipeCommand(CLICommand):
         default=[]
     ).arg()
 
+    edit: str | None = CLIArgument(
+        type=str,
+        help="Opens the generated recipe in an editor to review and refine it. (Defaults to nano.)",
+        flags=("--edit", "-e"),
+        default=None,
+        const="nano",
+        nargs="?",
+        metavar="[editor binary]"
+    ).arg()
+
     def _generator(self) -> RecipeGenerator | None:        
         generator = None
 
@@ -369,4 +380,14 @@ class CreateRecipeCommand(CLICommand):
         if not generator:
             return
         
-        sys.stdout.write(generator.yaml())
+        yaml = generator.yaml()
+
+        if self.edit:
+            yaml = open_editor(
+                editor=self.edit,
+                extension="yaml",
+                name=self.recipe_name,
+                text=yaml
+            )
+
+        sys.stdout.write(yaml)

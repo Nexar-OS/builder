@@ -325,12 +325,6 @@ class CreateRecipeCommand(CLICommand):
             .set("description", self.description or "empty") \
             .set("maintainers", self.maintainers or None) \
             .set("homepage", self.homepage or generator.schema.homepage or "unknown") \
-        
-        if self.post_install:
-            generator.post_install(*self.post_install)
-        
-        if self.prepare:
-            generator.post_install(*self.prepare)
 
         dependencies = Dependencies(
             required=self.runtime_dependencies or None,
@@ -344,6 +338,14 @@ class CreateRecipeCommand(CLICommand):
         # Set build system
         self._parse_build_system(generator)
 
+        # Add hooks
+        if self.post_install:
+            generator.post_install(*self.post_install)
+        
+        if self.prepare:
+            generator.post_install(*self.prepare)
+
+        # Add patches
         for patch in self.patches:
             generator.add_patch(patch)
 

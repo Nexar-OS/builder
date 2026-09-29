@@ -343,7 +343,7 @@ class CreateRecipeCommand(CLICommand):
             generator.post_install(*self.post_install)
         
         if self.prepare:
-            generator.post_install(*self.prepare)
+            generator.prepare(*self.prepare)
 
         # Add patches
         for patch in self.patches:

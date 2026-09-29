@@ -5,6 +5,10 @@ description: <description>
 
 version: "<version>"
 
+version_source:
+  type: "<version_source_type>"
+  "<version_source_args>"
+
 dependencies:
   required:
     - <required_dependencies>

@@ -38,6 +38,7 @@ class RecipeMetadata:
         sources (list[str]): List of web-sources.
         license (list[str]): License(s) of the recipe.
         homepage (str): Upstream homepage of the recipe/project.
+        repo (str | None): The repository the recipe was loaded from.
     """
 
     name: str
@@ -52,6 +53,7 @@ class RecipeMetadata:
     sources: list[str] | None = None
     last_build: str | None = None
     fingerprint: str | None = None
+    repo: str | None = None
 
 class BuildMethod(StrEnum):
     """

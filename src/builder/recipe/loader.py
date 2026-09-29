@@ -150,7 +150,22 @@ def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSc
     """
 
     build = schema.build
-    
+
+    repo_path = ctx.registry.path(schema.name)
+    repo_path = repo_path.parent if repo_path else None
+
+    # Resolve file sources from repo-dir
+    sources = []
+    for source in schema.sources:
+        if source.url.lower().startswith("file://") and repo_path:
+            path = Path(source.url.removeprefix("file://"))
+            if not path.is_absolute():
+                path = repo_path / path
+            path = path.resolve()
+            source.url = "file://" + str(path)
+        
+        sources.append(load_source_from_schema(source))
+
     return GenericRecipe(
         ctx=ctx,
         role=role,
@@ -164,11 +179,9 @@ def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSc
             license=[ schema.license ] if isinstance(schema.license, str) else schema.license,
             homepage=schema.homepage,
             dependencies=schema.dependencies,
+            repo=str(repo_path)
         ),
-        sources=[
-            load_source_from_schema(source_schema)
-            for source_schema in schema.sources
-        ],
+        sources=sources,
         build_method=build.method if build else BuildMethod.OUT_OF_SOURCE,
         build_system=load_build_system_from_schema(build.build_system) if build else None,
         patches=build.patches if build else [],
@@ -195,7 +208,6 @@ def load_recipe(recipe_path: Path, role: BuildRole, ctx: BuildContext) -> Generi
         GenericRecipe | None: The loaded recipe or None if schema was invalid.
     """
     schema = load_schema(recipe_path, {
-        "patches": "src/patches/",
         "target.libdir": ctx.target_machine.libdir,
         "target.libdir.name": ctx.target_machine.libdir.split("/")[-1],
         "target.triple": ctx.target_machine.triple,

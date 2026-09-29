@@ -22,7 +22,7 @@ sources:
   
   - type: file
     name: gcc16.patch
-    url: "file://${patches}/bc/gcc16.patch"
+    url: "file://bc/gcc16.patch"
 
 build:
   method: OUT_OF_SOURCE

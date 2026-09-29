@@ -309,6 +309,10 @@ class CreateRecipeCommand(CLICommand):
             
             case "custom":
                 generator.custom_build_system(
+                    prepare=None,
+                    configure="\n".join(self.config_args) or None,
+                    build="\n".join(self.build_args) or None,
+                    install="\n".join(self.install_args) or None,
                     disable_fakeroot=self.disable_fakeroot,
                     build_method=method
                 )

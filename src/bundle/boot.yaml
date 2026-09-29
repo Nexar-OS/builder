@@ -1,7 +1,7 @@
-name: core
+name: boot
 homepage: None
 license: None
-description: A bundle of core packages.
+description: A bundle of boot packages.
 
 version: "1.0"
 

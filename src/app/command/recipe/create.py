@@ -196,6 +196,22 @@ class CreateRecipeCommand(CLICommand):
         default=[]
     ).arg()
 
+    prepare: list[str] = CLIArgument(
+        type=str,
+        help="Add one or more lines of shell script to execute before the recipe gets build.",
+        flags=("--prepare", "-prep"),
+        action="append",
+        default=[]
+    ).arg()
+
+    post_install: list[str] = CLIArgument(
+        type=str,
+        help="Add one or more lines of shell script to execute after the recipe has been built.",
+        flags=("--post-install", "-pi"),
+        action="append",
+        default=[]
+    ).arg()
+
     def _generator(self) -> RecipeGenerator | None:        
         generator = None
 
@@ -310,6 +326,12 @@ class CreateRecipeCommand(CLICommand):
             .set("maintainers", self.maintainers or None) \
             .set("homepage", self.homepage or generator.schema.homepage or "unknown") \
         
+        if self.post_install:
+            generator.post_install(*self.post_install)
+        
+        if self.prepare:
+            generator.post_install(*self.prepare)
+
         dependencies = Dependencies(
             required=self.runtime_dependencies or None,
             optional=self.optional_runtime_dependencies or None,

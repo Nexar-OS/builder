@@ -409,6 +409,38 @@ class RecipeGenerator():
 
         return self
     
+    def post_install(self, *script: str) -> "RecipeGenerator":
+        """Set the post-install shell script to run after the build-system finishes.
+
+        Args:
+            *script (str): One or more lines of the shell script.
+
+        Returns:
+            RecipeGenerator: This generator, allowing for method chaining.
+        """
+        if not self.schema.build:
+            raise ValueError("Cannot set post-install script of a recipe without a build system.")
+
+        self.schema.build.post_install = "\n".join(script)
+
+        return self
+    
+    def prepare(self, *script: str) -> "RecipeGenerator":
+        """Set the preparation shell script to run before the build-system starts.
+
+        Args:
+            *script (str): One or more lines of the shell script.
+
+        Returns:
+            RecipeGenerator: This generator, allowing for method chaining.
+        """
+        if not self.schema.build:
+            raise ValueError("Cannot set post-install script of a recipe without a build system.")
+
+        self.schema.build.prepare = "\n".join(script)
+
+        return self
+    
     def recipe(self, ctx: BuildContext, role: BuildRole | None = None) -> GenericRecipe:
         """Generate the runtime recipe from the declarative representation.
 

@@ -223,6 +223,12 @@ class CreateRecipeCommand(CLICommand):
         metavar="[editor binary]"
     ).arg()
 
+    out: Path | None = CLIArgument(
+        type=Path,
+        help="Set the output file to write the generated recipe into.",
+        flags=("--out", "-o"),
+    ).arg()
+
     def _generator(self) -> RecipeGenerator | None:        
         generator = None
 
@@ -389,5 +395,8 @@ class CreateRecipeCommand(CLICommand):
                 name=self.recipe_name,
                 text=yaml
             )
+        
+        if self.out:
+            self.out.write_text(yaml)
 
         sys.stdout.write(yaml)

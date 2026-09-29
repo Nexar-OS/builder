@@ -1,0 +1,15 @@
+--- include/bc.h	2026-08-28 17:11:52.854344674 +0200
++++ include/bc.h	2026-08-28 17:13:38.052519932 +0200
+@@ -265,9 +265,9 @@
+  * @return    An expression entry for bc_parse_exprs[].
+  */
+ #define BC_PARSE_EXPR_ENTRY(e1, e2, e3, e4, e5, e6, e7, e8)               \
+-	((UINTMAX_C(e1) << 7) | (UINTMAX_C(e2) << 6) | (UINTMAX_C(e3) << 5) | \
+-	 (UINTMAX_C(e4) << 4) | (UINTMAX_C(e5) << 3) | (UINTMAX_C(e6) << 2) | \
+-	 (UINTMAX_C(e7) << 1) | (UINTMAX_C(e8) << 0))
++	((((uintmax_t) (e1)) << 7) | (((uintmax_t) (e2)) << 6) | (((uintmax_t) (e3)) << 5) | \
++	 (((uintmax_t) (e4)) << 4) | (((uintmax_t) (e5)) << 3) | (((uintmax_t) (e6)) << 2) | \
++	 (((uintmax_t) (e7)) << 1) | (((uintmax_t) (e8)) << 0))
+ 
+ /**
+  * Returns true if token @a i is a token that belongs in an expression.

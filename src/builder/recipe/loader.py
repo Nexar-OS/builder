@@ -250,6 +250,9 @@ def recipe_schema_to_yaml(schema: RecipeSchema) -> str:
         "    config_args:",
         "    build_args:",
         "    install_args:",
+        "  post_install:",
+        "  prepare:",
+        "  patches:",
     ]
 
     for line in lines:

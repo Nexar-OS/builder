@@ -1,0 +1,28 @@
+name: libevdev
+homepage: https://www.freedesktop.org/wiki/Software/libevdev
+license:
+  - MIT
+description: A wrapper library for evdev devices.
+
+version: 1.13.7
+
+version_source:
+  type: web
+  url: https://www.freedesktop.org/software/libevdev/
+  regex: libevdev\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+sources:
+  - type: tarball
+    name: libevdev
+    url: https://www.freedesktop.org/software/libevdev/libevdev-${version}.tar.xz
+    md5hash: 864cc0d2b0d9a023f80540179aea4d41
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dtests=disabled

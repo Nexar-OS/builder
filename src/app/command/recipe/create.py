@@ -183,6 +183,12 @@ class CreateRecipeCommand(CLICommand):
         flags=("--generator",)
     ).arg()
 
+    version_note_filter: str = CLIArgument(
+        type=str,
+        help="Filter versions for a specific note.",
+        flags=("--filter-version-note", "-vnf")
+    ).arg()
+
     in_source: bool = CLIArgument(
         type=bool,
         help="Set the build method to IN_SOURCE.",
@@ -266,7 +272,8 @@ class CreateRecipeCommand(CLICommand):
                     identifier=self.version_identifier,
                     tag_format=self.tag_format,
                     filename=self.filename,
-                    name=self.recipe_name
+                    name=self.recipe_name,
+                    note_filter=self.version_note_filter
                 )
             
             case "gitlab":
@@ -285,7 +292,8 @@ class CreateRecipeCommand(CLICommand):
                     filename=self.filename,
                     name=self.recipe_name,
                     base_url=self.gitlab_url,
-                    identifier=self.version_identifier
+                    identifier=self.version_identifier,
+                    note_filter=self.version_note_filter
                 )
             
             case _:

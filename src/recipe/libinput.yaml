@@ -1,0 +1,38 @@
+name: libinput
+homepage: https://gitlab.freedesktop.org//libinput/libinput/
+license:
+  - MIT
+description: Input device management and event handling library
+
+version: 1.32.0
+
+version_source:
+  type: gitlab
+  repo: libinput/libinput
+  base_url: https://gitlab.freedesktop.org/
+
+dependencies:
+  required:
+    - systemd
+
+  build:
+    - libwacom
+    - mtdev
+    - systemd
+    - libevdev
+
+sources:
+  - type: tarball
+    name: libinput
+    url: https://gitlab.freedesktop.org//libinput/libinput/-/archive/${version}/libinput-${version}.tar.gz
+    md5hash: f9aed17c8eb2d180348343aa6d3c53ed
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Ddebug-gui=false

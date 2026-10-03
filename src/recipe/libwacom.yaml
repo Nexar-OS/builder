@@ -1,0 +1,33 @@
+name: libwacom
+homepage: https://github.com/linuxwacom/libwacom/
+license:
+  - https://github.com/linuxwacom/libwacom?tab=License-1-ov-file
+description: A tablet description library.
+
+version: libwacom-2.20.0
+
+version_source:
+  type: github
+  repo: linuxwacom/libwacom
+
+sources:
+  - type: tarball
+    name: libwacom
+    url: https://github.com/linuxwacom/libwacom/releases/download/${version}/${version}.tar.xz
+    md5hash: 4ddf6476047a10c8fbaaba6b30a672e6
+
+dependencies:
+  required:
+    - libgudev
+
+  build:
+    - libgudev
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr

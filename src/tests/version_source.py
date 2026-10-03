@@ -1,18 +1,17 @@
 from tests.vars import ctx
 from builder.recipe import BuildRole
+from builder.version.source import *
 
-recipes = [
-    ctx.registry.getOrThrow(
-        name=recipe,
-        role=BuildRole.TARGET,
-        ctx=ctx
-    )
-    for recipe in sorted(ctx.registry.paths().keys())
-]
+vs = GitlabVersionSource(
+    repo="xorg/lib/libpciaccess",
+    base_url="https://gitlab.freedesktop.org/",
+    identifier="repository/tags",
+    note_filter="libpciaccess"
+)
 
-for recipe in recipes:
-    version_source = recipe.version_source
-    
-    print(f"Loading: {recipe.name}")
-    version = version_source.latest_version if version_source else None
-    print(f"Recipe '{recipe.name}': {version or '/'}")
+for v in vs.versions:
+    print(v)
+
+print("\n\nLatest:")
+
+print(vs.latest_version)

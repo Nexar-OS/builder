@@ -1,0 +1,27 @@
+name: libxml2
+homepage: https://gitlab.gnome.org//GNOME/libxml2/
+license:
+  - MIT
+description: XML parser and toolkit
+
+version: v2.15.4
+
+version_source:
+  type: gitlab
+  repo: GNOME/libxml2
+  base_url: https://gitlab.gnome.org/
+
+sources:
+  - type: tarball
+    name: libxml2
+    url: https://gitlab.gnome.org//GNOME/libxml2/-/archive/${version}/libxml2-${version}.tar.gz
+    md5hash: bd9f2a13194683714c66b480cf413716
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr

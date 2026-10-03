@@ -83,7 +83,8 @@ class Toolchain(ABC):
     def cflags(self) -> list[str]:
         return [
             "-O2",
-            "-pipe"
+            "-pipe",
+            "-fPIC"
         ]
     
     @property

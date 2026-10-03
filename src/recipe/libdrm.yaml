@@ -1,0 +1,41 @@
+name: libdrm
+homepage: https://dri.freedesktop.org/libdrm/
+license:
+  - MIT
+description: Userspace interface to Linux DRM.
+
+version: 2.4.134
+
+version_source:
+  type: web
+  url: https://dri.freedesktop.org/libdrm/
+  regex: libdrm\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  required:
+    - libpciaccess
+
+  build:
+    - pkgconf
+    - libpciaccess
+
+sources:
+  - type: tarball
+    name: libdrm
+    url: https://dri.freedesktop.org/libdrm/libdrm-${version}.tar.xz
+    md5hash: 0e70607bb5c2f7ecbc411e6a2fab8b22
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dintel=enabled
+      - -Damdgpu=enabled
+      - -Dradeon=enabled
+      - -Dnouveau=enabled
+      - -Dvmwgfx=enabled
+      - -Dtests=false

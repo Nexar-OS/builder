@@ -123,6 +123,7 @@ class RecipeGenerator():
         cls,
         repository: str,
         include_prereleases: bool = False,
+        identifier: str = "releases",
         tag_format: str = "{version}",
         *,
         filename: str,
@@ -139,6 +140,7 @@ class RecipeGenerator():
             name (str | None, optional): Package name. Defaults to the repository name.
             include_prereleases (bool): Whether prerelease versions should be considered
                                         when discovering versions.
+            identifier (str): GitLab release identifier used by the version source.
             tag_format (str): The format of gitlab-tags (Allows for ``{version}`` placeholder.)
             filename (str): The filename to download (Allows for ``{version}`` placeholder.)
             base_url (str | None, optional): GitLab instance URL. ``None`` uses the default GitLab instance.
@@ -156,7 +158,8 @@ class RecipeGenerator():
                 type="gitlab",
                 repo=repository,
                 include_prereleases=include_prereleases,
-                base_url=base_url
+                base_url=base_url,
+                identifier=identifier
             ),
             download_url=f"https://gitlab.com/{repository}/-/archive/{tag_format}/{filename}",
             homepage=f"https://gitlab.com/{repository}/"

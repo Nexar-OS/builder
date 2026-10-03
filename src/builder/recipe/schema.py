@@ -86,6 +86,7 @@ class GitlabVersionSourceSchema(Schema):
     repo: str
     include_prereleases: bool = False
     base_url: str | None = None
+    identifier: str = "releases"
 
 class NestedVersionSourceSchema(Schema):
     type: Literal["nested"]

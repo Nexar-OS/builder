@@ -17,10 +17,12 @@ class GitlabVersionSource(VersionSource):
         repo (str): The github repository (Format: group/project)
         include_prereleases (bool): Whether prereleases should be included.
         base_url (str | None): Base URL of the GitLab instance. (Defaults to ``https://gitlab.com/``)
+        identifier (str): The identifier of the releases. (Usually releases or repository/tags)
     """
     repo: str
     include_prereleases: bool = False
     base_url: str | None = None
+    identifier: str = "releases"
 
     def _fetch_api(self):
         """
@@ -32,7 +34,7 @@ class GitlabVersionSource(VersionSource):
         project = quote(self.repo, safe="")
         url = (
             f"{self.base_url or DEFAULT_BASE_URL}/api/v4/projects/"
-            f"{project}/releases"
+            f"{project}/{self.identifier}"
         )
 
         params = {

@@ -16,10 +16,12 @@ class GithubVersionSource(VersionSource):
         repo (str): The github repository (Format: user/name)
         include_prereleases (bool): Whether prereleases should be included.
         identifier (str): The identifier of the releases. (Usually releases or tags)
+        note_filter (str | None): Filter for a versions containing a specific note.
     """
     repo: str
     include_prereleases: bool = False
     identifier: str = "releases"
+    note_filter: str | None = None
 
     API_URL = "https://api.github.com"
 
@@ -89,6 +91,9 @@ class GithubVersionSource(VersionSource):
                 continue
 
             if version in found:
+                continue
+
+            if self.note_filter and version.note != self.note_filter:
                 continue
 
             found.add(version)

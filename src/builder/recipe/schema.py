@@ -80,6 +80,7 @@ class GithubVersionSourceSchema(Schema):
     repo: str
     include_prereleases: bool = False
     identifier: str = "releases"
+    note_filter: str | None = None
 
 class GitlabVersionSourceSchema(Schema):
     type: Literal["gitlab"]
@@ -87,6 +88,7 @@ class GitlabVersionSourceSchema(Schema):
     include_prereleases: bool = False
     base_url: str | None = None
     identifier: str = "releases"
+    note_filter: str | None = None
 
 class NestedVersionSourceSchema(Schema):
     type: Literal["nested"]

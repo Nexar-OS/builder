@@ -18,11 +18,13 @@ class GitlabVersionSource(VersionSource):
         include_prereleases (bool): Whether prereleases should be included.
         base_url (str | None): Base URL of the GitLab instance. (Defaults to ``https://gitlab.com/``)
         identifier (str): The identifier of the releases. (Usually releases or repository/tags)
+        note_filter (str | None): Filter for a versions containing a specific note.
     """
     repo: str
     include_prereleases: bool = False
     base_url: str | None = None
     identifier: str = "releases"
+    note_filter: str | None = None
 
     def _fetch_api(self):
         """
@@ -75,6 +77,9 @@ class GitlabVersionSource(VersionSource):
                 continue
 
             if version in found:
+                continue
+
+            if self.note_filter and version.note != self.note_filter:
                 continue
 
             found.add(version)

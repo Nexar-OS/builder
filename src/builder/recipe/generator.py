@@ -81,6 +81,7 @@ class RecipeGenerator():
         include_prereleases: bool = False,
         identifier: str = "releases",
         tag_format: str = "{version}",
+        note_filter: str | None = None,
         *,
         filename: str,
         name: str | None = None
@@ -96,6 +97,7 @@ class RecipeGenerator():
             include_prereleases (bool): Whether prerelease versions should be considered
                                         when discovering versions.
             tag_format (str): The format of gitlab-tags (Allows for ``{version}`` placeholder.)
+            note_filter (str | None): Filter for a versions containing a specific note.
             filename (str): The filename to download (Allows for ``{version}`` placeholder.)
             identifier (str): GitHub release identifier used by the version source.
         """
@@ -112,7 +114,8 @@ class RecipeGenerator():
                 type="github",
                 repo=repository,
                 include_prereleases=include_prereleases,
-                identifier=identifier
+                identifier=identifier,
+                note_filter=note_filter
             ),
             download_url=f"https://github.com/{repository}/releases/download/{tag_format}/{filename}",
             homepage=f"https://github.com/{repository}/"
@@ -126,6 +129,7 @@ class RecipeGenerator():
         include_prereleases: bool = False,
         identifier: str = "releases",
         tag_format: str = "{version}",
+        note_filter: str | None = None,
         *,
         filename: str,
         name: str | None = None,
@@ -143,6 +147,7 @@ class RecipeGenerator():
                                         when discovering versions.
             identifier (str): GitLab release identifier used by the version source.
             tag_format (str): The format of gitlab-tags (Allows for ``{version}`` placeholder.)
+            note_filter (str | None): Filter for a versions containing a specific note.
             filename (str): The filename to download (Allows for ``{version}`` placeholder.)
             base_url (str | None, optional): GitLab instance URL. ``None`` uses the default GitLab instance.
         """
@@ -160,7 +165,8 @@ class RecipeGenerator():
                 repo=repository,
                 include_prereleases=include_prereleases,
                 base_url=base_url,
-                identifier=identifier
+                identifier=identifier,
+                note_filter=note_filter
             ),
             download_url=f"{base_url or gitlab.DEFAULT_BASE_URL}/{repository}/-/archive/{tag_format}/{filename}",
             homepage=f"{base_url or gitlab.DEFAULT_BASE_URL}/{repository}/"

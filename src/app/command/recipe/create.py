@@ -2,7 +2,7 @@ from pathlib import Path
 from dataclasses import dataclass
 
 from builder.build.context import BuildContext
-from builder.utils.logger import error
+from builder.utils.logger import error, info
 from ..command import CLICommand, CLIArgument
 from builder.recipe import RecipeGenerator, Dependencies, BuildMethod
 import sys
@@ -400,8 +400,14 @@ class CreateRecipeCommand(CLICommand):
                 name=self.recipe_name,
                 text=yaml
             )
-        
-        if self.out:
-            self.out.write_text(yaml)
+
+        out = self.out        
+        if out:
+            if out.is_dir():
+                out = out / (self.recipe_name + ".yaml")
+
+            out.write_text(yaml)
+
+            info(f"Writing recipe to '{out}'...")
 
         sys.stdout.write(yaml)

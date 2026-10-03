@@ -104,10 +104,10 @@ class CreateRecipeCommand(CLICommand):
         flags=("--include-prereleases", "-ipr")
     ).arg()
 
-    release_identifier: str = CLIArgument(
+    version_identifier: str = CLIArgument(
         type=str,
-        help="The github release identifier. (Usually either tags or releases)",
-        flags=("--release-identifier", "-ri"),
+        help="The github/gitlab version identifier. (Usually either tags, releases or repository/releases)",
+        flags=("--version-identifier", "-vi"),
         default="releases"
     ).arg()
 
@@ -263,7 +263,7 @@ class CreateRecipeCommand(CLICommand):
                 generator = RecipeGenerator.github(
                     repository=self.repo,
                     include_prereleases=self.include_prereleases,
-                    identifier=self.release_identifier,
+                    identifier=self.version_identifier,
                     tag_format=self.tag_format,
                     filename=self.filename,
                     name=self.recipe_name
@@ -271,11 +271,11 @@ class CreateRecipeCommand(CLICommand):
             
             case "gitlab":
                 if not self.repo:
-                    error(f"'Github' template needs '--repo' to run.")
+                    error(f"'Gitlab' template needs '--repo' to run.")
                     return
                 
                 if not self.filename:
-                    error(f"'Github' template needs '--filename' to run.")
+                    error(f"'Gitlab' template needs '--filename' to run.")
                     return
 
                 generator = RecipeGenerator.gitlab(
@@ -284,7 +284,8 @@ class CreateRecipeCommand(CLICommand):
                     tag_format=self.tag_format,
                     filename=self.filename,
                     name=self.recipe_name,
-                    base_url=self.gitlab_url
+                    base_url=self.gitlab_url,
+                    identifier=self.version_identifier
                 )
             
             case _:

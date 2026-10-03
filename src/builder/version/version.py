@@ -25,7 +25,7 @@ class Version:
             Version: The parsed version. None if invalid format.
         """
         value = value.replace("_", ".")
-        match = re.search(r"(?<!\d)(\d+(?:\.\d+){0,2})(?!\d)", value)
+        match = re.search(r"(?<![A-Za-z0-9])(\d+(?:\.\d+){0,2})(?!\d)", value)
 
         if not match:
             return None
@@ -45,9 +45,24 @@ class Version:
     def _key(self):
         return (
             self.major,
-            self.minor if self.minor is not None else -1,
-            self.patch if self.patch is not None else -1,
+            self.minor if self.minor is not None else 0,
+            self.patch if self.patch is not None else 0,
         )
+
+    def __eq__(self, value: object) -> bool:
+        """
+        Compare two version instances.
+
+        Args:
+            value (Version): The other version to compare
+
+        Returns:
+            bool: True if ``self`` is equal to ``value``.
+        """
+        if not isinstance(value, Version):
+            return NotImplemented
+        
+        return self._key() < value._key()
 
     def __lt__(self, other: "Version") -> bool:
         """

@@ -65,7 +65,7 @@ class GitlabVersionSource(VersionSource):
             if release.get("upcoming_release"):
                 continue
 
-            tag = release.get("tag_name")
+            tag = release.get("tag_name") or release.get("name")
             if not tag:
                 continue
 

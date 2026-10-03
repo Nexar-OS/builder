@@ -34,10 +34,17 @@ build:
       make
     
     install: |
-      mkdir -p usr/{bin,share/man/man1}
+      mkdir -p usr/{bin,include,lib,share/man/man1}
 
       cp $BUILD/bzip2-shared usr/bin/bzip2
       ln -s bzip2 usr/bin/bzcat
       ln -s bzip2 usr/bin/bunzip2
+
+      cp $BUILD/bzlib.h usr/include
+      cp $BUILD/libbz2.a usr/lib
+
+      cp $BUILD/libbz2.so.${version} usr/lib
+      ln -sf libbz2.so.${version} usr/lib/libbz2.so.1.0
+      ln -sf libbz2.so.1.0 usr/lib/libbz2.so
 
       cp -R $BUILD/bzip2.1 usr/share/man/man1/bzip2.1

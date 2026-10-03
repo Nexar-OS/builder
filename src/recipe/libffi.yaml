@@ -1,0 +1,32 @@
+name: libffi
+homepage: http://sourceware.org/libffi
+license:
+  - MIT
+description: A portable foreign-function interface library.
+
+version: 3.8.0
+
+version_source:
+  type: github
+  repo: libffi/libffi
+
+dependencies:
+  build:
+    - pkgconf
+    - m4
+
+sources:
+  - type: tarball
+    name: libffi
+    url: https://github.com/libffi/libffi/releases/download/v${version}/libffi-${version}.tar.gz
+    md5hash: 96fe46f2a7bb82559b35a268a2c000ba
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

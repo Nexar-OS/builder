@@ -261,10 +261,6 @@ class CreateRecipeCommand(CLICommand):
                 if not self.repo:
                     error(f"'Github' template needs '--repo' to run.")
                     return
-                
-                if not self.filename:
-                    error(f"'Github' template needs '--filename' to run.")
-                    return
 
                 generator = RecipeGenerator.github(
                     repository=self.repo,

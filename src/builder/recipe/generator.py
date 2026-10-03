@@ -83,7 +83,7 @@ class RecipeGenerator():
         tag_format: str = "{version}",
         note_filter: str | None = None,
         *,
-        filename: str,
+        filename: str | None,
         name: str | None = None
     ) -> "RecipeGenerator":
         """Create a recipe from a Github repository.
@@ -106,7 +106,11 @@ class RecipeGenerator():
         
         repository_name = repository.rsplit("/", 1)[1]
         tag_format = tag_format.replace("{version}", "${version}")
-        filename = filename.replace("{version}", "${version}")
+        if filename:
+            filename = filename.replace("{version}", "${version}")
+            download_url = f"https://github.com/{repository}/releases/download/{tag_format}/{filename}"
+        else:
+            download_url = f"https://github.com/{repository}/archive/refs/tags/${{version}}.tar.gz"
 
         return cls.from_source(
             name=name or repository_name,
@@ -117,7 +121,7 @@ class RecipeGenerator():
                 identifier=identifier,
                 note_filter=note_filter
             ),
-            download_url=f"https://github.com/{repository}/releases/download/{tag_format}/{filename}",
+            download_url=download_url,
             homepage=f"https://github.com/{repository}/"
         )
         
@@ -482,8 +486,10 @@ class RecipeGenerator():
             if not self.schema.version:
                 raise ValueError("Cannot resolve md5hashes automatically without a version.")
 
+            print(source.url.replace("${version}", self.schema.version))
+
             source.md5hash = url_file_to_md5(source.url.replace("${version}", self.schema.version))
-    
+
     def dump(self) -> dict[str, Any]:
         """Create a dump of the recipe schema to serialize.
 

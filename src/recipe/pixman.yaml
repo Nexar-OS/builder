@@ -1,0 +1,32 @@
+name: pixman
+homepage: https://pixman.org/
+license:
+  - MIT
+description: Low-level pixel manipulation library.
+
+version: 0.46.4
+
+version_source:
+  type: web
+  url: https://cairographics.org/releases/
+  regex: pixman\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  build:
+    - pkgconf
+
+sources:
+  - type: tarball
+    name: pixman
+    url: https://cairographics.org/releases/pixman-${version}.tar.gz
+    md5hash: c08173c8e1d2cc79428d931c13ffda59
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dtests=disabled

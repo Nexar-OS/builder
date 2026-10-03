@@ -1,0 +1,37 @@
+name: libgudev
+homepage: https://gudev.sourceforge.net/
+license:
+  - GNU LGPLv2.1
+description: GObject library for libudev
+
+version: '238'
+
+version_source:
+  type: gitlab
+  repo: GNOME/libgudev
+  base_url: https://gitlab.gnome.org/
+  identifier: repository/tags
+
+dependencies:
+  required:
+    - systemd
+
+  build:
+    - systemd
+
+sources:
+  - type: tarball
+    name: libgudev
+    url: https://gitlab.gnome.org//GNOME/libgudev/-/archive/${version}/libgudev-${version}.tar.gz
+    md5hash: c85736d109526690bf6e2845616f6809
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dintrospection=disabled
+      - -Dvapi=disabled

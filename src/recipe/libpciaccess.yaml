@@ -1,0 +1,33 @@
+name: libpciaccess
+homepage: https://gitlab.freedesktop.org/xorg/lib/libpciaccess/
+license:
+  - MIT
+description: Generic PCI access library
+
+version: libpciaccess-0.19
+
+version_source:
+  type: gitlab
+  repo: xorg/lib/libpciaccess
+  base_url: https://gitlab.freedesktop.org
+  identifier: repository/tags
+  note_filter: libpciaccess
+
+dependencies:
+  build:
+    - pkgconf
+
+sources:
+  - type: tarball
+    name: libpciaccess
+    url: https://gitlab.freedesktop.org/xorg/lib/libpciaccess/-/archive/${version}/${version}.tar.gz
+    md5hash: c45bde897bffbac9af7d0609af54b36a
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr

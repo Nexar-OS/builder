@@ -1,0 +1,27 @@
+name: mtdev
+homepage: http://bitmath.org/code/mtdev/
+license:
+  - GPL-2.0-or-later
+description: Multitouch Protocol Translation Library
+
+version: 1.1.7
+
+version_source:
+  type: web
+  url: http://bitmath.org/code/mtdev/
+  regex: mtdev\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+sources:
+  - type: tarball
+    name: mtdev
+    url: http://bitmath.org/code/mtdev/mtdev-${version}.tar.gz
+    md5hash: a7e223d2b33d5d943941ae3423b86cac
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr

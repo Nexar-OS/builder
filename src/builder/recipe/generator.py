@@ -2,6 +2,7 @@ from typing import Literal, Any
 import re
 from builder.recipe.schema import *
 from builder.build import BuildContext
+from builder.version.source import gitlab
 from builder.recipe.recipe import GenericRecipe, BuildRole, BuildMethod
 from builder.recipe.loader import load_recipe_from_schema, load_version_source_from_schema
 from builder.utils.download import url_file_to_md5
@@ -161,8 +162,8 @@ class RecipeGenerator():
                 base_url=base_url,
                 identifier=identifier
             ),
-            download_url=f"https://gitlab.com/{repository}/-/archive/{tag_format}/{filename}",
-            homepage=f"https://gitlab.com/{repository}/"
+            download_url=f"{base_url or gitlab.DEFAULT_BASE_URL}/{repository}/-/archive/{tag_format}/{filename}",
+            homepage=f"{base_url or gitlab.DEFAULT_BASE_URL}/{repository}/"
         )
 
     @classmethod

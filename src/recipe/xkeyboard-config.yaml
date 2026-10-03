@@ -1,0 +1,32 @@
+name: xkeyboard-config
+homepage: https://www.freedesktop.org/wiki/Software/XKeyboardConfig/
+license:
+  - MIT
+  - X11
+description: Keyboard layout and XKB configuration data.
+
+version: '2.48'
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/data/xkeyboard-config/
+  regex: xkeyboard\-config\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  build:
+    - gettext
+
+sources:
+  - type: tarball
+    name: xkeyboard-config
+    url: https://xorg.freedesktop.org/archive/individual/data/xkeyboard-config/xkeyboard-config-${version}.tar.xz
+    md5hash: 575106aff79b589abe4aff6c4bff4782
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr

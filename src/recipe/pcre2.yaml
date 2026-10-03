@@ -1,0 +1,33 @@
+name: pcre2
+homepage: https://github.com/PCRE2Project/pcre2/
+license:
+  - BSD-3-Clause
+description: Regular expression library.
+
+version: pcre2-10.49
+
+version_source:
+  type: github
+  repo: PCRE2Project/pcre2
+
+dependencies:
+  optional:
+    - readline
+    - zlib
+    - bzip2
+
+  build:
+    - pkgconf
+    - bzip2
+
+sources:
+  - type: tarball
+    name: pcre2
+    url: https://github.com/PCRE2Project/pcre2/releases/download/${version}/${version}.tar.gz
+    md5hash: 40dc26f12d94443502eb98f085f89d50
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cmake

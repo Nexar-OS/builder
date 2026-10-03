@@ -6,6 +6,7 @@ from builder.version.source import gitlab
 from builder.recipe.recipe import GenericRecipe, BuildRole, BuildMethod
 from builder.recipe.loader import load_recipe_from_schema, load_version_source_from_schema
 from builder.utils.download import url_file_to_md5
+from builder.utils.logger import debug
 import jinja2
 import yaml
 
@@ -486,7 +487,7 @@ class RecipeGenerator():
             if not self.schema.version:
                 raise ValueError("Cannot resolve md5hashes automatically without a version.")
 
-            print(source.url.replace("${version}", self.schema.version))
+            debug("Resolving md5hash for '" + source.url.replace("${version}", self.schema.version) + "'.")
 
             source.md5hash = url_file_to_md5(source.url.replace("${version}", self.schema.version))
 

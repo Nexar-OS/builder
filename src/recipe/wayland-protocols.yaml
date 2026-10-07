@@ -1,0 +1,38 @@
+name: wayland-protocols
+homepage: https://wayland.freedesktop.org/
+license:
+  - MIT
+description: Additional standard Wayland protocol definitions.
+
+version: '1.49'
+
+version_source:
+  type: gitlab
+  repo: wayland/wayland-protocols
+  base_url: https://gitlab.freedesktop.org/
+
+dependencies:
+  required:
+    - wayland
+  
+  build:
+    - wayland
+  
+  host:
+    - wayland-scanner
+
+sources:
+  - type: tarball
+    name: wayland-protocols
+    url: https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/${version}/downloads/wayland-protocols-${version}.tar.xz
+    md5hash: 5685f769a227f2d4143d983ad07edaba
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dtests=false

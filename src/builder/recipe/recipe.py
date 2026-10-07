@@ -86,6 +86,13 @@ class BuildRole(Enum):
     target binaries.
     """
 
+    HOST = auto()
+    """
+    Build dependency to be made available in the $PATH of the build machine itself.
+
+    This could be a binary needed by the compilation process of another recipe.
+    """
+
     SYSROOT = auto()
     """
     Target development component installed into the (cross-)toolchain.
@@ -294,6 +301,9 @@ class BuildRecipe(ABC):
         match self.build_role:
             case BuildRole.TOOLCHAIN:
                 dir = None
+
+            case BuildRole.HOST:
+                dir = self.ctx.toolchain_host_tools
 
             case BuildRole.SYSROOT | BuildRole.TARGET:
                 dir = self.work_dir / "rootfs"

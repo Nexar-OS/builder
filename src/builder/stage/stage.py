@@ -28,6 +28,7 @@ class Stage:
         recipes (list[str]): Recipes included in this stage.
         build_role (BuildRole): The role in which recipes should be built.
         add_runtime_dependencies (bool): When set to ``True``, runtime dependencies will be built as well.
+        add_optional_dependencies (bool): When set to ``True``, optional runtime dependencies will be built as well.
         ignore_dependency_errors (bool): When set to ``True``, missing dependencies will be tollerated.
         max_retries (int): The maximum amount to retry building each recipe if it fails.
         throw_on_fail (bool): Make the sequencer throw a ``RuntimeError`` if a recipe cannot be built.
@@ -42,6 +43,7 @@ class Stage:
     recipes: list[str]
     build_role: BuildRole = BuildRole.TARGET
     add_runtime_dependencies: bool = False
+    add_optional_dependencies: bool = False
     ignore_dependency_errors: bool = False
     max_retries: int = 3
     throw_on_fail: bool = False
@@ -93,6 +95,31 @@ class Stage:
             # dependencies could introduce new build dependencies
             recipes = list(self.runtime_dependencies.recipes.values())
 
+        # Only create optional runtime graph if the feature is enabled
+        self.optional_dependencies = None
+        if self.add_optional_dependencies:
+            self.optional_dependencies = DependencyGraph(
+                recipes=recipes,
+                registry=self.ctx.registry,
+                kind=DependencyKind.OPTIONAL,
+                allow_cycles=True,
+                ignore_dependency_errors=self.ignore_dependency_errors
+            )
+
+            recipes = list(self.optional_dependencies.recipes.values())
+
+        # Host graph is similar to build graph
+        # and will also always be required
+        self.host_graph = DependencyGraph(
+            recipes=recipes,
+            registry=self.ctx.registry,
+            kind=DependencyKind.HOST,
+            allow_cycles=False,
+            ignore_dependency_errors=self.ignore_dependency_errors
+        )
+
+        recipes = list(self.host_graph.recipes.values())
+
         # Build graph will always be needed
         # but the recipes used may depend on the runtime graph
         self.build_dependencies = DependencyGraph(
@@ -107,9 +134,19 @@ class Stage:
         self._load_recipes()
         self._build_dependency_graphs()
 
+        graphs = []
+        if self.runtime_dependencies:
+            graphs.append(self.runtime_dependencies)
+        
+        if self.optional_dependencies:
+            graphs.append(self.optional_dependencies)
+
         self.sequencer = Sequencer(
-            build_graph=self.build_dependencies,
-            runtime_graph=self.runtime_dependencies,
+            graphs=graphs,
+            constraining_graphs=[
+                self.build_dependencies,
+                self.host_graph
+            ],
             max_workers=self.max_workers or Stage.DEFAULT_MAX_WORKERS
         )
     

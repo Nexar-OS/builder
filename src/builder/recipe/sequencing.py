@@ -5,8 +5,6 @@ from concurrent.futures import (
     FIRST_COMPLETED
 )
 
-from dataclasses import dataclass
-
 from .dependencies import (
     DependencyGraph,
     RecipeKey
@@ -33,13 +31,13 @@ class Sequencer:
     """
 
     def __init__(self,
-                 build_graph: DependencyGraph | None,
-                 runtime_graph: DependencyGraph | None,
+                 graphs: list[DependencyGraph] | None,
+                 constraining_graphs: list[DependencyGraph] | None,
                  max_workers: int = 1,
                 ) -> None:
 
-        self.build_graph = build_graph or DependencyGraph.empty()
-        self.runtime_graph = runtime_graph or DependencyGraph.empty()
+        self.graphs = graphs or []
+        self.constraining_graphs = constraining_graphs or []
 
         self.max_workers = max_workers
 
@@ -57,8 +55,7 @@ class Sequencer:
 
         # Initialize dependency and dependent mappings
         for graph in (
-            self.build_graph,
-            self.runtime_graph
+            self.graphs + self.constraining_graphs
         ):
             for recipe in graph.recipes.values():
                 key = RecipeKey.get(recipe)
@@ -80,17 +77,18 @@ class Sequencer:
                 self._dependencies[target_key].add(sysroot_key)
                 self._dependents[sysroot_key].add(target_key)
     
-        # Only BUILD edges become constraints.
-        recipes = self.build_graph.recipes
-        for recipe in recipes.values():
-            node_key = RecipeKey.get(recipe)
-            
-            for dependency in self.build_graph.dependencies_of(recipe):
-                dependency_recipe = recipes[dependency]
-                dependency_key = RecipeKey.get(dependency_recipe)
+        # Only edges from constraining_graphs become constraints.
+        for graph in self.constraining_graphs:
+            recipes = graph.recipes
+            for recipe in recipes.values():
+                node_key = RecipeKey.get(recipe)
 
-                self._dependencies[node_key].add(dependency_key)
-                self._dependents[dependency_key].add(node_key)
+                for dependency in graph.dependencies_of(recipe):
+                    dependency_recipe = recipes[dependency]
+                    dependency_key = RecipeKey.get(dependency_recipe)
+
+                    self._dependencies[node_key].add(dependency_key)
+                    self._dependents[dependency_key].add(node_key)
         
         debug("BUILD PLAN:")
         for recipe, dependencies in self._dependencies.items():

@@ -30,6 +30,7 @@ class BuildContext:
         toolchain (Toolchain): Toolchain used to build the next recipe.
         toolchain_dir (Path): Directory where the (cross-)toolchain will be located.
         toolchain_sysroot (Path): Directory where the (cross-)toolchains sysroot will be located.
+        toolchain_host_tools (Path): Directory where HOST-recipes will be built into.
 
         num_jobs (int): The amount of concurrent build jobs.
         sysroot_lock (Lock): A global lock on recipes installing to sysroot.
@@ -48,6 +49,7 @@ class BuildContext:
 
     toolchain_dir: Path
     toolchain_sysroot: Path
+    toolchain_host_tools: Path
 
     num_jobs: int
 

@@ -21,6 +21,7 @@ class Dependencies:
 
     required: list[str] | None = None
     optional: list[str] | None = None
+    host: list[str] | None = None
     build: list[str] | None = None
     
     def is_empty(self) -> bool:
@@ -57,6 +58,11 @@ class DependencyKind(Enum):
     Dependencies needed to build a recipe.
     """
 
+    HOST = auto()
+    """
+    Dependencies needed in $PATH of build-machine for a recipe to be buildable.
+    """
+
     @property
     def build_role(self) -> "BuildRole":
         """
@@ -74,6 +80,9 @@ class DependencyKind(Enum):
             
             case DependencyKind.BUILD:
                 return BuildRole.SYSROOT
+            
+            case DependencyKind.HOST:
+                return BuildRole.HOST
 
 class DependencyCycleError(RuntimeError):
     """
@@ -209,6 +218,12 @@ class DependencyGraph():
                 yield from _dependencies(
                     role=BuildRole.TARGET,
                     list=dependencies.required or []
+                )
+            
+            case DependencyKind.HOST:
+                yield from _dependencies(
+                    role=BuildRole.HOST,
+                    list=dependencies.host or []
                 )
         
             case _:

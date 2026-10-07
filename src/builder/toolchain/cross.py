@@ -266,6 +266,8 @@ class CrossToolchain(Toolchain):
             num_jobs=ctx.num_jobs,
         )
 
+        self.ctx = ctx
+
         # Load pkg-config wrapper
         self.pkg_config_wrapper = self.prefix / "pkg-config_wrapper"
         load_pkgconfig_wrapper(self.pkg_config_wrapper)
@@ -273,3 +275,11 @@ class CrossToolchain(Toolchain):
     @property
     def pkg_config(self) -> str:
         return str(self.pkg_config_wrapper)
+    
+    @property
+    def path(self) -> str:
+        return f"{self.ctx.toolchain_host_tools}:{super().path}"
+    
+    @property
+    def pkg_config_libdir(self) -> str:
+        return f"{self.ctx.toolchain_host_tools}:{super().pkg_config_libdir}"

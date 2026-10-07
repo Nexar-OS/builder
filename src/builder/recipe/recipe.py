@@ -11,7 +11,6 @@ from hashlib import sha256
 
 from builder.source.source import Source
 from builder.build.context import BuildContext
-from builder.toolchain import NativeToolchain
 
 if TYPE_CHECKING:
     from builder.build.system import BuildSystem
@@ -418,6 +417,7 @@ class BuildRecipe(ABC):
             # Host-recipes are usually built with native toolchain
             # but we will respect the forced toolchain (if passed).
             if not toolchain and self.build_role == BuildRole.HOST:
+                from builder.toolchain import NativeToolchain
                 self.logger.info(f"Switching to native-toolchain for '{self}'.")
                 toolchain = NativeToolchain()
 

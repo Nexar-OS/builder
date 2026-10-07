@@ -130,6 +130,7 @@ class DefaultArguments(CLICommand):
                 toolchain=NativeToolchain(),
                 toolchain_dir=self.toolchain_dir.resolve() / "binaries",
                 toolchain_sysroot=self.toolchain_dir.resolve() / "sysroot",
+                toolchain_host_tools=self.toolchain_dir.resolve() / "host_tools",
                 num_jobs=self.num_jobs
             )
         

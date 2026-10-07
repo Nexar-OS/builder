@@ -258,6 +258,15 @@ class DependencyGraph():
         self._dependents.setdefault(key, set())
         
         for dependency_key in self._dependency_names(recipe):
+            # A recipe may depend on itself as a HOST dependency, but that
+            # dependency is only meaningful when the recipe is not already
+            # being built in the HOST role itself.
+            if (
+                self.kind is DependencyKind.HOST
+                and dependency_key == key
+            ):
+                continue
+
             dependency = self._load_dependency(dependency_key, recipe)
 
             # Dependency errors are ignored

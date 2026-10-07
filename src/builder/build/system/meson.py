@@ -1,7 +1,7 @@
 from pathlib import Path
 from builder.recipe import BuildRecipe
 from .buildsystem import BuildSystem
-from builder.toolchain import Toolchain
+from builder.toolchain import Toolchain, NativeToolchain
 from dataclasses import dataclass
 
 @dataclass
@@ -16,6 +16,9 @@ class Meson(BuildSystem):
         """
         Prepare the cross config file for meson.
         """
+
+        if isinstance(toolchain, NativeToolchain):
+            return
 
         self.cross_file = build_dir / "cross.ini"
         with self.cross_file.open("w") as f:
@@ -59,7 +62,6 @@ class Meson(BuildSystem):
             build_dir (Path): Directory where the build will be configured.
             config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
         """
-        assert self.cross_file, "No cross file found!"
 
         build_dir.mkdir(exist_ok=True, parents=True)
 
@@ -76,10 +78,15 @@ class Meson(BuildSystem):
             str(toolchain.meson),
             "setup", str(build_dir), str(source_dir),
             *args,
-            "--cross-file",
-            str(self.cross_file),
-            "--prefer-static"
+            "--prefer-static",
         ]
+
+        if not isinstance(toolchain, NativeToolchain):
+            assert self.cross_file, "No cross file found!"
+            cmd += [
+                "--cross-file",
+                str(self.cross_file),
+            ]
 
         # Invoke setup
         recipe.ctx.run(

@@ -394,6 +394,7 @@ class BuildRecipe(ABC):
             if (
                 dest_dir
                 and dest_dir.is_dir()
+                and self.build_role != BuildRole.HOST
             ):
                 rmtree(dest_dir)
 

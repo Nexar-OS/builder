@@ -9,6 +9,7 @@ class Meson(BuildSystem):
     Abstraction for the meson build system.
     """
     disable_fakeroot: bool = False
+    install_target: str | None = None
 
     def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         """
@@ -68,16 +69,18 @@ class Meson(BuildSystem):
             recipe.logger.info("No config args passed. Skipping configuration.")
             return
 
+        cmd = [
+            str(recipe.ctx.toolchain.meson),
+            "setup", str(build_dir), str(source_dir),
+            *args,
+            "--cross-file",
+            str(self.cross_file),
+            "--prefer-static"
+        ]
+
         # Invoke setup
         recipe.ctx.run(
-            [
-                str(recipe.ctx.toolchain.meson),
-                "setup", str(build_dir), str(source_dir),
-                *args,
-                "--cross-file",
-                str(self.cross_file),
-                "--prefer-static"
-            ],
+            cmd,
             cwd=build_dir,
             use_fakeroot=not self.disable_fakeroot,
             recipe=recipe
@@ -91,8 +94,13 @@ class Meson(BuildSystem):
             recipe (BuildRecipe): The recipe to build.
             build_dir (Path): Directory containing the configured build tree.
         """
+        cmd = [recipe.ctx.toolchain.ninja, *(self.build_args or []), "-C", str(build_dir)]
+
+        if self.install_target:
+            cmd += [ self.install_target ]
+
         recipe.ctx.run(
-            [recipe.ctx.toolchain.ninja, *(self.build_args or []), "-C", str(build_dir)],
+            cmd,
             cwd=build_dir,
             use_fakeroot=not self.disable_fakeroot,
             recipe=recipe

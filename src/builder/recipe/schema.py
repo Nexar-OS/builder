@@ -29,6 +29,7 @@ class MesonSchema(Schema):
     config_args: list[str] | None = None
     build_args: list[str] | None = None
     install_args: list[str] | None = None
+    install_target: str | None = None
 
 class CustomBuildSystemSchema(Schema):
     type: Literal["custom"]

@@ -105,6 +105,14 @@ class Toolchain(ABC):
         return str(self.prefix / "bin")
     
     @property
+    def pkg_config_libdir(self) -> str:
+        return ":".join([
+            str(self.sysroot / "usr/lib/pkgconfig"),
+            str(self.sysroot / "usr/lib64/pkgconfig"),
+            str(self.sysroot / "usr/share/pkgconfig")
+        ])
+
+    @property
     def env(self) -> dict[str, str]:
         """Build a map of environment variables for a shell-sandbox.
 
@@ -132,9 +140,5 @@ class Toolchain(ABC):
 
             "PKG_CONFIG": self.pkg_config,
             "PKG_CONFIG_SYSROOT_DIR": f"{self.sysroot}",
-            "PKG_CONFIG_LIBDIR": ":".join([
-                str(self.sysroot / "usr/lib/pkgconfig"),
-                str(self.sysroot / "usr/lib64/pkgconfig"),
-                str(self.sysroot / "usr/share/pkgconfig")
-            ]),
+            "PKG_CONFIG_LIBDIR": self.pkg_config_libdir,
         }

@@ -33,7 +33,7 @@ class Meson(BuildSystem):
 
             f.write("[properties]\n")
             f.write(f"sys_root = '{recipe.ctx.toolchain.sysroot}'\n")
-            f.write(f"pkg_config_libdir = '{recipe.ctx.toolchain.env.get('PKG_CONFIG_LIBDIR', '')}'\n")
+            f.write(f"pkg_config_libdir = '{recipe.ctx.toolchain.pkg_config_libdir}'\n")
 
             f.write("[built-in options]\n")
             f.write(f"default_library = 'shared'\n")

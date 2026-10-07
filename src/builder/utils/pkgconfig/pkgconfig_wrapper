@@ -11,13 +11,26 @@
 set -eu
 
 # Ignore PKG_CONFIG_SYSROOT_DIR for --variable
-for arg in "$@"; do
-    case "$arg" in
-        --variable|--variable=*)
-            unset PKG_CONFIG_SYSROOT_DIR
-            break
-            ;;
-    esac
-done
+
+# ========================================================================
+# I am genuinely not sure why this doesn't work any longer nor why
+# exactly I even added this wrapper in the first place.
+#
+# This however breaks how the wayland-protocols directory is resolved
+# as it strips the sysroot part of the path it passes to meson.
+#
+# I discovered this specifically while testing the 'libxkbcommon'-recipe.
+#
+# Hope this doesn't break anything...
+# ========================================================================
+
+# for arg in "$@"; do
+#     case "$arg" in
+#         --variable|--variable=*)
+#             unset PKG_CONFIG_SYSROOT_DIR
+#             break
+#             ;;
+#     esac
+# done
 
 exec pkg-config "$@"

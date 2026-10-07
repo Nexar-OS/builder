@@ -1,0 +1,42 @@
+name: libxkbcommon
+homepage: https://xkbcommon.org/
+license:
+  - MIT
+description: Keymap handling library for toolkits and window systems.
+
+version: xkbcommon-1.14.0-beta2
+
+version_source:
+  type: github
+  repo: xkbcommon/libxkbcommon
+
+sources:
+  - type: tarball
+    name: libxkbcommon
+    url: https://github.com/xkbcommon/libxkbcommon/archive/refs/tags/${version}.tar.gz
+    md5hash: eb59e0282b51be01279758d452831d37
+
+dependencies:
+  runtime:
+    - libxml2
+    - xkeyboard-config
+    - wayland-protocols
+
+  build:
+    - libxml2
+    - wayland-protocols
+  
+  host:
+    - wayland-scanner
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Denable-x11=false
+      - -Denable-wayland=true
+      - -Denable-docs=false

@@ -71,6 +71,14 @@ class CreateRecipeCommand(CLICommand):
         default=[]
     ).arg(parse=list[str])
 
+    host_dependencies: list[str] = CLIArgument(
+        type=str,
+        help="Add a dependency required in the build machines $PATH for building this recipe.",
+        flags=("--host-dep", "-hd"),
+        action="append",
+        default=[]
+    ).arg(parse=list[str])
+
     version: str | None = CLIArgument(
         type=str,
         help="The upstream-version to build the package from.",
@@ -355,6 +363,7 @@ class CreateRecipeCommand(CLICommand):
         dependencies = Dependencies(
             required=self.runtime_dependencies or None,
             optional=self.optional_runtime_dependencies or None,
+            host=self.host_dependencies or None,
             build=self.build_dependencies or None
         )
         if not dependencies.is_empty():

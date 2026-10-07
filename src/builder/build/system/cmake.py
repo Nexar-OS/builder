@@ -1,6 +1,7 @@
 from pathlib import Path
 from builder.recipe import BuildRecipe
 from .buildsystem import BuildSystem
+from builder.toolchain import Toolchain
 from dataclasses import dataclass
 
 @dataclass
@@ -8,11 +9,12 @@ class CMake(BuildSystem):
     """Abstraction for the cmake build system."""
     generator: str | None = None
 
-    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
+    def prepare(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         build_dir.mkdir(exist_ok=True, parents=True)
 
     def configure(self,
                   recipe: BuildRecipe,
+                  toolchain: Toolchain,
                   source_dir: Path, 
                   build_dir: Path,
                   dest_dir: Path|None = None,
@@ -22,12 +24,13 @@ class CMake(BuildSystem):
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             source_dir (Path): Directory containing the projects source tree.
             build_dir (Path): Directory where the build will be configured.
             config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
         """
         args = [
-            recipe.ctx.toolchain.cmake,
+            toolchain.cmake,
             "-S", str(source_dir),
             "-B", str(build_dir)
         ]
@@ -40,12 +43,13 @@ class CMake(BuildSystem):
 
         recipe.ctx.run(args, cwd=build_dir, recipe=recipe)
         
-    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
+    def build(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Compile the project using ``cmake``
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             build_dir (Path): Directory containing the configured build tree.
         """
         recipe.ctx.run(
@@ -60,7 +64,7 @@ class CMake(BuildSystem):
             recipe=recipe
         )
 
-    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
+    def install(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install the compiled artifacts using ``cmake --install``.
 
@@ -69,10 +73,11 @@ class CMake(BuildSystem):
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             build_dir (Path): Directory containing the build output.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
-        cmd = [ recipe.ctx.toolchain.make ]
+        cmd = [ toolchain.make ]
 
         if dest_dir:
             cmd.append(f"DESTDIR={dest_dir}")

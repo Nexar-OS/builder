@@ -11,11 +11,13 @@ from hashlib import sha256
 
 from builder.source.source import Source
 from builder.build.context import BuildContext
+from builder.toolchain import NativeToolchain
 
 if TYPE_CHECKING:
     from builder.build.system import BuildSystem
     from builder.version.source import VersionSource
     from builder.build import MachineSpec
+    from builder.toolchain import Toolchain
 
 from builder.utils import logger
 from builder.utils.file import rmtree, merge_trees
@@ -358,7 +360,7 @@ class BuildRecipe(ABC):
             ]
         )
 
-    def build(self, force_rebuild: bool = False) -> None:
+    def build(self, force_rebuild: bool = False, toolchain: "Toolchain | None" = None) -> None:
         """
         Executes the complete build lifecycle of the recipe.
 
@@ -372,6 +374,7 @@ class BuildRecipe(ABC):
 
         Args:
             force_rebuild (bool): If ``True``, the self.needs_rebuild flag is ignored and the recipe is built again.
+            toolchain (Toolchain | None): Force the toolchain used. Defaults to ``self.ctx.toolchain``.
         """
 
         work_dir = self.work_dir
@@ -412,12 +415,18 @@ class BuildRecipe(ABC):
             # Let recipes apply custom patches
             self.patch(self.ctx, source_dir)
 
+            # Host-recipes are usually built with native toolchain
+            # but we will respect the forced toolchain (if passed).
+            if not toolchain and self.build_role == BuildRole.HOST:
+                self.logger.info(f"Switching to native-toolchain for '{self}'.")
+                toolchain = NativeToolchain()
+
             # Run installation
             if self.build_system:
-                self.build_system.prepare(self, source_dir, build_dir, dest_dir)
-                self.build_system.configure(self, source_dir, build_dir, dest_dir, self._config_args(self.ctx))
-                self.build_system.build(self, source_dir, build_dir, dest_dir)
-                self.build_system.install(self, source_dir, build_dir, dest_dir)
+                self.build_system.prepare(self, toolchain or self.ctx.toolchain, source_dir, build_dir, dest_dir)
+                self.build_system.configure(self, toolchain or self.ctx.toolchain, source_dir, build_dir, dest_dir, self._config_args(self.ctx))
+                self.build_system.build(self, toolchain or self.ctx.toolchain, source_dir, build_dir, dest_dir)
+                self.build_system.install(self, toolchain or self.ctx.toolchain, source_dir, build_dir, dest_dir)
 
             # Run post install hook
             self.post_install(self.ctx, dest_dir)

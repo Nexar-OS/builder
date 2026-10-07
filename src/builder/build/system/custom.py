@@ -3,6 +3,7 @@ from builder.recipe import BuildRecipe
 from .buildsystem import BuildSystem
 from builder.build.context import BuildContext
 from dataclasses import dataclass
+from builder.toolchain import Toolchain
 
 @dataclass
 class CustomBuildSystem(BuildSystem):
@@ -33,7 +34,7 @@ class CustomBuildSystem(BuildSystem):
             recipe=recipe
         )
 
-    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
+    def prepare(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         """
         Prepare the cross config file for meson.
         """
@@ -45,6 +46,7 @@ class CustomBuildSystem(BuildSystem):
 
     def configure(self,
                   recipe: BuildRecipe,
+                  toolchain: Toolchain,
                   source_dir: Path, 
                   build_dir: Path,
                   dest_dir: Path|None = None,
@@ -56,6 +58,7 @@ class CustomBuildSystem(BuildSystem):
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             source_dir (Path): Directory containing the projects source tree.
             build_dir (Path): Directory where the build will be configured.
             config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
@@ -67,12 +70,13 @@ class CustomBuildSystem(BuildSystem):
         }, recipe)
         
         
-    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
+    def build(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Compile the project using the ``_build`` script.
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             build_dir (Path): Directory containing the configured build tree.
         """
         self._invoke(recipe.ctx, self._build, build_dir, {
@@ -81,12 +85,13 @@ class CustomBuildSystem(BuildSystem):
             "DESTDIR": str(dest_dir),
         }, recipe)
 
-    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
+    def install(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install the compiled artifacts using the passed ``_install`` script.
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             build_dir (Path): Directory containing the build output.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """

@@ -1,7 +1,7 @@
 from pathlib import Path
 from .buildsystem import BuildSystem
 from builder.recipe import BuildRecipe, BuildRole
-from builder.build.context import BuildContext
+from builder.toolchain import Toolchain
 from dataclasses import dataclass
 
 @dataclass
@@ -15,12 +15,13 @@ class Autotools(BuildSystem):
     install_target: str = "install"
     disable_fakeroot: bool = False
 
-    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
+    def prepare(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         # Not needed
         pass
 
     def configure(self,
                   recipe: BuildRecipe,
+                  toolchain: Toolchain,
                   source_dir: Path, 
                   build_dir: Path,
                   dest_dir: Path|None = None,
@@ -33,6 +34,7 @@ class Autotools(BuildSystem):
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             source_dir (Path): Directory containing the projects source tree.
             build_dir (Path): Directory where the build will be configured.
             config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
@@ -42,7 +44,7 @@ class Autotools(BuildSystem):
 
         # Build argument list
         args = list(self.config_args or [])
-        # args += config_args or []
+        args += config_args or []
 
         match recipe.build_role:
             case BuildRole.TARGET | BuildRole.SYSROOT:
@@ -90,25 +92,26 @@ class Autotools(BuildSystem):
             recipe=recipe
         )
         
-    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
+    def build(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Compile the project using ``make``
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             build_dir (Path): Directory containing the configured build tree.
         """
         if self.skip_build:
             return
         
         recipe.ctx.run(
-            [recipe.ctx.toolchain.make, *(self.build_args or []), f"-j{recipe.ctx.num_jobs}"],
+            [toolchain.make, *(self.build_args or []), f"-j{recipe.ctx.num_jobs}"],
             cwd=build_dir,
             use_fakeroot=not self.disable_fakeroot,
             recipe=recipe
         )
 
-    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
+    def install(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install the compiled artifacts using ``make install``.
 
@@ -116,11 +119,12 @@ class Autotools(BuildSystem):
         ``DESTDIR`` override, allowing for staged or relocatable installations.
 
         Args:
-            ctx (BuildContext): Build context.
+            recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             build_dir (Path): Directory containing the build output.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
-        cmd = [ recipe.ctx.toolchain.make ]
+        cmd = [ toolchain.make ]
 
         if dest_dir:
             cmd.append(f"DESTDIR={dest_dir}")

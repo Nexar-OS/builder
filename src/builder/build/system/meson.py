@@ -1,6 +1,7 @@
 from pathlib import Path
 from builder.recipe import BuildRecipe
 from .buildsystem import BuildSystem
+from builder.toolchain import Toolchain
 from dataclasses import dataclass
 
 @dataclass
@@ -11,7 +12,7 @@ class Meson(BuildSystem):
     disable_fakeroot: bool = False
     install_target: str | None = None
 
-    def prepare(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
+    def prepare(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         """
         Prepare the cross config file for meson.
         """
@@ -19,21 +20,21 @@ class Meson(BuildSystem):
         self.cross_file = build_dir / "cross.ini"
         with self.cross_file.open("w") as f:
             f.write("[binaries]\n")
-            f.write(f"c = '{recipe.ctx.toolchain.cc}'\n")
-            f.write(f"cpp = '{recipe.ctx.toolchain.cxx}'\n")
-            f.write(f"ar = '{recipe.ctx.toolchain.ar}'\n")
-            f.write(f"strip = '{recipe.ctx.toolchain.strip}'\n")
-            f.write(f"pkg-config = '{recipe.ctx.toolchain.pkg_config}'\n")
+            f.write(f"c = '{toolchain.cc}'\n")
+            f.write(f"cpp = '{toolchain.cxx}'\n")
+            f.write(f"ar = '{toolchain.ar}'\n")
+            f.write(f"strip = '{toolchain.strip}'\n")
+            f.write(f"pkg-config = '{toolchain.pkg_config}'\n")
 
             f.write("[host_machine]\n")
             f.write("system = 'linux'\n")
-            f.write(f"cpu_family = '{recipe.ctx.target_machine.arch}'\n")
-            f.write(f"cpu = '{recipe.ctx.target_machine.arch}'\n")
+            f.write(f"cpu_family = '{toolchain.target.arch}'\n")
+            f.write(f"cpu = '{toolchain.target.arch}'\n")
             f.write("endian = 'little'\n")
 
             f.write("[properties]\n")
-            f.write(f"sys_root = '{recipe.ctx.toolchain.sysroot}'\n")
-            f.write(f"pkg_config_libdir = '{recipe.ctx.toolchain.pkg_config_libdir}'\n")
+            f.write(f"sys_root = '{toolchain.sysroot}'\n")
+            f.write(f"pkg_config_libdir = '{toolchain.pkg_config_libdir}'\n")
 
             f.write("[built-in options]\n")
             f.write(f"default_library = 'shared'\n")
@@ -41,6 +42,7 @@ class Meson(BuildSystem):
 
     def configure(self,
                   recipe: BuildRecipe,
+                  toolchain: Toolchain,
                   source_dir: Path, 
                   build_dir: Path,
                   dest_dir: Path|None = None,
@@ -52,6 +54,7 @@ class Meson(BuildSystem):
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             source_dir (Path): Directory containing the projects source tree.
             build_dir (Path): Directory where the build will be configured.
             config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
@@ -70,7 +73,7 @@ class Meson(BuildSystem):
             return
 
         cmd = [
-            str(recipe.ctx.toolchain.meson),
+            str(toolchain.meson),
             "setup", str(build_dir), str(source_dir),
             *args,
             "--cross-file",
@@ -86,15 +89,16 @@ class Meson(BuildSystem):
             recipe=recipe
         )
         
-    def build(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
+    def build(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Compile the project using ``ninja``
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             build_dir (Path): Directory containing the configured build tree.
         """
-        cmd = [recipe.ctx.toolchain.ninja, *(self.build_args or []), "-C", str(build_dir)]
+        cmd = [toolchain.ninja, *(self.build_args or []), "-C", str(build_dir)]
 
         if self.install_target:
             cmd += [ self.install_target ]
@@ -106,7 +110,7 @@ class Meson(BuildSystem):
             recipe=recipe
         )
 
-    def install(self, recipe: BuildRecipe, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
+    def install(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
         Install the compiled artifacts using ``ninja install``.
 
@@ -115,10 +119,11 @@ class Meson(BuildSystem):
 
         Args:
             recipe (BuildRecipe): The recipe to build.
+            toolchain (Toolchain): The toolchain to use for the build.
             build_dir (Path): Directory containing the build output.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
-        cmd = [ recipe.ctx.toolchain.ninja ]
+        cmd = [ toolchain.ninja ]
 
         # Destdir must be passed as an environment variable
         env = dict(recipe.ctx.env)

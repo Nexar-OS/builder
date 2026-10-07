@@ -127,7 +127,7 @@ class DefaultArguments(CLICommand):
                 metadata_dir=self.build_dir.resolve() / ".metadata",
                 build_machine=detect_machine(),
                 target_machine=target,
-                toolchain=NativeToolchain(),
+                toolchain=NativeToolchain.get(),
                 toolchain_dir=self.toolchain_dir.resolve() / "binaries",
                 toolchain_sysroot=self.toolchain_dir.resolve() / "sysroot",
                 toolchain_host_tools=self.toolchain_dir.resolve() / "host_tools",

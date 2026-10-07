@@ -3,6 +3,7 @@ from .toolchain import Toolchain
 from builder.build.machine import detect_machine, nproc
 from builder.utils.logger import info
 
+_NATIVE_TOOLCHAIN = None
 class NativeToolchain(Toolchain):
     """
     Representation of the build systems native compiler toolchain.
@@ -19,6 +20,22 @@ class NativeToolchain(Toolchain):
             sysroot=Path("/"),
             num_jobs=nproc()
         )
+    
+    @classmethod
+    def get(cls) -> "NativeToolchain":
+        """Get a native toolchain.
+
+        This method returns a native toolchain and keeps
+        track of it.
+
+        Returns:
+            NativeToolchain: The toolchain.
+        """
+        global _NATIVE_TOOLCHAIN
+        if not _NATIVE_TOOLCHAIN:
+            _NATIVE_TOOLCHAIN = cls()
+
+        return _NATIVE_TOOLCHAIN
     
     @property
     def cc(self) -> str:

@@ -43,7 +43,7 @@ class Meson(BuildSystem):
             f.write(f"default_library = 'shared'\n")
             f.write(f"prefer_static = true\n")
         
-        native = NativeToolchain()
+        native = NativeToolchain.get()
         self.native_file = build_dir / "native.ini"
         with self.native_file.open("w") as f:
             f.write("[binaries]\n")

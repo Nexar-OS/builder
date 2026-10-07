@@ -419,7 +419,7 @@ class BuildRecipe(ABC):
             if not toolchain and self.build_role == BuildRole.HOST:
                 from builder.toolchain import NativeToolchain
                 self.logger.info(f"Switching to native-toolchain for '{self}'.")
-                toolchain = NativeToolchain()
+                toolchain = NativeToolchain.get()
 
             # Run installation
             if self.build_system:

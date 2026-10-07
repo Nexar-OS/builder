@@ -1,0 +1,34 @@
+name: wayland
+homepage: https://wayland.freedesktop.org/
+license: MIT
+description: A replacement for the X11 window system protocol and architecture.
+
+version: 1.26.0
+
+version_source:
+  type: gitlab
+  repo: wayland/wayland
+  base_url: https://gitlab.freedesktop.org/
+
+sources:
+  - type: tarball
+    name: wayland
+    url: https://gitlab.freedesktop.org/wayland/wayland/-/releases/${version}/downloads/wayland-${version}.tar.xz
+    md5hash: 64c593ccf6820635765a952ec5f34fbb
+
+dependencies:
+  host:
+    - wayland-scanner
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Ddocumentation=false
+      - -Dtests=false
+      - -Dscanner=true
+      - -Dlibraries=true

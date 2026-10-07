@@ -42,6 +42,16 @@ class Meson(BuildSystem):
             f.write("[built-in options]\n")
             f.write(f"default_library = 'shared'\n")
             f.write(f"prefer_static = true\n")
+        
+        native = NativeToolchain()
+        self.native_file = build_dir / "native.ini"
+        with self.native_file.open("w") as f:
+            f.write("[binaries]\n")
+            f.write(f"pkg-config = '{native.pkg_config}'\n")
+
+            f.write("[properties]\n")
+            f.write(f"sys_root = '{recipe.ctx.toolchain_host_tools}'\n")
+            f.write(f"pkg_config_libdir = '{recipe.ctx.toolchain_host_tools / 'usr/lib/pkgconfig'}'\n")
 
     def configure(self,
                   recipe: BuildRecipe,
@@ -83,10 +93,15 @@ class Meson(BuildSystem):
 
         if not isinstance(toolchain, NativeToolchain):
             assert self.cross_file, "No cross file found!"
+            assert self.native_file, "No native file found!"
             cmd += [
                 "--cross-file",
                 str(self.cross_file),
+                "--native-file",
+                str(self.native_file),
             ]
+        
+            
 
         # Invoke setup
         recipe.ctx.run(

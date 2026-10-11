@@ -26,6 +26,7 @@ class CMakeSchema(Schema):
 class MesonSchema(Schema):
     type: Literal["meson"]
     disable_fakeroot: bool = False
+    use_pkgconf_wrapper: bool = True
     config_args: list[str] | None = None
     build_args: list[str] | None = None
     install_args: list[str] | None = None

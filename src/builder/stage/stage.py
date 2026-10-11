@@ -163,7 +163,8 @@ class Stage:
         """
         Exports a specific recipe to the target stage.
         """
-        
+        info(f"Exporting recipe '{recipe.name}' to '{str(stage_dir)}'")
+
         path = recipe._dest_dir
         
         if not path:
@@ -217,8 +218,10 @@ class Stage:
                 list(self.runtime_dependencies.recipes.values())
             )
 
+        # Rootfs recipe should always be exported first (if present)
+        recipes = sorted(recipes, key=lambda r: r.name != "rootfs")
+
         for recipe in recipes:
-            info(f"Exporting recipe '{recipe.name}' to '{str(out)}'")
             self._export_recipe(recipe, out, copy)
         
         return self

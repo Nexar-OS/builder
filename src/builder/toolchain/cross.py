@@ -275,6 +275,10 @@ class CrossToolchain(Toolchain):
     @property
     def pkg_config(self) -> str:
         return str(self.pkg_config_wrapper)
+
+    @property
+    def pkg_config_no_wrapper(self) -> str:
+        return super().pkg_config
     
     @property
     def path(self) -> str:

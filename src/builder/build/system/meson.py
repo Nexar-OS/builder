@@ -11,6 +11,7 @@ class Meson(BuildSystem):
     """
     disable_fakeroot: bool = False
     install_target: str | None = None
+    use_pkgconf_wrapper: bool = True
 
     def prepare(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         """
@@ -27,7 +28,11 @@ class Meson(BuildSystem):
             f.write(f"cpp = '{toolchain.cxx}'\n")
             f.write(f"ar = '{toolchain.ar}'\n")
             f.write(f"strip = '{toolchain.strip}'\n")
-            f.write(f"pkg-config = '{toolchain.pkg_config}'\n")
+            if self.use_pkgconf_wrapper:
+                f.write(f"pkg-config = '{toolchain.pkg_config}'\n")
+            else:
+                f.write(f"pkg-config = '{NativeToolchain.get().pkg_config}'\n")
+
 
             f.write("[host_machine]\n")
             f.write("system = 'linux'\n")

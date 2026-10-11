@@ -13,9 +13,13 @@ version_source:
 dependencies:
   required:
     - libmnl
+    - libnftnl
+    - gmp
 
   build:
     - libmnl
+    - libnftnl
+    - gmp
   
 sources:
   - type: tarball

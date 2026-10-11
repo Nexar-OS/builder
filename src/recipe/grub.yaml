@@ -48,4 +48,4 @@ build:
       - --with-platform=efi
 
     build_args:
-      - CFLAGS=-Wno-error
+      - CFLAGS=-Wno-error -fno-pic

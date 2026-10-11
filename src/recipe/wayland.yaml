@@ -17,6 +17,14 @@ sources:
     md5hash: 64c593ccf6820635765a952ec5f34fbb
 
 dependencies:
+  required:
+    - libffi
+    - libexpat
+
+  build:
+    - libffi
+    - libexpat
+
   host:
     - wayland-scanner
 

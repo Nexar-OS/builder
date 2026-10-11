@@ -10,6 +10,15 @@ version_source:
   repo: wayland/wayland
   base_url: https://gitlab.freedesktop.org/
 
+dependencies:
+  required:
+    - libffi
+    - libexpat
+
+  build:
+    - libffi
+    - libexpat
+
 sources:
   - type: tarball
     name: wayland

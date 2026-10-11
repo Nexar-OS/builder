@@ -62,7 +62,6 @@ build:
 
           mkdir -p "$(dirname "$name")"
           cat > "$name"
-          echo "\n" >> "$name"
           chown "$owner" "$name"
           chmod "$mode" "$name"
       }
@@ -121,7 +120,7 @@ build:
       create_file etc/profile root:root 0644 <<'EOF'
       export PATH="/usr/local/sbin/:/usr/local/bin/:/usr/sbin:/usr/bin"
 
-      if [-d /etc/profile.d ]; then
+      if [ -d /etc/profile.d ]; then
         for f in /etc/profile.d/*.sh; do
           [ -r "$f" ] && . "$f"
         done

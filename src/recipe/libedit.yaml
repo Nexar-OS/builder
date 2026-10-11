@@ -14,6 +14,11 @@ dependencies:
   required:
     - glibc
     - ncurses
+
+  build:
+    - glibc
+    - ncurses
+
 sources:
   - type: tarball
     name: libedit

@@ -24,3 +24,4 @@ build:
 
   build_system:
     type: autotools
+    skip_build: true

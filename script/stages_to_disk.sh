@@ -2,7 +2,7 @@
 
 sh script/umount.sh
 
-DISK_SIZE=3072
+DISK_SIZE=4096
 DISK_IMG="build/disk.img"
 MOUNT="build/disk"
 

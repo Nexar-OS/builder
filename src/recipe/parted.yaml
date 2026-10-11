@@ -15,7 +15,7 @@ dependencies:
     - util-linux
   
   build:
-    - pkgconfig
+    - pkgconf
   
 sources:
   - type: tarball

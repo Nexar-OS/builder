@@ -22,3 +22,10 @@ build:
 
   build_system:
     type: autotools
+
+    # The make script tries to invoke a second script called "copy-firmware.sh"
+    # all MAKEFLAGS will be passed as arguments and -j isn't supported.
+    # Since the toolchain automatically passes -j$(nproc) through MAKEFLAGS
+    # we need to manually override them.
+    install_args:
+      - MAKEFLAGS=

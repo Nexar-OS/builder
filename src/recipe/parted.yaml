@@ -13,9 +13,12 @@ version_source:
 dependencies:
   required:
     - util-linux
+    - cryptsetup
   
   build:
+    - util-linux
     - pkgconf
+    - cryptsetup
   
 sources:
   - type: tarball

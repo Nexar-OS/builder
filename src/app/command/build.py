@@ -24,6 +24,12 @@ class BuildCommand(CLICommand):
         flags=("--all", "-a")
     ).arg()
 
+    skip: list[str] = CLIArgument(
+        type=str,
+        help="Pass one or multiple recipe(s) to exclude from the '--all' selection.",
+        flags=("--skip", "-s")
+    ).arg(parse=list[str])
+
     throw_on_fail: bool = CLIArgument(
         type=bool,
         help="Pass to exit the builder when a single recipe cannot be built.",
@@ -60,6 +66,9 @@ class BuildCommand(CLICommand):
             recipes: list[str] = list(ctx.registry.all)
         else:
             recipes: list[str] = self.recipes
+        
+        if self.skip:
+            recipes = [ recipe for recipe in recipes if not recipe in self.skip ]
 
         if not recipes:
             error("Please pass one or more recipes to build.")

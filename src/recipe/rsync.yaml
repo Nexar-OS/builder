@@ -1,0 +1,39 @@
+name: rsync
+homepage: https://github.com/RsyncProject/rsync/
+license:
+  - GPL
+description: Utility that provides fast incremental file transfer.
+
+version: 3.5.1
+
+version_source:
+  type: github
+  repo: RsyncProject/rsync
+
+dependencies:
+  required:
+    - openssl
+    - zstd
+    - libidn2
+  
+  build:
+    - openssl
+    - zstd
+    - libidn2
+
+sources:
+  - type: tarball
+    name: rsync
+    url: https://github.com/RsyncProject/rsync/releases/download/v${version}/rsync-${version}.tar.gz
+    md5hash: 9b996a86c297a1e9cef0f92725dc825e
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-xxhash
+      - --disable-lz4

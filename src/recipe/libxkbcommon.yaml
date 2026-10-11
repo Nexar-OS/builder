@@ -35,6 +35,10 @@ build:
   build_system:
     type: meson
 
+    # The wrapper would remove the sysroot from a variable
+    # where it is needed.
+    use_pkgconf_wrapper: false
+
     config_args:
       - --prefix=/usr
       - -Denable-x11=false

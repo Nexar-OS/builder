@@ -19,6 +19,7 @@ dependencies:
   build:
     - pkgconf
     - bzip2
+    - readline
 
 sources:
   - type: tarball

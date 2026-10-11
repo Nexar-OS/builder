@@ -41,6 +41,7 @@ dependencies:
     - readline
     - systemd
     - wpa_supplicant
+    - glib
   
 sources:
   - type: tarball
@@ -53,7 +54,7 @@ build:
 
   build_system:
     type: meson
-      
+
     config_args:
       - --prefix=/usr
       - -Dintrospection=false

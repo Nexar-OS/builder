@@ -15,11 +15,13 @@ dependencies:
     - libmnl
     - libnftnl
     - gmp
+    - libedit
 
   build:
     - libmnl
     - libnftnl
     - gmp
+    - libedit
   
 sources:
   - type: tarball

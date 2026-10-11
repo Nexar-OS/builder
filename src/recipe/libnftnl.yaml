@@ -14,6 +14,9 @@ dependencies:
   required:
     - libmnl
   
+  build:
+    - libmnl
+  
 sources:
   - type: tarball
     name: libnftnl

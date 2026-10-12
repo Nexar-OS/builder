@@ -114,7 +114,7 @@ class CreateRecipeCommand(CLICommand):
 
     version_identifier: str = CLIArgument(
         type=str,
-        help="The github/gitlab version identifier. (Usually either tags, releases or repository/releases)",
+        help="The github/gitlab version identifier. (Usually either tags, releases or repository/tags)",
         flags=("--version-identifier", "-vi"),
         default="releases"
     ).arg()

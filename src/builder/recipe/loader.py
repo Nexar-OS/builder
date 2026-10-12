@@ -219,6 +219,8 @@ def load_recipe(recipe_path: Path, role: BuildRole, ctx: BuildContext) -> Generi
         "build.kernel_arch": ctx.build_machine.kernel_arch,
         "build.arch": ctx.build_machine.arch,
         "num_jobs": str(ctx.num_jobs),
+        "host_tools": str(ctx.toolchain_host_tools),
+        "sysroot": str(ctx.toolchain_sysroot),
         
         **{ f"mirror.{key}": value for key, value in MIRRORS.items() }
     })

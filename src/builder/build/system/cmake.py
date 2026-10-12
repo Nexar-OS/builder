@@ -31,7 +31,7 @@ class CMake(BuildSystem):
         """
         args = [
             toolchain.cmake,
-            "-S", str(source_dir),
+            "-S", str(source_dir / self.source_subdir),
             "-B", str(build_dir)
         ]
 

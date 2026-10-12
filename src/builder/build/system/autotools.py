@@ -71,7 +71,7 @@ class Autotools(BuildSystem):
         # Different projects might use different names for the same config file
         config_script = None
         for name in [ "configure", "Configure", "config" ]:
-            config_script = source_dir / name
+            config_script = source_dir / self.source_subdir / name
 
             if config_script.is_file():
                 break

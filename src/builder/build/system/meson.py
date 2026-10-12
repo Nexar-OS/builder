@@ -91,7 +91,7 @@ class Meson(BuildSystem):
 
         cmd = [
             str(toolchain.meson),
-            "setup", str(build_dir), str(source_dir),
+            "setup", str(build_dir), str(source_dir / self.source_subdir),
             *args,
             "--prefer-static",
         ]

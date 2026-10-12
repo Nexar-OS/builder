@@ -15,6 +15,7 @@ class AutotoolsSchema(Schema):
     config_args: list[str] | None = None
     build_args: list[str] | None = None
     install_args: list[str] | None = None
+    source_subdir: str = ""
 
 class CMakeSchema(Schema):
     type: Literal["cmake"]
@@ -22,6 +23,7 @@ class CMakeSchema(Schema):
     build_args: list[str] | None = None
     install_args: list[str] | None = None
     generator: str | None = None
+    source_subdir: str = ""
 
 class MesonSchema(Schema):
     type: Literal["meson"]
@@ -31,6 +33,7 @@ class MesonSchema(Schema):
     build_args: list[str] | None = None
     install_args: list[str] | None = None
     install_target: str | None = None
+    source_subdir: str = ""
 
 class CustomBuildSystemSchema(Schema):
     type: Literal["custom"]

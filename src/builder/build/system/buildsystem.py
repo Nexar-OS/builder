@@ -15,6 +15,7 @@ class BuildSystem(ABC):
     config_args: list[str]|None = None
     build_args: list[str]|None = None
     install_args: list[str]|None = None
+    source_subdir: str = ""
 
     @abstractmethod
     def prepare(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:

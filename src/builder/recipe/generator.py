@@ -3,12 +3,14 @@ import re
 from builder.recipe.schema import *
 from builder.build import BuildContext
 from builder.version.source import gitlab
+from builder.version import Version
 from builder.recipe.recipe import GenericRecipe, BuildRole, BuildMethod
 from builder.recipe.loader import load_recipe_from_schema, load_version_source_from_schema
 from builder.utils.download import url_file_to_md5
 from builder.utils.logger import debug
-import jinja2
-import yaml
+
+def _prepare_vars(string: str) -> str:
+    return re.sub(r"\{([^{}]+)\}", r"${\1}", string)
 
 class RecipeGenerator():
     """Generate new package recipes.
@@ -106,9 +108,9 @@ class RecipeGenerator():
             raise ValueError("Github repository must be in 'owner/repository' format!")
         
         repository_name = repository.rsplit("/", 1)[1]
-        tag_format = tag_format.replace("{version}", "${version}")
+        tag_format = _prepare_vars(tag_format)
         if filename:
-            filename = filename.replace("{version}", "${version}")
+            filename = _prepare_vars(filename)
             download_url = f"https://github.com/{repository}/releases/download/{tag_format}/{filename}"
         else:
             download_url = f"https://github.com/{repository}/archive/refs/tags/${{version}}.tar.gz"
@@ -160,8 +162,8 @@ class RecipeGenerator():
             raise ValueError("Gitlab repository must be in 'namespace/project' format!")
         
         repository_name = repository.rsplit("/", 1)[1]
-        tag_format = tag_format.replace("{version}", "${version}")
-        filename = filename.replace("{version}", "${version}")
+        tag_format = _prepare_vars(tag_format)
+        filename = _prepare_vars(filename)
 
         return cls.from_source(
             name=name or repository_name,
@@ -213,7 +215,7 @@ class RecipeGenerator():
             ),
             download_url=(
                 f"{url.rstrip('/')}/"
-                f"{filename.replace('{version}', '${version}')}"
+                f"{_prepare_vars(filename)}"
             ),
             homepage=url
         )
@@ -405,6 +407,20 @@ class RecipeGenerator():
 
         return self
 
+    def _resolve_vars(self, string: str) -> str:
+        """Fill in the schema-variables"""
+        def _rep(a: str, b: str) -> str:
+            return string.replace(f"${{{a}}}", b)
+        
+        # Parse version-variables
+        string = _rep("version", self.schema.version)
+        version = Version.from_version_string(self.schema.version)
+        if version:
+            for key, value in version.dict().items():
+                string = _rep(key, value)
+
+        return string
+
     def add_patch(self, patch: Path) -> "RecipeGenerator":
         """Add a patch to the recipe.
 
@@ -487,9 +503,9 @@ class RecipeGenerator():
             if not self.schema.version:
                 raise ValueError("Cannot resolve md5hashes automatically without a version.")
 
-            debug("Resolving md5hash for '" + source.url.replace("${version}", self.schema.version) + "'.")
-
-            source.md5hash = url_file_to_md5(source.url.replace("${version}", self.schema.version))
+            url = self._resolve_vars(source.url)
+            debug("Resolving md5hash for '" + url + "'.")
+            source.md5hash = url_file_to_md5(url)
 
     def dump(self) -> dict[str, Any]:
         """Create a dump of the recipe schema to serialize.

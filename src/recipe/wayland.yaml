@@ -20,10 +20,12 @@ dependencies:
   required:
     - libffi
     - libexpat
+    - libxml2
 
   build:
     - libffi
     - libexpat
+    - libxml2
 
   host:
     - wayland-scanner

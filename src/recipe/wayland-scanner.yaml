@@ -14,10 +14,15 @@ dependencies:
   required:
     - libffi
     - libexpat
+    - libxml2
 
   build:
     - libffi
     - libexpat
+    - libxml2
+  
+  host:
+    - wayland-scanner # i don't even know why
 
 sources:
   - type: tarball

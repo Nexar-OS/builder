@@ -34,6 +34,7 @@ class MesonSchema(Schema):
     install_args: list[str] | None = None
     install_target: str | None = None
     source_subdir: str = ""
+    additional_binaries: list[str] | None = None
 
 class CustomBuildSystemSchema(Schema):
     type: Literal["custom"]

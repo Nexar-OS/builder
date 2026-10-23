@@ -1,0 +1,24 @@
+name: spirv-headers
+homepage: https://github.com/KhronosGroup/SPIRV-Headers/
+license:
+  - MIT
+description: SPIRV-Headers
+
+version: v1.202609.0
+
+version_source:
+  type: github
+  repo: KhronosGroup/SPIRV-Headers
+  identifier: tags
+
+sources:
+  - type: tarball
+    name: spirv-headers
+    url: https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/${version}.tar.gz
+    md5hash: acc27dd079aae8a854943e8ebb264846
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cmake

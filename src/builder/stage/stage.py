@@ -8,9 +8,10 @@ from builder.build import BuildContext
 from builder.recipe import (
     BuildRecipe,
     BuildRole,
+    RecipeKey,
     DependencyGraph,
     DependencyKind,
-    Sequencer
+    Sequencer,
 )
 
 @dataclass
@@ -77,58 +78,72 @@ class Stage:
         """
         Constructs the dependency graphs.
         """
-        recipes: list[BuildRecipe] = self._recipes
+        registry = self.ctx.registry
 
-        # Only create a runtime graph if the feature is explicitly requested
+        # Start with user-selected recipes.
+        recipes: dict[RecipeKey, BuildRecipe] = {
+            RecipeKey.get(recipe): recipe
+            for recipe in self._recipes
+        }
+
+        # Initialize optional dependency graphs.
         self.runtime_dependencies = None
-        if self.add_runtime_dependencies:
-            self.runtime_dependencies = DependencyGraph(
-                recipes=self._recipes,
-                registry=self.ctx.registry,
-                kind=DependencyKind.RUNTIME,
-                allow_cycles=True,
-                ignore_dependency_errors=self.ignore_dependency_errors
-            )
-
-            # The recipes list passed to the build graph must be updated
-            # with all recipes resolved by the runtime graph, as runtime
-            # dependencies could introduce new build dependencies
-            recipes = list(self.runtime_dependencies.recipes.values())
-
-        # Only create optional runtime graph if the feature is enabled
         self.optional_dependencies = None
-        if self.add_optional_dependencies:
-            self.optional_dependencies = DependencyGraph(
-                recipes=recipes,
-                registry=self.ctx.registry,
-                kind=DependencyKind.OPTIONAL,
-                allow_cycles=True,
-                ignore_dependency_errors=self.ignore_dependency_errors
+
+        # Every resolved dependency of one graph might also introduce
+        # new dependencies on another (or the same) graph. We therefore
+        # loop over the whole process of discovering dependencies until
+        # nothing changes any longer.
+        while True:
+            previous = set(recipes)
+
+            # Add runtime dependencies
+            if self.add_runtime_dependencies:
+                self.runtime_dependencies = DependencyGraph(
+                    recipes=recipes.values(),
+                    registry=registry,
+                    kind=DependencyKind.RUNTIME,
+                    allow_cycles=True,
+                    ignore_dependency_errors=self.ignore_dependency_errors,
+                )
+
+                recipes.update(self.runtime_dependencies.recipes)
+            
+            # Add optional runtime dependencies
+            if self.add_optional_dependencies:
+                self.optional_dependencies = DependencyGraph(
+                    recipes=recipes.values(),
+                    registry=registry,
+                    kind=DependencyKind.OPTIONAL,
+                    allow_cycles=True,
+                    ignore_dependency_errors=self.ignore_dependency_errors,
+                )
+
+                recipes.update(self.optional_dependencies.recipes)
+            
+            # Host dependencies
+            self.host_dependencies = DependencyGraph(
+                recipes=recipes.values(),
+                registry=registry,
+                kind=DependencyKind.HOST,
+                allow_cycles=False,
+                ignore_dependency_errors=self.ignore_dependency_errors,
             )
+            recipes.update(self.host_dependencies.recipes)
 
-            recipes = list(self.optional_dependencies.recipes.values())
-
-        # Host graph is similar to build graph
-        # and will also always be required
-        self.host_graph = DependencyGraph(
-            recipes=recipes,
-            registry=self.ctx.registry,
-            kind=DependencyKind.HOST,
-            allow_cycles=False,
-            ignore_dependency_errors=self.ignore_dependency_errors
-        )
-
-        recipes = list(self.host_graph.recipes.values())
-
-        # Build graph will always be needed
-        # but the recipes used may depend on the runtime graph
-        self.build_dependencies = DependencyGraph(
-            recipes=recipes,
-            registry=self.ctx.registry,
-            kind=DependencyKind.BUILD,
-            allow_cycles=False,
-            ignore_dependency_errors=self.ignore_dependency_errors
-        )
+            # Build dependencies
+            self.build_dependencies = DependencyGraph(
+                recipes=recipes.values(),
+                registry=registry,
+                kind=DependencyKind.BUILD,
+                allow_cycles=False,
+                ignore_dependency_errors=self.ignore_dependency_errors,
+            )
+            recipes.update(self.build_dependencies.recipes)
+            
+            # Stop when no graph discovered any additional recipes.
+            if set(recipes) == previous:
+                break
 
     def __post_init__(self):
         self._load_recipes()
@@ -145,7 +160,7 @@ class Stage:
             graphs=graphs,
             constraining_graphs=[
                 self.build_dependencies,
-                self.host_graph
+                self.host_dependencies
             ],
             max_workers=self.max_workers or Stage.DEFAULT_MAX_WORKERS
         )

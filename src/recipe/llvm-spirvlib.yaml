@@ -1,0 +1,33 @@
+name: llvm-spirvlib
+homepage: https://github.com/KhronosGroup/SPIRV-LLVM-Translator/
+license:
+  - NCSA
+description: A library for bi-directional translation between SPIR-V and LLVM IR
+
+version: v23.1.2
+
+version_source:
+  type: github
+  repo: KhronosGroup/SPIRV-LLVM-Translator
+
+dependencies:
+  build:
+    - libedit
+    - llvm
+
+sources:
+  - type: tarball
+    name: llvm-spirvlib
+    url: https://github.com/KhronosGroup/SPIRV-LLVM-Translator/archive/refs/tags/${version}.tar.gz
+    md5hash: 2f163a32cb716012c3f19bb9a754a0e4
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cmake
+
+    config_args:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_INSTALL_LIBDIR=lib
+      - -DCMAKE_BUILD_TYPE=Release

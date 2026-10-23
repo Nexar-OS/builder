@@ -3,12 +3,12 @@ homepage: https://codeberg.org/jmoyer/libaio
 license: LGPL-2.0-or-later
 description: Library providing native asynchronous I/O support
 
-version: "0.3.113"
+version: "libaio-0.3.113"
 
 version_source:
-  type: web
-  url: https://releases.pagure.org/libaio/
-  regex: libaio-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+  type: github
+  repo: yugabyte/libaio
+  identifier: tags
 
 dependencies:
   required:
@@ -17,8 +17,8 @@ dependencies:
 sources:
   - type: tarball
     name: libaio
-    url: https://releases.pagure.org/libaio/libaio-${version}.tar.gz
-    md5hash: 7d5be185f20eeaae15e267419950aaf7
+    url: https://github.com/yugabyte/libaio/archive/refs/tags/${version}.tar.gz
+    md5hash: 576e77ea1652a01b079d9618b924a264
 
 build:
   method: IN_SOURCE

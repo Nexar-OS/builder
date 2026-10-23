@@ -1,0 +1,40 @@
+name: rust
+homepage: https://github.com/rust-lang/rust/
+license: unknown
+description: Empowering everyone to build reliable and efficient software.
+
+version: 1.99.1
+
+version_source:
+  type: github
+  repo: rust-lang/rust
+
+dependencies:
+  build:
+    - zlib
+    - zstd
+    - openssl
+    - llvm
+
+sources:
+  - type: tarball
+    name: rust
+    url: https://static.rust-lang.org/dist/rustc-${version}-src.tar.xz
+    md5hash: 0124cb31c9f2e626d75a4bf48de126dc
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: custom
+
+    configure: |
+      ./configure \
+        --set install.prefix=/usr \
+        --set install.sysconfdir=/etc
+    
+    build: |
+      ./x build -j ${num_jobs}
+    
+    install: |
+      DESTDIR="$DESTDIR" ./x install

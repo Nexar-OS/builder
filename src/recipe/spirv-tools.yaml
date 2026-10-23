@@ -1,0 +1,39 @@
+name: spirv-tools
+homepage: https://github.com/khronosGroup/SPIRV-Tools/
+license:
+  - Apache-2.0
+description: API and commands for processing SPIR-V modules.
+
+version: v2026.4
+
+version_source:
+  type: github
+  repo: khronosGroup/SPIRV-Tools
+
+dependencies:
+  required:
+    - spirv-headers
+
+  build:
+    - spirv-headers
+
+sources:
+  - type: tarball
+    name: spirv-tools
+    url: https://github.com/khronosGroup/SPIRV-Tools/archive/refs/tags/${version}.tar.gz
+    md5hash: f74500cd1a16d6c06fbedf84a8c23ee3
+
+build:
+  method: OUT_OF_SOURCE
+
+  prepare: |
+    cd $SOURCE
+    python utils/git-sync-deps
+
+  build_system:
+    type: cmake
+
+    config_args:
+        - -DCMAKE_INSTALL_PREFIX=/usr
+        - -DCMAKE_INSTALL_LIBDIR=lib
+        - -DCMAKE_BUILD_TYPE=Release

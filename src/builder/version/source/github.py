@@ -50,8 +50,6 @@ class GithubVersionSource(VersionSource):
             "per_page": 100
         }
 
-        print(url)
-
         response = requests.get(
             url,
             headers=headers,

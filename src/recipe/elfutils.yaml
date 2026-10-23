@@ -3,12 +3,20 @@ homepage: https://github.com/roolebo/elfutils
 license: [ GPL-3.0, GPL-2.0, LGPL-3.0 ]
 description: Utilities and libraries to read, create and modify ELF binary files
 
-version: latest
+version: "0.197"
 
 version_source:
-  type: web
-  url: https://sourceware.org/elfutils/ftp/
-  regex: elfutils-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.bz2
+  type: nested
+  
+  parent:
+    type: web
+    url: https://sourceware.org/elfutils/ftp/
+    regex: (?P<version>[0-9]\.[0-9]*)\/
+  
+  child:
+    type: web
+    url: https://sourceware.org/elfutils/ftp/{version}/
+    regex: elfutils-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.bz2
 
 dependencies:
   required:
@@ -29,8 +37,8 @@ dependencies:
 sources:
   - type: tarball
     name: elfutils
-    url: https://sourceware.org/elfutils/ftp/elfutils-${version}.tar.bz2
-    md5hash: 8d3f6cf81a8d27d6fa917ac1b566d8ff
+    url: https://sourceware.org/elfutils/ftp/${version}/elfutils-${version}.tar.bz2
+    md5hash: 072992c8388b958dc006c6cfb74a0100
 
 build:
   method: OUT_OF_SOURCE

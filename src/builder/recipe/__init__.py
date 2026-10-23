@@ -13,7 +13,8 @@ from .dependencies import (
     Dependencies,
     DependencyCycleError,
     DependencyGraph,
-    DependencyKind
+    DependencyKind,
+    RecipeKey
 )
 
 from .loader import (

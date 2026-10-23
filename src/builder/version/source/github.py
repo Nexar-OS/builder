@@ -50,6 +50,8 @@ class GithubVersionSource(VersionSource):
             "per_page": 100
         }
 
+        print(url)
+
         response = requests.get(
             url,
             headers=headers,
@@ -72,18 +74,20 @@ class GithubVersionSource(VersionSource):
 
         found: set[Version] = set()
 
-        for release in json:
-            if release.get("draft"):
+        for element in json:
+            if element.get("draft"):
                 continue
 
-            if release.get("prerelease") and not self.include_prereleases:
+            if element.get("prerelease") and not self.include_prereleases:
                 continue
 
-            if "tag_name" not in release:
-                continue
+            value: str | None = element.get("tag_name")
+            value = value or element.get("version")
+            value = value or element.get("name")
+            value = value.lstrip("v") if value else None
 
-            value: str = release["tag_name"]
-            value = value.lstrip("v")
+            if not value:
+                continue
 
             version = Version.from_version_string(value)
 

@@ -42,10 +42,10 @@ build:
       # target architechtures than this build system does.
       # So they need to be convered manually.
       case "$arch" in
-        x86) llvm_arch="X86" ;;
+        x86) llvm_arch="X86;AMDGPU" ;;
         arm64) llvm_arch="AArch64" ;;
         arm) llvm_arch="ARM" ;;
-        riscv) llvm_arch="RISCV" ;;
+        riscv) llvm_arch="RISCV;AMDGPU" ;;
         *) llvm_arch="$arch" ;;
       esac
 
@@ -54,6 +54,7 @@ build:
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_LIBDIR=lib \
         -DLLVM_TARGETS_TO_BUILD="$llvm_arch" \
+        -DLLVM_ENABLE_PROJECTS=clang \
         -DLLVM_BUILD_TESTS=OFF \
         -DLLVM_INCLUDE_TESTS=OFF \
         -DLLVM_INCLUDE_EXAMPLES=OFF \
@@ -61,6 +62,7 @@ build:
         -DLLVM_ENABLE_TERMINFO=OFF \
         -DLLVM_ENABLE_ZLIB=ON \
         -DLLVM_ENABLE_ZSTD=ON \
+        -DLLVM_ENABLE_RTTI=ON \
         -DLLVM_BUILD_LLVM_DYLIB=ON
 
     build: |

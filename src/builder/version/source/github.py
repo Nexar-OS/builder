@@ -82,7 +82,7 @@ class GithubVersionSource(VersionSource):
             value: str | None = element.get("tag_name")
             value = value or element.get("version")
             value = value or element.get("name")
-            value = value.lstrip("v") if value else None
+            # value = value.lstrip("v") if value else None
 
             if not value:
                 continue

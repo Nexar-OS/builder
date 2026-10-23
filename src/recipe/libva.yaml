@@ -1,0 +1,33 @@
+name: libva
+homepage: https://github.com/intel/libva/
+license:
+  - MIT
+description: An implementation for the Video Acceleration API.
+
+version: 2.24.1
+
+version_source:
+  type: github
+  repo: intel/libva
+
+dependencies:
+  required:
+    - libdrm
+  
+  build:
+    - libdrm
+
+sources:
+  - type: tarball
+    name: libva
+    url: https://github.com/intel/libva/releases/download/${version}/libva-${version}.tar.bz2
+    md5hash: b8f57656dd721f2bc71dcbb98e986072
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr

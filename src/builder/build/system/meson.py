@@ -33,6 +33,8 @@ class Meson(BuildSystem):
                 f.write(f"pkg-config = '{toolchain.pkg_config}'\n")
             else:
                 f.write(f"pkg-config = '{NativeToolchain.get().pkg_config}'\n")
+            if self.additional_binaries:
+                f.write("\n".join(self.additional_binaries) + "\n")
 
             f.write("[host_machine]\n")
             f.write("system = 'linux'\n")

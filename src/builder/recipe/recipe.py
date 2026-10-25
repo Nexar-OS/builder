@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from pathlib import Path
 from abc import ABC
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from enum import Enum, StrEnum, auto
 
 import json
@@ -52,8 +52,6 @@ class RecipeMetadata:
     homepage: str | None = None
     dependencies: Dependencies | None = None
     sources: list[str] | None = None
-    last_build: str | None = None
-    fingerprint: str | None = None
     repo: str | None = None
 
 class BuildMethod(StrEnum):
@@ -158,32 +156,41 @@ class BuildRecipe(ABC):
         return self.work_dir / "build.log"
 
     @property
-    def fingerprint(self) -> str:
+    def target(self) -> MachineSpec:
         """
-        Compute a deterministic fingerprint for this recipe.
+        Returns the machine specification this recipe targets due to its ``BuildRole``.
+        """
+        match self.build_role:
+            case BuildRole.HOST | BuildRole.TOOLCHAIN:
+                from builder.build.machine import detect_machine
+                return detect_machine()
+            
+            case BuildRole.SYSROOT | BuildRole.TARGET:
+                return self.ctx.target_machine
 
-        The fingerprint uniquely identifies the current build state of the
-        recipe by hashing:
-        - the recipe name
-        - the resolved build options
+    @property
+    def build_info(self) -> dict[str, str]:
+        """
+        Compute a deterministic information-table for this recipe.
+
+        The table uniquely identifies the current build of the recipe.
 
         Returns:
-            str: A SHA-256 digest representing the recipe state.
+            dict[str, str]: A map of important build-configuration-values.
         """
-        h = sha256()
 
-        # Recipe identity
-        h.update(self.name.encode())
-        h.update(str(self._dest_dir or "").encode())
+        fingerprint: dict[str, str] = {
+            "name": self.name,
+            "version": str(self.metadata.version),
+            "build_dir": str(self.ctx.build_dir),
+            "build_machine": self.ctx.build_machine.triple,
+            "target_arch": self.target.arch,
+            "toolchain_dir": str(self.ctx.toolchain_dir),
+            "toolchain_sysroot": str(self.ctx.toolchain_sysroot),
+            "role": str(self.build_role.name.upper()),
+        }
 
-        # h.update(str(self.ctx).encode()) # doesn't work because of ctx.registry
-        h.update(str(self.ctx.build_dir).encode())
-        h.update(str(self.ctx.build_machine.triple).encode())
-        h.update(str(self.ctx.target_machine.triple).encode())
-        h.update(str(self.ctx.toolchain_dir).encode())
-        h.update(str(self.ctx.toolchain_sysroot).encode())
-
-        # Build system args
+        # Add build-args
         config_args = self._config_args(self.ctx)
         build_args = None
         install_args = None
@@ -191,17 +198,39 @@ class BuildRecipe(ABC):
             if self.build_system.config_args:
                 config_args = config_args + self.build_system.config_args
 
-            build_args = self.build_system.build_args
-            install_args = self.build_system.install_args
+            build_args = self.build_system.build_args or []
+            install_args = self.build_system.install_args or []
 
-        h.update(f"{config_args}-{build_args}-{install_args}".encode())
+        fingerprint.update({
+            "config_args": str(config_args),
+            "build_args": str(build_args),
+            "install_args": str(install_args),
+        })
+
+        return fingerprint
+
+    @property
+    def fingerprint(self) -> str:
+        """
+        Compute a deterministic fingerprint for this recipe.
+
+        The fingerprint uniquely identifies the current build state of the
+        recipe by hashing it's `build_info`-property.
+
+        Returns:
+            str: A SHA-256 digest representing the recipe state.
+        """
+        h = sha256()
+
+        for key, value in self.build_info.items():
+            h.update(f"{key}={value}".encode())
 
         return h.hexdigest()
 
     @property
     def metadata_path(self) -> Path:
         """
-        Return the path to the recipe's build metadata file.
+        Return the path to the recipe's build-metadata file.
 
         Returns:
             Path: Path to the JSON metadata file for this recipe.
@@ -236,8 +265,10 @@ class BuildRecipe(ABC):
         Record the current recipe fingerprint as successfully built.
         """
         path = self.metadata_path
-        self.metadata.fingerprint = self.fingerprint
-        path.write_text(json.dumps(asdict(self.metadata)))
+        path.write_text(json.dumps({
+            "build_info": self.build_info,
+            "fingerprint": self.fingerprint,
+        }, indent=4))
 
     def _resolve_sources(self, source_dir: Path, build_dir: Path):
         """
@@ -303,10 +334,7 @@ class BuildRecipe(ABC):
             case BuildRole.TOOLCHAIN:
                 dir = None
 
-            case BuildRole.HOST:
-                dir = self.ctx.toolchain_host_tools
-
-            case BuildRole.SYSROOT | BuildRole.TARGET:
+            case BuildRole.SYSROOT | BuildRole.TARGET | BuildRole.HOST:
                 dir = self.work_dir / "rootfs"
 
             case _:
@@ -331,28 +359,28 @@ class BuildRecipe(ABC):
         """
         return []
 
-    def _install_to_sysroot(self, delete_after_copy: bool = False):
+    def _install(self, dest: Path, delete_after_copy: bool = False) -> None:
         """
-        Copies the build output into sysroot.
+        Copy the build output into a destination directory.
 
-        No checks of the recipe built actually being
-        ``BuildRole.SYSROOT`` are performed.
+        No checks of the recipe being actually built
+        are performed!
 
         Args:
-            delete_after_copy (bool): If ``True``, deletes the rootfs.
+            dest (Path): The destination path to copy into.
+            delete_after_copy (bool, optional): If ``True``, deletes the rootfs. Defaults to False.
         """
-
         source = self._dest_dir
 
         if not source:
             return
-
+        
         if not source.is_dir():
             return
-
+        
         merge_trees(
             source=source,
-            dest=self.ctx.toolchain_sysroot,
+            dest=dest,
             copy=not delete_after_copy,
             skip_extensions=[
                 "la"
@@ -441,7 +469,11 @@ class BuildRecipe(ABC):
         # This must run even when the recipe is already marked as built
         if self.build_role == BuildRole.SYSROOT:
             with self.ctx.sysroot_lock:
-                self._install_to_sysroot()
+                self._install(self.ctx.toolchain_sysroot)
+
+        # Install to host-tools
+        if self.build_role == BuildRole.HOST:
+            self._install(self.ctx.toolchain_host_tools)
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """

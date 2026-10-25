@@ -28,11 +28,13 @@ class MachineSpec:
         arch (str): The userspace architecture name.
         kernel_arch (str): Architecture name expected by the kernel.
         triple (str): Full machine triple used by the toolchain.
+        abi (str): The abi of the machine.
     """
 
     arch: str
     kernel_arch: str
     triple: str
+    abi: str
 
     @property
     def kernel_image(self) -> tuple[str, str]:
@@ -53,7 +55,8 @@ class MachineSpec:
         
         return "usr/lib"
 
-triple_suffix = "nexar-linux-gnu"
+abi = "gnu"
+triple_suffix = f"nexar-linux-{abi}"
 class Target:
     """
     A collection of different target architectures.
@@ -61,19 +64,22 @@ class Target:
     X86_64 = MachineSpec(
         arch="x86_64",
         kernel_arch="x86", # _64 will be determined by cross compiler
-        triple=f"x86_64-{triple_suffix}"
+        triple=f"x86_64-{triple_suffix}",
+        abi=abi,
     )
 
     AARCH64 = MachineSpec(
         arch="aarch64",
         kernel_arch="arm64",
-        triple=f"aarch64-{triple_suffix}"
+        triple=f"aarch64-{triple_suffix}",
+        abi=abi,
     )
 
     ARMV7 = MachineSpec(
         arch="armv7",
         kernel_arch="arm",
-        triple=f"armv7-{triple_suffix}eabihf"
+        triple=f"armv7-{triple_suffix}eabihf",
+        abi=abi,
     )
 
 
@@ -127,10 +133,13 @@ def detect_machine() -> MachineSpec:
         "riscv64": "riscv",
     }
 
+    triple = detect_triple()
+
     return MachineSpec(
         arch=normalized,
         kernel_arch=kernel_arch_map.get(arch, arch),
-        triple=detect_triple()
+        triple=triple,
+        abi=triple.split("-")[-1],
     )
 
 def detect_ram() -> float:

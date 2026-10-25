@@ -22,7 +22,7 @@ build:
     type: cargo
     install_subdir: bindgen-cli
 
-    post_install: |
-      cd $DESTDIR
-      mkdir usr
-      mv bin usr/bin
+  post_install: |
+    cd $DESTDIR
+    mkdir usr
+    mv bin usr/bin

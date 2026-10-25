@@ -1,0 +1,28 @@
+name: bindgen
+homepage: https://github.com/rust-lang/rust-bindgen/
+license: BSD-3-Clause
+description: Automatically generates Rust FFI bindings to C (and some C++) libraries.
+
+version: v0.73.2
+
+version_source:
+  type: github
+  repo: rust-lang/rust-bindgen
+
+sources:
+  - type: tarball
+    name: rust-bindgen
+    url: https://github.com/rust-lang/rust-bindgen/archive/refs/tags/${version}.tar.gz
+    md5hash: baefc3f7d25a22d9b6b9113a2db39649
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cargo
+    install_subdir: bindgen-cli
+
+    post_install: |
+      cd $DESTDIR
+      mkdir usr
+      mv bin usr/bin

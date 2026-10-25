@@ -337,6 +337,15 @@ class CreateRecipeCommand(CLICommand):
                     generator=self.generator
                 )
             
+            case "cargo":
+                generator.cargo(
+                    config_args=self.config_args or None,
+                    build_args=self.build_args or None,
+                    install_args=self.install_args or None,
+                    build_method=method,
+                    disable_fakeroot=self.disable_fakeroot
+                )
+
             case "custom":
                 generator.custom_build_system(
                     prepare=None,

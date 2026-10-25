@@ -235,7 +235,7 @@ class BuildRecipe(ABC):
         Returns:
             Path: Path to the JSON metadata file for this recipe.
         """
-        path = self.ctx.metadata_dir / "recipes" / f"{self.name}.json"
+        path = self.ctx.metadata_dir / "recipes" / f"{self.name}.{self.build_role.name.lower()}.json"
         path.parent.mkdir(exist_ok=True, parents=True)
 
         return path
@@ -307,7 +307,7 @@ class BuildRecipe(ABC):
         Returns:
             Path: Absolute path where the build takes place
         """
-        work_dir = self.ctx.build_dir / "recipe" / (self.name + "-" + self.metadata.version)
+        work_dir = self.ctx.build_dir / "recipe" / (self.name + "-" + self.metadata.version) / self.build_role.name.lower()
         work_dir.mkdir(exist_ok=True, parents=True)
 
         return work_dir.resolve()

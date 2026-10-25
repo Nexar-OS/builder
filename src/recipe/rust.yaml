@@ -12,6 +12,13 @@ version_source:
   repo: rust-lang/rust
 
 dependencies:
+  required:
+    - glibc
+    - zlib
+    - llvm
+    - openssl
+    - zstd
+
   build:
     - zlib
     - zstd
@@ -31,12 +38,33 @@ build:
     type: custom
 
     configure: |
-      ./configure \
-        --set install.prefix=/usr \
-        --set install.sysconfdir=/etc
+      cat > bootstrap.toml <<'EOF'
+      [build]
+      target = [ "${target.arch}-unknown-linux-${target.abi}" ]
+      build-dir = "$BUILD"
+
+      docs = false
+      extended = true
+      profiler = true
+
+      [install]
+      prefix = "/usr"
+      sysconfdir = "/etc"
+
+      [rust]
+      channel = "stable"
+
+      [gcc]
+      download-ci-gcc = false
+
+      [llvm]
+      download-ci-llvm = true
+      EOF
     
     build: |
       ./x build -j ${num_jobs}
     
     install: |
-      DESTDIR="$DESTDIR" ./x install
+      cd $BUILD
+      DESTDIR="$DESTDIR" \
+        ./x install

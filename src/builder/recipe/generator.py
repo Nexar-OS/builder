@@ -381,6 +381,37 @@ class RecipeGenerator():
         )
 
         return self
+
+    def cargo(
+            self,
+            config_args: list[str] | None = None,
+            build_args: list[str] | None = None,
+            install_args: list[str] | None = None,
+            disable_fakeroot: bool = False,
+            build_method: BuildMethod | None = None,
+            install_subdir: str | None = None,
+            release: bool = True,
+            locked: bool = True,
+            offline: bool = False,
+        ) -> "RecipeGenerator":
+        """Configure the meson build system."""
+
+        self.schema.build = BuildSchema(
+            method=build_method or BuildMethod.OUT_OF_SOURCE,
+            build_system=CargoSchema(
+                type="cargo",
+                disable_fakeroot=disable_fakeroot,
+                release=release,
+                locked=locked,
+                offline=offline,
+                config_args=config_args,
+                build_args=build_args,
+                install_args=install_args,
+                install_subdir=install_subdir
+            )
+        )
+
+        return self
     
     def custom_build_system(
             self,

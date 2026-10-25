@@ -132,6 +132,7 @@ def load_build_system_from_schema(schema: BuildSystemSchema) -> BuildSystem:
         AutotoolsSchema: Autotools,
         CMakeSchema: CMake,
         MesonSchema: Meson,
+        CargoSchema: Cargo,
         CustomBuildSystemSchema: CustomBuildSystem
     })
 

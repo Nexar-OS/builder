@@ -36,6 +36,17 @@ class MesonSchema(Schema):
     source_subdir: str = ""
     additional_binaries: list[str] | None = None
 
+class CargoSchema(Schema):
+    type: Literal["cargo"]
+    disable_fakeroot: bool = False
+    release: bool = True
+    locked: bool = True
+    offline: bool = False
+    install_subdir: str | None = None
+    config_args: list[str] | None = None
+    build_args: list[str] | None = None
+    install_args: list[str] | None = None
+
 class CustomBuildSystemSchema(Schema):
     type: Literal["custom"]
     prepare: str | None = None
@@ -45,7 +56,7 @@ class CustomBuildSystemSchema(Schema):
     disable_fakeroot: bool = False
 
 BuildSystemSchema = Annotated[
-    Union[AutotoolsSchema, CMakeSchema, MesonSchema, CustomBuildSystemSchema],
+    Union[AutotoolsSchema, CMakeSchema, MesonSchema, CargoSchema, CustomBuildSystemSchema],
     Field(discriminator="type")
 ]
 

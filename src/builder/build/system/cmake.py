@@ -77,7 +77,7 @@ class CMake(BuildSystem):
             build_dir (Path): Directory containing the build output.
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
-        cmd = [ toolchain.make ]
+        cmd = [ toolchain.cmake ]
 
         if dest_dir:
             cmd.append(f"DESTDIR={dest_dir}")
@@ -85,7 +85,7 @@ class CMake(BuildSystem):
         if self.install_args:
             cmd.extend(self.install_args)
         
-        cmd.append("install")
-
+        cmd.append("--install")
+        cmd.append(str(build_dir))
 
         recipe.ctx.run(cmd, cwd=build_dir, recipe=recipe)

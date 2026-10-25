@@ -80,7 +80,7 @@ class CMake(BuildSystem):
         cmd = [ toolchain.cmake ]
 
         if dest_dir:
-            cmd.append(f"DESTDIR={dest_dir}")
+            cmd = [ f"DESTDIR={dest_dir}" ] + cmd
         
         if self.install_args:
             cmd.extend(self.install_args)

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from pathlib import Path
 from abc import ABC
@@ -187,7 +187,6 @@ class BuildRecipe(ABC):
             "target_arch": self.target.arch,
             "toolchain_dir": str(self.ctx.toolchain_dir),
             "toolchain_sysroot": str(self.ctx.toolchain_sysroot),
-            "role": str(self.build_role.name.upper()),
         }
 
         # Add build-args
@@ -235,7 +234,16 @@ class BuildRecipe(ABC):
         Returns:
             Path: Path to the JSON metadata file for this recipe.
         """
-        path = self.ctx.metadata_dir / "recipes" / f"{self.name}.{self.build_role.name.lower()}.json"
+        match self.build_role:
+            # Target and sysroot can use the same build directory.
+            case BuildRole.TARGET | BuildRole.SYSROOT:
+                role = "target"
+
+            # Default to name of the build-role
+            case _:
+                role = self.build_role.name.lower()
+
+        path = self.ctx.metadata_dir / "recipes" / f"{self.name}.{role}.json"
         path.parent.mkdir(exist_ok=True, parents=True)
 
         return path
@@ -307,7 +315,17 @@ class BuildRecipe(ABC):
         Returns:
             Path: Absolute path where the build takes place
         """
-        work_dir = self.ctx.build_dir / "recipe" / (self.name + "-" + self.metadata.version) / self.build_role.name.lower()
+
+        match self.build_role:
+            # Target and sysroot can use the same build directory.
+            case BuildRole.TARGET | BuildRole.SYSROOT:
+                role = "target"
+
+            # Default to name of the build-role
+            case _:
+                role = self.build_role.name.lower()
+
+        work_dir = self.ctx.build_dir / "recipe" / (self.name + "-" + self.metadata.version) / role
         work_dir.mkdir(exist_ok=True, parents=True)
 
         return work_dir.resolve()

@@ -282,7 +282,7 @@ class CrossToolchain(Toolchain):
     
     @property
     def path(self) -> str:
-        return f"{self.ctx.toolchain_host_tools}:{super().path}"
+        return f"{self.ctx.toolchain_host_tools}/usr/bin:{super().path}"
     
     @property
     def pkg_config_libdir(self) -> str:

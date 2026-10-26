@@ -55,6 +55,13 @@ class BuildCommand(CLICommand):
         flags=("--ignore-dependency-errors", "-ide")
     ).arg()
 
+    role: str = CLIArgument(
+        type=str,
+        help="Set the role to build the recipe as.",
+        flags=("--role", "-rl"),
+        metavar="/".join( x.name for x in list(BuildRole) )
+    ).arg()
+
     export: str = CLIArgument(
         type=str,
         help="Export the recipes after building into a stage.",
@@ -73,13 +80,25 @@ class BuildCommand(CLICommand):
         if not recipes:
             error("Please pass one or more recipes to build.")
             return
-        
+    
+        role: BuildRole = BuildRole.TARGET
+        if self.role:
+            for b in list(BuildRole):
+                if b.name.lower() == self.role.lower():
+                    role = b
+                    break
+            
+            error(f"Invalid build role '{self.role}'")
+
         stage = Stage(
             ctx=ctx,
             name=self.export or str(uuid4()),
             recipes=recipes,
-            build_role=BuildRole.TARGET,
-            add_runtime_dependencies=not self.no_runtime_dependencies,
+            build_role=role,
+            add_runtime_dependencies=(
+                (not self.no_runtime_dependencies) if role == BuildRole.TARGET
+                else False
+            ),
             ignore_dependency_errors=self.ignore_dependency_errors,
             max_retries=self.max_retries,
             throw_on_fail=self.throw_on_fail,

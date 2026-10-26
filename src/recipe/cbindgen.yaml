@@ -1,0 +1,28 @@
+name: cbindgen
+homepage: https://github.com/mozilla/cbindgen/
+license:
+  - MPL-2.0
+description: A project for generating C bindings from Rust code
+
+version: v0.27.0
+
+version_source:
+  type: github
+  repo: mozilla/cbindgen
+
+sources:
+  - type: tarball
+    name: cbindgen
+    url: https://github.com/mozilla/cbindgen/archive/refs/tags/${version}.tar.gz
+    md5hash: 9349f81198b82c970822c452d08f25e5
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cargo
+
+  post_install: |
+    cd $DESTDIR
+    mkdir usr
+    mv bin usr/bin

@@ -13,7 +13,7 @@ version_source:
 dependencies:
   build:
     - libedit
-    # - llvm
+    - llvm
     - spirv-tools
 
 sources:

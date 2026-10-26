@@ -217,16 +217,7 @@ class BuildRecipe(ABC):
             Path: Absolute path where the build takes place
         """
 
-        match self.build_role:
-            # Target and sysroot can use the same build directory.
-            case BuildRole.TARGET | BuildRole.SYSROOT:
-                role = "target"
-
-            # Default to name of the build-role
-            case _:
-                role = self.build_role.name.lower()
-
-        work_dir = self.ctx.build_dir / "recipe" / (self.name + "-" + self.metadata.version) / role
+        work_dir = self.ctx.build_dir / "recipe" / (self.name + "-" + self.metadata.version) / self.identity.target_type
         work_dir.mkdir(exist_ok=True, parents=True)
 
         return work_dir.resolve()
@@ -306,6 +297,43 @@ class BuildRecipe(ABC):
             ]
         )
 
+    @property
+    def needs_rebuild(self) -> bool:
+        """Determine whether this recipe needs to be (re)built.
+
+        By default, a recipe needs rebuilding if its identity is marked
+        invalid in the standard build registry. For recipes installed into
+        for example the sysroot or host, the existence of a previous installation
+        is enough to justify not rebuilding the package.
+
+        Returns:
+            bool: ``True`` if the recipe needs rebuilding.
+        """
+
+        # By default every recipe built goes through the standard
+        # build registry. This keeps track of every recipe that has
+        # BEEN BUILT.
+        default = self.ctx.build_registry.is_invalid(self.identity)
+
+        # In addition we need to perform sanity-checks if the recipes are actually installed.
+        # If a sysroot package has not been built, but already exists in sysroot, we do not
+        # need to rebuild it. If however, it doesn't exist in the sysroot, if we need to rebuild
+        # it or not exclusively depends on if it has been built according to the default build registry.
+        
+        if self.build_role == BuildRole.SYSROOT:
+            installed = self.ctx.sysroot_registry.is_valid(self.identity)
+
+            if installed:
+                return False
+        
+        if self.build_role == BuildRole.HOST:
+            installed = self.ctx.host_tools_registry.is_valid(self.identity)
+
+            if installed:
+                return False
+
+        return default
+
     def build(self, force_rebuild: bool = False, toolchain: "Toolchain | None" = None) -> None:
         """
         Executes the complete build lifecycle of the recipe.
@@ -328,10 +356,7 @@ class BuildRecipe(ABC):
         source_dir = work_dir / "sources"
         dest_dir = self._dest_dir
 
-        if (
-            self.ctx.build_registry.is_invalid(self.identity)
-            or force_rebuild
-        ):
+        if self.needs_rebuild or force_rebuild:
             self.logger.info(f"Building recipe '{self.name}'...")
 
             # Ensure a fresh empty build directory
@@ -391,6 +416,7 @@ class BuildRecipe(ABC):
             and self.ctx.sysroot_registry.is_invalid(self.identity)
         ):
             self._install(self.ctx.toolchain_sysroot)
+            self.ctx.sysroot_registry.record(self.identity)
         
         # Install into host-tools
         if (
@@ -398,6 +424,7 @@ class BuildRecipe(ABC):
             and self.ctx.host_tools_registry.is_invalid(self.identity)
         ):
             self._install(self.ctx.toolchain_host_tools)
+            self.ctx.host_tools_registry.record(self.identity)
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """

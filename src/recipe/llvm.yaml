@@ -53,7 +53,7 @@ build:
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_LIBDIR=lib \
-        -DLLVM_TARGETS_TO_BUILD="$llvm_arch" \
+        -DLLVM_TARGETS_TO_BUILD="$llvm_arch;SPIRV" \
         -DLLVM_ENABLE_PROJECTS=clang \
         -DLLVM_BUILD_TESTS=OFF \
         -DLLVM_INCLUDE_TESTS=OFF \

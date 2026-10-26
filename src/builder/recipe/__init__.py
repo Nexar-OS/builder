@@ -36,3 +36,8 @@ from .sequencing import (
 )
 
 from .generator import RecipeGenerator
+
+from .identity import (
+    BuildIdentity,
+    IdentityRegistry
+)

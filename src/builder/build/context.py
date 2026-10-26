@@ -1,15 +1,15 @@
 import subprocess
 from pathlib import Path
-from dataclasses import dataclass, field
-
-from threading import Lock
+from dataclasses import dataclass
 
 from .machine import MachineSpec
 
+from functools import cached_property
 import typing
 if typing.TYPE_CHECKING:
     from builder.recipe import RecipeRegistry, BuildRecipe
     from builder.toolchain.toolchain import Toolchain
+    from builder.recipe.identity import IdentityRegistry
 
 from builder.utils.logger import global_logger
 
@@ -33,7 +33,6 @@ class BuildContext:
         toolchain_host_tools (Path): Directory where HOST-recipes will be built into.
 
         num_jobs (int): The amount of concurrent build jobs.
-        sysroot_lock (Lock): A global lock on recipes installing to sysroot.
         verbose_build_logs (bool): If ``True``, more detailed steps of build logs will be printed to ``stdout``.
     """
     registry: "RecipeRegistry"
@@ -53,8 +52,6 @@ class BuildContext:
 
     num_jobs: int
 
-    sysroot_lock: Lock = field(default_factory=Lock)
-
     verbose_build_logs: bool = False
 
     @property
@@ -63,6 +60,21 @@ class BuildContext:
         Return the toolchains environment.
         """
         return self.toolchain.env or dict()
+
+    @cached_property
+    def build_registry(self) -> "IdentityRegistry":
+        from builder.recipe.identity import IdentityRegistry
+        return IdentityRegistry(self.metadata_dir)
+
+    @cached_property
+    def sysroot_registry(self) -> "IdentityRegistry":
+        from builder.recipe.identity import IdentityRegistry
+        return IdentityRegistry(self.toolchain_sysroot / "packages")
+    
+    @cached_property
+    def host_tools_registry(self) -> "IdentityRegistry":
+        from builder.recipe.identity import IdentityRegistry
+        return IdentityRegistry(self.toolchain_host_tools / "packages")
 
     def run(self,
             cmd: list[str],

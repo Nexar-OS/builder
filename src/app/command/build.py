@@ -24,6 +24,12 @@ class BuildCommand(CLICommand):
         flags=("--all", "-a")
     ).arg()
 
+    verbose: bool = CLIArgument(
+        type=bool,
+        help="Make recipe builds verbose.",
+        flags=("--verbose", "-v")
+    ).arg()
+
     skip: list[str] = CLIArgument(
         type=str,
         help="Pass one or multiple recipe(s) to exclude from the '--all' selection.",
@@ -81,6 +87,9 @@ class BuildCommand(CLICommand):
             error("Please pass one or more recipes to build.")
             return
     
+        if self.verbose:
+            ctx.verbose_build_logs = True
+
         role: BuildRole = BuildRole.TARGET
         if self.role:
             for b in list(BuildRole):

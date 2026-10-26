@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from functools import cached_property
 from pathlib import Path
 from abc import ABC
 from dataclasses import dataclass
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
 
 from builder.utils import logger
 from builder.utils.file import rmtree, merge_trees
+from .identity import BuildIdentity
 from .dependencies import Dependencies
 
 @dataclass
@@ -168,115 +170,14 @@ class BuildRecipe(ABC):
             case BuildRole.SYSROOT | BuildRole.TARGET:
                 return self.ctx.target_machine
 
-    @property
-    def build_info(self) -> dict[str, str]:
+    @cached_property
+    def identity(self) -> BuildIdentity:
         """
         Compute a deterministic information-table for this recipe.
 
         The table uniquely identifies the current build of the recipe.
-
-        Returns:
-            dict[str, str]: A map of important build-configuration-values.
         """
-
-        fingerprint: dict[str, str] = {
-            "name": self.name,
-            "version": str(self.metadata.version),
-            "build_dir": str(self.ctx.build_dir),
-            "build_machine": self.ctx.build_machine.triple,
-            "target_arch": self.target.arch,
-            "toolchain_dir": str(self.ctx.toolchain_dir),
-            "toolchain_sysroot": str(self.ctx.toolchain_sysroot),
-        }
-
-        # Add build-args
-        config_args = self._config_args(self.ctx)
-        build_args = None
-        install_args = None
-        if self.build_system:
-            if self.build_system.config_args:
-                config_args = config_args + self.build_system.config_args
-
-            build_args = self.build_system.build_args or []
-            install_args = self.build_system.install_args or []
-
-        fingerprint.update({
-            "config_args": str(config_args),
-            "build_args": str(build_args),
-            "install_args": str(install_args),
-        })
-
-        return fingerprint
-
-    @property
-    def fingerprint(self) -> str:
-        """
-        Compute a deterministic fingerprint for this recipe.
-
-        The fingerprint uniquely identifies the current build state of the
-        recipe by hashing it's `build_info`-property.
-
-        Returns:
-            str: A SHA-256 digest representing the recipe state.
-        """
-        h = sha256()
-
-        for key, value in self.build_info.items():
-            h.update(f"{key}={value}".encode())
-
-        return h.hexdigest()
-
-    @property
-    def metadata_path(self) -> Path:
-        """
-        Return the path to the recipe's build-metadata file.
-
-        Returns:
-            Path: Path to the JSON metadata file for this recipe.
-        """
-        match self.build_role:
-            # Target and sysroot can use the same build directory.
-            case BuildRole.TARGET | BuildRole.SYSROOT:
-                role = "target"
-
-            # Default to name of the build-role
-            case _:
-                role = self.build_role.name.lower()
-
-        path = self.ctx.metadata_dir / "recipes" / f"{self.name}.{role}.json"
-        path.parent.mkdir(exist_ok=True, parents=True)
-
-        return path
-
-    @property
-    def needs_rebuild(self) -> bool:
-        """
-        Determine whether the recipe must be rebuilt.
-
-        A rebuild is required if no metadata from a previous build exists or 
-        if the stored fingerprint differs from the fingerprint computed from
-        the current recipe state.
-
-        Returns:
-            bool: True if the recipe should be rebuilt, otherwise False.
-        """
-        path = self.metadata_path
-
-        if not path.exists():
-            return True
-
-        old = json.loads(path.read_text())["fingerprint"]
-        return old != self.fingerprint
-
-    def mark_built(self) -> None:
-        """
-        Record the current recipe fingerprint as successfully built.
-        """
-        path = self.metadata_path
-        path.write_text(json.dumps({
-            "build_info": self.build_info,
-            "fingerprint": self.fingerprint,
-        }, indent=4))
+        return BuildIdentity.create(self)
 
     def _resolve_sources(self, source_dir: Path, build_dir: Path):
         """
@@ -427,9 +328,10 @@ class BuildRecipe(ABC):
         source_dir = work_dir / "sources"
         dest_dir = self._dest_dir
 
-        build: bool = self.needs_rebuild or force_rebuild
-
-        if build:
+        if (
+            self.ctx.build_registry.is_invalid(self.identity)
+            or force_rebuild
+        ):
             self.logger.info(f"Building recipe '{self.name}'...")
 
             # Ensure a fresh empty build directory
@@ -478,19 +380,23 @@ class BuildRecipe(ABC):
             # Run post install hook
             self.post_install(self.ctx, dest_dir)
 
-            self.mark_built()
+            self.ctx.build_registry.record(self.identity)
 
         else:
             self.logger.info(f"Skipping build for recipe '{self}' (Up to date).")
 
         # Install to sysroot
-        # This must run even when the recipe is already marked as built
-        if self.build_role == BuildRole.SYSROOT:
-            with self.ctx.sysroot_lock:
-                self._install(self.ctx.toolchain_sysroot)
-
-        # Install to host-tools
-        if self.build_role == BuildRole.HOST:
+        if (
+            self.build_role == BuildRole.SYSROOT
+            and self.ctx.sysroot_registry.is_invalid(self.identity)
+        ):
+            self._install(self.ctx.toolchain_sysroot)
+        
+        # Install into host-tools
+        if (
+            self.build_role == BuildRole.HOST
+            and self.ctx.host_tools_registry.is_invalid(self.identity)
+        ):
             self._install(self.ctx.toolchain_host_tools)
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:

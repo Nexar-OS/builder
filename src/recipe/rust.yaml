@@ -15,7 +15,6 @@ dependencies:
   required:
     - glibc
     - zlib
-    - llvm
     - openssl
     - zstd
 
@@ -23,7 +22,6 @@ dependencies:
     - zlib
     - zstd
     - openssl
-    - llvm
 
 sources:
   - type: tarball

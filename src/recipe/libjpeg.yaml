@@ -1,27 +1,35 @@
 name: libjpeg
-homepage: https://libjpeg.sourceforge.net/
+homepage: https://libjpeg-turbo.org
 license:
   - IJG
-description: C library for reading and writing JPEG image files.
+  - BSD-3-Clause
+description: A JPEG image codec that uses SIMD instructions to accelerate baseline
+  and progressive JPEG compression
 
-version: '10'
+version: 3.2.1
 
 version_source:
-  type: web
-  url: https://www.ijg.org/files/
-  regex: jpegsrc\.v(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+  type: github
+  repo: libjpeg-turbo/libjpeg-turbo
 
 sources:
   - type: tarball
     name: libjpeg
-    url: https://www.ijg.org/files/jpegsrc.v${version}.tar.gz
-    md5hash: cc9eda64fc6281dc24739e29aa9556fc
+    url: https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/${version}/libjpeg-turbo-${version}.tar.gz
+    md5hash: dad2613d70883fee715599d5f363bf46
 
 build:
   method: OUT_OF_SOURCE
 
   build_system:
-    type: autotools
+    type: cmake
 
     config_args:
-      - --prefix=/usr
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_INSTALL_LIBDIR=lib
+      - -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+      - -DENABLE_SHARED=OFF
+      - -DENABLE_STATIC=ON
+    
+  post_install: |
+    rm -f $DESTDIR/usr/lib/libturbojpeg.a

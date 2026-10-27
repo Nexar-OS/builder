@@ -1,0 +1,93 @@
+name: mesa
+homepage: https://docs.mesa3d.org/
+license:
+  - MIT
+description: Mesa 3D graphics library
+
+version: mesa-26.2.4
+
+version_source:
+  type: gitlab
+  repo: mesa/mesa
+  base_url: https://gitlab.freedesktop.org
+  identifier: repository/tags
+
+dependencies:
+  required:
+    - libdrm
+    - wayland
+    - wayland-protocols
+    - libexpat
+    - zlib
+    - zstd
+    - libva
+    - llvm-spirvlib
+    - spirv-tools
+    - elfutils
+
+  build:
+    - libdrm
+    - wayland
+    - wayland-protocols
+    - libexpat
+    - zlib
+    - libva
+    - llvm-spirvlib
+    - zstd
+    - spirv-tools
+    - llvm
+    - systemd
+    - elfutils
+
+  host:
+    - rust
+    - llvm
+    - cbindgen
+
+sources:
+  - type: tarball
+    name: mesa
+    url: https://gitlab.freedesktop.org/mesa/mesa/-/archive/${version}/mesa-${version}.tar.gz
+    md5hash: 903779d5284c2e83a9e49bebf3fd6bc2
+
+build:
+  method: OUT_OF_SOURCE
+
+  prepare: |
+    cd $SOURCE
+    meson subprojects download
+
+  build_system:
+    type: meson
+    use_pkgconf_wrapper: false
+
+    additional_binaries:
+      - llvm-config = '${host_tools}/usr/bin/llvm-config'
+      - rust = '${host_tools}/usr/bin/rustc'
+
+    config_args:
+      - --prefix=/usr
+      - --libdir=lib
+
+      - -Dplatforms=wayland
+      - -Dopengl=true
+      - -Degl=enabled
+      - -Dgbm=enabled
+      - -Dgles1=disabled
+      - -Dgles2=enabled
+      - -Dglx=disabled
+
+      # Select drivers
+      - -Dgallium-drivers=auto
+      - -Dvulkan-drivers=auto
+
+      # LLVM integration
+      - -Dllvm=enabled
+      - -Dshared-llvm=enabled
+      - -Ddraw-use-llvm=true
+      - -Dcpp_rtti=true
+
+      # Explicit feature choices
+      - -Dexpat=enabled
+      - -Dzlib=enabled
+      - -Dzstd=enabled

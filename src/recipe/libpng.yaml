@@ -1,0 +1,27 @@
+name: libpng
+homepage: http://libpng.org/
+license: unknown
+description: Portable Network Graphics support
+
+version: v1.6.59
+
+version_source:
+  type: github
+  repo: pnggroup/libpng
+  identifier: tags
+
+sources:
+  - type: tarball
+    name: libpng
+    url: https://github.com/pnggroup/libpng/archive/refs/tags/${version}.tar.gz
+    md5hash: f6ebbce5d235295002d739ab57daeaaa
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cmake
+
+    config_args:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_INSTALL_LIBDIR=lib

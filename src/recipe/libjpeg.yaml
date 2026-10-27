@@ -12,6 +12,10 @@ version_source:
   type: github
   repo: libjpeg-turbo/libjpeg-turbo
 
+dependencies:
+  build:
+    - zlib
+
 sources:
   - type: tarball
     name: libjpeg
@@ -30,6 +34,4 @@ build:
       - -DCMAKE_POSITION_INDEPENDENT_CODE=ON
       - -DENABLE_SHARED=OFF
       - -DENABLE_STATIC=ON
-    
-  post_install: |
-    rm -f $DESTDIR/usr/lib/libturbojpeg.a
+      - -DWITH_SYSTEM_ZLIB=ON

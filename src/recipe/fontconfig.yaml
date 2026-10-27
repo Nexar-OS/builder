@@ -15,10 +15,12 @@ dependencies:
   required:
     - libexpat
     - glib
+    - freetype
 
   build:
     - libexpat
     - glib
+    - freetype
 
 sources:
   - type: tarball

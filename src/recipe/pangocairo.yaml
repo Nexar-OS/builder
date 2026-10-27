@@ -10,6 +10,10 @@ version_source:
   repo: GNOME/pango
   base_url: https://gitlab.gnome.org/
 
+dependencies:
+  build:
+    - fontconfig
+
 sources:
   - type: tarball
     name: pangocairo

@@ -1,0 +1,27 @@
+name: libjpeg
+homepage: https://libjpeg.sourceforge.net/
+license:
+  - IJG
+description: C library for reading and writing JPEG image files.
+
+version: '10'
+
+version_source:
+  type: web
+  url: https://www.ijg.org/files/
+  regex: jpegsrc\.v(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+sources:
+  - type: tarball
+    name: libjpeg
+    url: https://www.ijg.org/files/jpegsrc.v${version}.tar.gz
+    md5hash: cc9eda64fc6281dc24739e29aa9556fc
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr

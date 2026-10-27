@@ -59,11 +59,14 @@ build:
         -DLLVM_INCLUDE_TESTS=OFF \
         -DLLVM_INCLUDE_EXAMPLES=OFF \
         -DLLVM_INCLUDE_BENCHMARKS=OFF \
+        -DLLVM_INCLUDE_DOCS=OFF \
         -DLLVM_ENABLE_TERMINFO=OFF \
+        -DLLVM_ENABLE_FFI=OFF \
         -DLLVM_ENABLE_ZLIB=ON \
         -DLLVM_ENABLE_ZSTD=ON \
         -DLLVM_ENABLE_RTTI=ON \
-        -DLLVM_BUILD_LLVM_DYLIB=ON
+        -DLLVM_BUILD_LLVM_DYLIB=ON \
+        -DLLVM_LINK_LLVM_DYLIB=ON
 
     build: |
       cmake --build "$BUILD" --parallel ${num_jobs} 

@@ -1,0 +1,27 @@
+name: seatd
+homepage: https://github.com/kennylevinsen/seatd/
+license:
+  - MIT
+description: Seat management daemon and library
+
+version: 0.9.3
+
+version_source:
+  type: github
+  repo: kennylevinsen/seatd
+  identifier: tags
+
+sources:
+  - type: tarball
+    name: seatd
+    url: https://github.com/kennylevinsen/seatd/archive/refs/tags/${version}.tar.gz
+    md5hash: c1cc200188d31214b88af015b1f19f7b
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr

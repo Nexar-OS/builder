@@ -1,0 +1,26 @@
+name: libwebp
+homepage: https://github.com/webmproject/libwebp/
+license: BSD-3-Clause
+description: Webp C library
+
+version: v1.6.0
+
+version_source:
+  type: github
+  repo: webmproject/libwebp
+  identifier: tags
+
+sources:
+  - type: tarball
+    name: libwebp
+    url: https://github.com/webmproject/libwebp/archive/refs/tags/${version}.tar.gz
+    md5hash: d498caf9323a24ce3ed40b84c22a32cd
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cmake
+
+    config_args:
+      - -DCMAKE_INSTALL_PREFIX=/usr

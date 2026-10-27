@@ -1,0 +1,38 @@
+name: fontconfig
+homepage: https://www.freedesktop.org/wiki/Software/fontconfig/
+license:
+  - MIT
+description: Font discovery and configuration system.
+
+version: 2.16.0
+
+version_source:
+  type: web
+  url: https://www.freedesktop.org/software/fontconfig/release/
+  regex: fontconfig\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  required:
+    - libexpat
+    - glib
+
+  build:
+    - libexpat
+    - glib
+
+sources:
+  - type: tarball
+    name: fontconfig
+    url: https://www.freedesktop.org/software/fontconfig/release/fontconfig-${version}.tar.xz
+    md5hash: 20d5466544aa62d18c94106faa169a09
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dtests=disabled
+      - -Ddoc=disabled

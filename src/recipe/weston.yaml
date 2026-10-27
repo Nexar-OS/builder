@@ -1,0 +1,64 @@
+name: weston
+homepage: https://gitlab.freedesktop.org//wayland/weston/
+license:
+  - MIT Expat
+description: A lightweight and functional Wayland compositor
+
+version: 16.0.2
+
+version_source:
+  type: gitlab
+  repo: wayland/weston
+  base_url: https://gitlab.freedesktop.org/
+
+dependencies:
+  required:
+    - mesa
+    - wayland
+    - wayland-protocols
+    - pixman
+    - libxkbcommon
+    - libinput
+    - cairo
+    - libjpeg
+    - libwebp
+    - seatd
+    - pipewire
+
+  build:
+    - mesa
+    - wayland
+    - wayland-protocols
+    - pixman
+    - libxkbcommon
+    - libinput
+    - cairo
+    - libjpeg
+    - libwebp
+    - seatd
+    - pipewire
+    - pangocairo
+
+sources:
+  - type: tarball
+    name: weston
+    url: https://gitlab.freedesktop.org/wayland/weston/-/releases/${version}/downloads/weston-${version}.tar.xz
+    md5hash: c3092583dbee80eda36b4ea866b22690
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+    use_pkgconf_wrapper: false
+
+    config_args:
+      - --prefix=/usr
+      
+      # Disabled features
+      - -Dcolor-management-lcms=false
+      - -Drenderer-vulkan=false
+      - -Dbackend-rdp=false
+      - -Dbackend-x11=false
+      - -Dxwayland=false
+      - -Dshell-lua=false

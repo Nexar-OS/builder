@@ -1,0 +1,27 @@
+name: brotli
+homepage: https://github.com/google/brotli/
+license:
+  - MIT
+description: Brotli compression format
+
+version: v1.2.1
+
+version_source:
+  type: github
+  repo: google/brotli
+
+sources:
+  - type: tarball
+    name: brotli
+    url: https://github.com/google/brotli/archive/refs/tags/${version}.tar.gz
+    md5hash: 960bffba8ce7a63451cd700b8f0aaa10
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cmake
+
+    config_args:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_INSTALL_LIBDIR=lib

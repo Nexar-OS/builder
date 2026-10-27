@@ -1,0 +1,26 @@
+name: pangocairo
+homepage: https://docs.gtk.org/PangoCairo/
+license: LGPL-2.0
+description: Cairo support for Pango.
+
+version: 1.58.2
+
+version_source:
+  type: gitlab
+  repo: GNOME/pango
+  base_url: https://gitlab.gnome.org/
+
+sources:
+  - type: tarball
+    name: pangocairo
+    url: https://gitlab.gnome.org//GNOME/pango/-/archive/${version}/pango-${version}.tar.gz
+    md5hash: c7e76237c2832b05ce1317ad8608e6d9
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr

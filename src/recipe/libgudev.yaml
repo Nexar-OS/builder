@@ -18,6 +18,7 @@ dependencies:
 
   build:
     - systemd
+    - glib
 
 sources:
   - type: tarball

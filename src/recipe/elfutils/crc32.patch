@@ -1,0 +1,11 @@
+--- libelf/Makefile.am	2026-10-27 19:33:52.854344674 +0200
++++ libelf/Makefile.am	2026-10-27 19:33:38.052519932 +0200
+@@ -123,7 +123,7 @@
+        @$(textrel_check)
+        $(AM_V_at)ln -fs $@ $@.$(VERSION)
+ 
+-libeu_objects = $(shell cat ../lib/libeu.manifest)
++libeu_objects = $(filter-out crc32.o,$(shell cat ../lib/libeu.manifest))
+ libelf_a_LIBADD = $(addprefix ../lib/,$(libeu_objects))
+ 
+ install: install-am libelf.so

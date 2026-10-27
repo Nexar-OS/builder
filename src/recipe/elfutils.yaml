@@ -39,6 +39,9 @@ sources:
     name: elfutils
     url: https://sourceware.org/elfutils/ftp/${version}/elfutils-${version}.tar.bz2
     md5hash: 072992c8388b958dc006c6cfb74a0100
+  - type: file
+    name: crc32.patch
+    url: "file://elfutils/crc32.patch"
 
 build:
   method: OUT_OF_SOURCE
@@ -49,3 +52,11 @@ build:
     config_args:
       - --prefix=/usr
       - --without-libbsd
+  
+  # crc32 is both provided by zlib and elfutils
+  # we prefer keeping only the zlip version.
+  patches:
+    - crc32.patch
+
+  post_install: |
+    rm -f $DESTDIR/usr/lib/libelf.a

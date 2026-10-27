@@ -1,0 +1,32 @@
+name: cairo
+homepage: https://www.cairographics.org/
+license:
+  - LGPL-2.1
+description: 2D graphics library with support for multiple output devices.
+
+version: 1.18.4
+
+version_source:
+  type: web
+  url: https://www.cairographics.org/releases/
+  regex: cairo\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  build:
+    - bzip2
+    - glib
+
+sources:
+  - type: tarball
+    name: cairo
+    url: https://www.cairographics.org/releases/cairo-${version}.tar.xz
+    md5hash: db575fb41bbda127e0147e401f36f8ac
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr

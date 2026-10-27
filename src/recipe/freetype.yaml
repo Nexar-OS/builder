@@ -1,0 +1,47 @@
+name: freetype
+homepage: https://freetype.org/
+license:
+  - FTL
+  - GPL-2.0-or-later
+description: High-quality font rendering engine.
+
+version: 2.15.0
+
+version_source:
+  type: web
+  url: https://download.savannah.gnu.org/releases/freetype/
+  regex: freetype\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - zlib
+    - bzip2
+    - libpng
+    - brotli
+
+  build:
+    - zlib
+    - bzip2
+    - libpng
+    - brotli
+
+sources:
+  - type: tarball
+    name: freetype
+    url: https://download.savannah.gnu.org/releases/freetype/freetype-${version}.tar.gz
+    md5hash: 9ce534d70a02b730e3b0c1f6045a0de8
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cmake
+
+    config_args:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_INSTALL_LIBDIR=lib
+      - -DBUILD_SHARED_LIBS=ON
+      - -DFT_DISABLE_HARFBUZZ=ON
+      - -DFT_REQUIRE_ZLIB=ON
+      - -DFT_REQUIRE_BZIP2=ON
+      - -DFT_REQUIRE_PNG=ON

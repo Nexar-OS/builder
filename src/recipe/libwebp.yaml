@@ -10,6 +10,13 @@ version_source:
   repo: webmproject/libwebp
   identifier: tags
 
+dependencies:
+  required:
+    - libjpeg
+
+  build:
+    - libjpeg
+
 sources:
   - type: tarball
     name: libwebp

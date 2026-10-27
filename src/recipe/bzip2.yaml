@@ -29,9 +29,9 @@ build:
     disable_fakeroot: true
 
     build: |
-      make -f Makefile-libbz2_so
       make clean
-      make
+      make CFLAGS="-fPIC" libbz2.a
+      make CFLAGS="-fPIC" -f Makefile-libbz2_so
     
     install: |
       mkdir -p usr/{bin,include,lib,share/man/man1}

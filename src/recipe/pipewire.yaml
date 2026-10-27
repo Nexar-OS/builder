@@ -1,0 +1,43 @@
+name: pipewire
+homepage: https://pipewire.org/
+license:
+  - MIT
+description: Modern audio and multimedia server.
+
+version: 1.6.10
+
+version_source:
+  type: github
+  repo: PipeWire/pipewire
+  identifier: tags
+
+dependencies:
+  required:
+    - dbus
+    - alsa-lib
+
+  optional:
+    - bluez
+
+  build:
+    - dbus
+    - alsa-lib
+
+sources:
+  - type: tarball
+    name: pipewire
+    url: https://github.com/PipeWire/pipewire/archive/refs/tags/${version}.tar.gz
+    md5hash: f6e0d99fe8632032313ea06f3faa3adf
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Ddocs=disabled
+      - -Dtests=disabled
+      - -Dpipewire-jack=enabled
+      - -Dpipewire-alsa=enabled

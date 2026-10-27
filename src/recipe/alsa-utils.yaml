@@ -1,0 +1,39 @@
+name: alsa-utils
+homepage: https://github.com/alsa-project/alsa-utils/
+license:
+  - GPL-2.0-or-later
+description: Command-line utilities for ALSA audio.
+
+version: 1.2.16
+
+version_source:
+  type: github
+  repo: alsa-project/alsa-utils
+  identifier: tags
+
+dependencies:
+  required:
+    - alsa-lib
+    - ncurses
+    - libcap
+
+  build:
+    - alsa-lib
+    - ncurses
+    - libcap
+
+sources:
+  - type: tarball
+    name: alsa-utils
+    url: https://www.alsa-project.org/files/pub/utils/alsa-utils-${version}.tar.bz2
+    md5hash: 570a1627d47b70ad683ef9f2429ddfca
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-alsaconf

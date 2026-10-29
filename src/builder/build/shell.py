@@ -36,9 +36,11 @@ class Shell:
         # Load logger
         if recipe is not None:
             self.logger = recipe.logger
+            self.logfile = recipe.logfile
         else:
             from builder.utils.logger import global_logger
             self.logger = global_logger
+            self.logfile = None
     
     def _start_shell(self,
                      *,
@@ -247,11 +249,20 @@ class Shell:
             )
 
             if check and result.returncode != 0:
-                raise subprocess.CalledProcessError(
-                    returncode=returncode,
-                    cmd=script,
-                    output=result.stdout,
-                    stderr=result.stderr
+                self.logger.error(
+                    f"Execution of command failed!\n"
+                    f"Command: {script}\n"
+                    f"Returncode: {result.returncode}\n"
+                    f"\nSTDOUT:\n"
+                    f"{result.stdout}\n"
+                    f"\nSTDERR:\n"
+                    f"{result.stderr}\n"
+                )
+
+                raise RuntimeError(
+                    f"Shell failed to execute command successfully (Returncode: {result.returncode}).\n"
+                    f"Command: {script.strip()}\n"
+                    f"Logfile: {self.logfile}\n" if self.logfile else ""
                 )
             
             return result

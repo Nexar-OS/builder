@@ -15,4 +15,6 @@ from .environment import (
     EnvironmentProfile
 )
 
-from .runner import CommandRunner
+from .runner import (
+    CommandRunner
+)

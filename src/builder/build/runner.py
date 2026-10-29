@@ -1,5 +1,8 @@
-import os
 import subprocess
+import tempfile
+import shlex
+import os
+import select
 
 from pathlib import Path
 from typing import Mapping, Any, TYPE_CHECKING
@@ -17,99 +20,135 @@ class CommandRunner:
     """
     Execute commands with an explicit build environment.
 
-    The reunner provides a single invocation interface for build systems.
+    The runner provides a single invocation interface for build systems.
     """
 
     def __init__(
             self,
-            ctx: BuildContext,
+            environment: Environment,
             *,
-            default_profile: EnvironmentProfile = EnvironmentProfile.TARGET
+            persistent: bool = True,
+            **kwargs,
         ) -> None:
-        self.ctx = ctx
-        self.default_profile = default_profile
+        self.persistent = persistent
+        self._shell_cache: subprocess.Popen[str] | None = None
+        self.environment: Environment = environment
+        self.kwargs = kwargs
+        self._closed = False
     
-    def make_environment(self,
-                         *,
-                         profile: EnvironmentProfile | None = None,
-                         environment: Environment | Mapping[str, str] | None = None,
-                         overrides: Mapping[str, str] | None = None,
-                         unset: tuple[str, ...] = ()
-                        ) -> dict[str, str]:
-        """Construct the environment dictionary for a command.
+    def _start_shell(self,
+                     *,
+                     use_fakeroot: bool = False,
+                     cwd: str | Path | None = None) -> subprocess.Popen[str]:
+        """Start a shell with a private channel for exit statuses."""
 
-        Args:
-            profile (EnvironmentProfile | None, optional): Profile to construct when ``environment`` is omitted.
-            environment (Environment | Mapping[str, str]): An already constructed ``Environment`` or a mapping of environment variables.
-            overrides (Mapping[str, str] | None, optional): Variables to add or replace for this invocation. Defaults to None.
-            unset (tuple[str, ...], optional): Variables to remove from the enviroment. Defaults to ().
+        command = [ "sh" ]
+
+        if use_fakeroot:
+            command.insert(0, "fakeroot")
+        
+        shell_loop = (
+            "while IFS= read -r __runner_line; do\n"
+            '   eval "$__runner_line"\n'
+            "done\n"
+        )
+
+        process = subprocess.Popen(
+            [ "sh", "-c", shell_loop ],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            env=self.environment.as_dict(),
+            cwd=Path(cwd) if cwd is not None else None,
+            **self.kwargs
+        )
+
+        return process
+
+    def _stop_shell(self) -> None:
+        """Stop and release the current shell"""
+        shell = self._shell_cache
+        self._shell_cache = None
+
+        if shell is None:
+            return
+        
+        # Terminate shell
+        if shell.poll() is None:
+            shell.terminate()
+
+            try:
+                shell.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                shell.kill()
+                shell.wait()
+        
+        # Close pipes
+        if shell.stdin is not None:
+            shell.stdin.close()
+        
+        if shell.stdout is not None:
+            shell.stdout.close()
+    
+    def close(self) -> None:
+        """Close the runner and its persisntent shell."""
+
+        if self._closed:
+            return
+        
+        self._closed = True
+        self._stop_shell()
+
+    @property
+    def _shell(self) -> subprocess.Popen[str]:
+        """Returns the shell used to execute commands
 
         Returns:
-            dict[str, str]: A mutable dictionary suitable for ``subprocess.run``.
+            subprocess.Popen[str]: The shell process.
         """
+        if self._closed:
+            raise ValueError("Runner is closed!")
 
-        # No environment was passed
-        if environment is None:
-            selected_profile = profile or self.default_profile
-            selected_environment = Environment.from_context(
-                ctx=self.ctx,
-                profile=selected_profile
-            )
-            variables = selected_environment.as_dict()
+        if self._shell_cache is not None:
+            if self._shell_cache.poll() is None:
+                return self._shell_cache
+
+            self._shell_cache = None
         
-        # Environment passed was an Environment object
-        elif isinstance(environment, Environment):
-            variables = environment.as_dict()
-        
-        # Environment passed was already a dict
-        else:
-            variables = dict(environment)
-        
-        for key in unset:
-            variables.pop(key, None)
-        
-        if overrides:
-            variables.update(overrides)
-        
-        return variables
-    
+        shell = self._start_shell()
+
+        if self.persistent:
+            self._shell_cache = shell
+
+        return shell
+
     def run(
             self,
-            cmd: list[str],
+            cmd: str | list[str],
             *,
-            profile: EnvironmentProfile | None = None,
-            environment: Environment | None = None,
-            env_overrides: Mapping[str, str] | None = None,
-            unset_env: tuple[str, ...] = (),
             check: bool = True,
-            use_fakeroot: bool = True,
             recipe: "BuildRecipe | None" = None,
             cwd: str | Path | None = None,
+            timeout: float | None = None,
             **kwargs: Any
     ) -> subprocess.CompletedProcess[str]:
         """Execute a command and return its completed-process result.
 
         Args:
             cmd (list[str]): Command and arguments to execute.
-            profile (EnvironmentProfile | None, optional): Environment profile for this invocation. Ignored if ``environment`` is passed.
-            environment (Environment | None, optional): Optional preconstructed environment.
-            env_overrides (Mapping[str, str] | None, optional): Environment variables to add or override.
-            unset_env (tuple[str, ...], optional): Environment variables to remove.
             check (bool, optional): Raises RuntimeError if the command exits unsuccessfully.
-            use_fakeroot (bool, optional): Prefix the command with ``fakeroot`` when enabled.
             recipe (BuildRecipe | None, optional): Optional recipe whose logger and information will be made available in the environment.
             cwd (str | Path | None, optional): Optional working directory for the subprocess.
-            **kwargs: Additional keyword arguments passed to ``subprocess.run``.
         """
-
-        if not cmd:
-            raise ValueError("Cannot execute empty command.")
+        if self._closed:
+            raise ValueError("Runner is closed!")
         
-        command = [
-            os.fspath(argument)
-            for argument in cmd
-        ]
+        script = cmd if isinstance(cmd, str) else "\n".join(cmd)
 
+        if not script.strip():
+            raise ValueError("Cannot execute an empty command.")
+        
         # Get logger
         if recipe is not None:
             logger = recipe.logger
@@ -117,46 +156,97 @@ class CommandRunner:
             from builder.utils.logger import global_logger
             logger = global_logger
 
-        # Prefix command with fakeroot if enabeld
-        if use_fakeroot:
-            command.insert(0, "fakeroot")
-        
-        env = self.make_environment(
-            profile=profile,
-            environment=environment,
-            overrides=env_overrides,
-            unset=unset_env,
-        )
+        logger.debug(f"> {script}")
 
-        logger.debug(f"> {' '.join(command)}")
+        with tempfile.TemporaryDirectory(prefix="cmd-") as tmp:
+            dir = Path(tmp)
+            script_file = dir / "script.sh"
+            stdout_file = dir / "stdout"
+            stderr_file = dir / "stderr"
 
-        # Keep output available for reporting errors.
-        kwargs.setdefault("capture_output", True)
-        kwargs.setdefault("text", True)
+            script_file.write_text(script)
 
-        result = subprocess.run(
-            command,
-            env=env,
-            cwd=Path(cwd) if cwd is not None else None,
-            **kwargs
-        )
+            invocation = []
 
-        # Check for errors
-        if check and result.returncode != 0:
-            stdout = result.stdout or ""
-            stderr = result.stderr or ""
+            # Add cd to invocation to respect cwd changes
+            if cwd is not None:
+                invocation.append(f"cd {shlex.quote(os.fspath(cwd))}")
+                invocation.append("__runner_cd_status=$?")
+                invocation.append(
+                    'if [ "$__runner_cd_status" -ne 0 ]; then '
+                    '__runner_status=$__runner_cd_status; else'
+                )
 
-            logger.error(
-                f"Command failed with exit code {result.returncode}: "
-                f"{' '.join(command)}\n\n"
-                f"STDOUT:\n{stdout}\n\n"
-                f"STDERR:\n{stderr}\n\n"
+            # Create invocation of the main script
+            invocation.extend([
+                (
+                    f". {shlex.quote(str(script_file))} "
+                    f"</dev/null "
+                    f"> {shlex.quote(str(stdout_file))} "
+                    f"2> {shlex.quote(str(stderr_file))}"
+                ),
+                "__runner_status=$?",
+            ])
+
+            if cwd is not None:
+                invocation.append("fi")
+            
+            # Dump status
+            invocation.append('printf "%s\\n" "$__runner_status"')
+
+            # Get shell
+            shell = self._shell
+            if shell.stdin is None or shell.stdout is None:
+                raise RuntimeError("Shell pipes are unavailable.")
+            
+            try:
+                # Write to shell
+                shell.stdin.write(" ; ".join(invocation) + "\n")
+                shell.stdin.flush()
+
+                # Handle timeouts
+                ready, _, _ = select.select(
+                    [ shell.stdout ],
+                    [], [],
+                    timeout
+                )
+
+                if not ready:
+                    raise subprocess.TimeoutExpired(
+                        cmd=script,
+                        timeout=timeout or 10
+                    )
+                
+                status_line = shell.stdout.readline()
+
+                if not status_line:
+                    raise RuntimeError("Shell exited before returning the command status.")
+
+                returncode = int(status_line.strip())
+            
+            except (BrokenPipeError, ValueError, OSError, RuntimeError, subprocess.TimeoutExpired):
+                self._stop_shell()
+                raise
+
+            result = subprocess.CompletedProcess(
+                args=script,
+                returncode=returncode,
+                stdout=(
+                    stdout_file.read_text(encoding="utf-8", errors="replace")
+                    if stdout_file.exists() else ""
+                ),
+                stderr=(
+                    stderr_file.read_text(encoding="utf-8", errors="replace")
+                    if stderr_file.exists() else ""
+                ),
             )
 
-            raise RuntimeError(
-                f"Command failed with exit code {result.returncode}: "
-                f"{' '.join(command)}\n"
-                f"{stderr}"
-            )
-
-        return result
+            if check and result.returncode != 0:
+                raise subprocess.CalledProcessError(
+                    returncode=returncode,
+                    cmd=script,
+                    output=result.stdout,
+                    stderr=result.stderr
+                )
+            
+            return result

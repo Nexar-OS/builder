@@ -15,6 +15,6 @@ from .environment import (
     EnvironmentProfile
 )
 
-from .runner import (
-    CommandRunner
+from .shell import (
+    Shell
 )

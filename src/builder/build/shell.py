@@ -5,18 +5,14 @@ import os
 import select
 
 from pathlib import Path
-from typing import Mapping, Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
-from .context import BuildContext
-from .environment import (
-    Environment,
-    EnvironmentProfile
-)
+from .environment import Environment
 
 if TYPE_CHECKING:
     from builder.recipe import BuildRecipe
 
-class CommandRunner:
+class Shell:
     """
     Execute commands with an explicit build environment.
 

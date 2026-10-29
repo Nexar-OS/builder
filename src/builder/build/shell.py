@@ -24,6 +24,7 @@ class Shell:
             environment: Environment,
             *,
             persistent: bool = True,
+            recipe: "BuildRecipe | None" = None,
             **kwargs,
         ) -> None:
         self.persistent = persistent
@@ -31,6 +32,13 @@ class Shell:
         self.environment: Environment = environment
         self.kwargs = kwargs
         self._closed = False
+
+        # Load logger
+        if recipe is not None:
+            self.logger = recipe.logger
+        else:
+            from builder.utils.logger import global_logger
+            self.logger = global_logger
     
     def _start_shell(self,
                      *,
@@ -112,7 +120,7 @@ class Shell:
 
             self._shell_cache = None
         
-        shell = self._start_shell()
+        shell = self._start_shell(use_fakeroot=False)
 
         if self.persistent:
             self._shell_cache = shell
@@ -124,10 +132,9 @@ class Shell:
             cmd: str | list[str],
             *,
             check: bool = True,
-            recipe: "BuildRecipe | None" = None,
             cwd: str | Path | None = None,
             timeout: float | None = None,
-            **kwargs: Any
+            silent: bool = False
     ) -> subprocess.CompletedProcess[str]:
         """Execute a command and return its completed-process result.
 
@@ -136,6 +143,7 @@ class Shell:
             check (bool, optional): Raises RuntimeError if the command exits unsuccessfully.
             recipe (BuildRecipe | None, optional): Optional recipe whose logger and information will be made available in the environment.
             cwd (str | Path | None, optional): Optional working directory for the subprocess.
+            silent (bool): Disables logging of the invoked commands.
         """
         if self._closed:
             raise ValueError("Runner is closed!")
@@ -144,15 +152,9 @@ class Shell:
 
         if not script.strip():
             raise ValueError("Cannot execute an empty command.")
-        
-        # Get logger
-        if recipe is not None:
-            logger = recipe.logger
-        else:
-            from builder.utils.logger import global_logger
-            logger = global_logger
 
-        logger.debug(f"> {script}")
+        if not silent:
+            self.logger.debug(f"> {script}")
 
         with tempfile.TemporaryDirectory(prefix="cmd-") as tmp:
             dir = Path(tmp)

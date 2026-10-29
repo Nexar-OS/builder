@@ -168,12 +168,16 @@ class Shell:
 
             # Add cd to invocation to respect cwd changes
             if cwd is not None:
-                invocation.append(f"cd {shlex.quote(os.fspath(cwd))}")
-                invocation.append("__runner_cd_status=$?")
-                invocation.append(
-                    'if [ "$__runner_cd_status" -ne 0 ]; then '
-                    '__runner_status=$__runner_cd_status; else'
-                )
+                invocation.extend([
+                    "__runner_old_pwd=$PWD",
+                    f"cd {shlex.quote(os.fspath(cwd))}",
+                    "__runner_cd_status=$?",
+                    (
+                        'if [ "$__runner_cd_status" -ne 0 ]; then '
+                        '__runner_status=$__runner_cd_status; '
+                        'else '
+                    )
+                ])
 
             # Create invocation of the main script
             invocation.extend([
@@ -187,7 +191,10 @@ class Shell:
             ])
 
             if cwd is not None:
-                invocation.append("fi")
+                invocation.extend([
+                    'cd "$__runner_old_pwd"',
+                    "fi"
+                ])
             
             # Dump status
             invocation.append('printf "%s\\n" "$__runner_status"')
@@ -199,7 +206,7 @@ class Shell:
             
             try:
                 # Write to shell
-                shell.stdin.write(" ; ".join(invocation) + "\n")
+                shell.stdin.write(" ; ".join(invocation).replace("else  ; ", "else ") + "\n")
                 shell.stdin.flush()
 
                 # Handle timeouts

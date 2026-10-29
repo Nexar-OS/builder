@@ -23,26 +23,21 @@ class CustomBuildSystem(BuildSystem):
         self._install = install
         self.disable_fakeroot = disable_fakeroot        
 
-    def _invoke(self, ctx: BuildContext, script: str | None, dir: Path, env: dict[str, str], recipe: BuildRecipe):
+    def _invoke(self, script: str | None, dir: Path, recipe: BuildRecipe):
         if not script:
             return
 
-        ctx.run(
-            [ "sh", "-c", script ],
-            cwd=dir,
-            env={ **ctx.env, **env},
-            recipe=recipe
+        recipe.shell.run(
+            script,
+            cwd=dir
         )
 
     def prepare(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:
         """
         Prepare the cross config file for meson.
         """
-        self._invoke(recipe.ctx, self._prepare, source_dir, {
-            "BUILD": str(build_dir),
-            "SOURCE": str(source_dir),
-            "DESTDIR": str(dest_dir),
-        }, recipe)
+
+        self._invoke(self._prepare, source_dir, recipe)
 
     def configure(self,
                   recipe: BuildRecipe,
@@ -63,11 +58,8 @@ class CustomBuildSystem(BuildSystem):
             build_dir (Path): Directory where the build will be configured.
             config_args (list[str] | None, optional): Additional configuration args. Defaults to None.
         """
-        self._invoke(recipe.ctx, self._configure, build_dir, {
-            "BUILD": str(build_dir),
-            "SOURCE": str(source_dir),
-            "DESTDIR": str(dest_dir),
-        }, recipe)
+
+        self._invoke(self._configure, build_dir, recipe)
         
         
     def build(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -79,11 +71,7 @@ class CustomBuildSystem(BuildSystem):
             toolchain (Toolchain): The toolchain to use for the build.
             build_dir (Path): Directory containing the configured build tree.
         """
-        self._invoke(recipe.ctx, self._build, build_dir, {
-            "BUILD": str(build_dir),
-            "SOURCE": str(source_dir),
-            "DESTDIR": str(dest_dir),
-        }, recipe)
+        self._invoke(self._build, build_dir, recipe)
 
     def install(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
@@ -98,8 +86,4 @@ class CustomBuildSystem(BuildSystem):
         dest_dir = dest_dir or build_dir
         dest_dir.mkdir(exist_ok=True, parents=True)
         
-        self._invoke(recipe.ctx, self._install, dest_dir, {
-            "BUILD": str(build_dir),
-            "SOURCE": str(source_dir),
-            "DESTDIR": str(dest_dir),
-        }, recipe)
+        self._invoke(self._install, dest_dir, recipe)

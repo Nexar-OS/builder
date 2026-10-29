@@ -41,7 +41,7 @@ class CMake(BuildSystem):
         args.extend(self.config_args or [])
         args.extend(config_args or [])
 
-        recipe.ctx.run(args, cwd=build_dir, recipe=recipe)
+        recipe.shell.run(args, cwd=build_dir)
         
     def build(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
@@ -52,7 +52,7 @@ class CMake(BuildSystem):
             toolchain (Toolchain): The toolchain to use for the build.
             build_dir (Path): Directory containing the configured build tree.
         """
-        recipe.ctx.run(
+        recipe.shell.run(
             [
                 "cmake",
                 "--build",
@@ -60,8 +60,7 @@ class CMake(BuildSystem):
                 "--parallel",
                 str(recipe.ctx.num_jobs),
                 *(self.build_args or [])
-            ],
-            recipe=recipe
+            ]
         )
 
     def install(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -85,7 +84,4 @@ class CMake(BuildSystem):
         cmd.append("--install")
         cmd.append(str(build_dir))
 
-        recipe.ctx.run(cmd, cwd=build_dir, recipe=recipe, env={
-            **recipe.ctx.env,
-            "DESTDIR": str(dest_dir)
-        })
+        recipe.shell.run(cmd, cwd=build_dir)

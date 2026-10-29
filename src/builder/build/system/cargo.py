@@ -18,16 +18,15 @@ class Cargo(BuildSystem):
     offline: bool = True
 
     def _run(self, recipe: BuildRecipe, args: list[str], cwd: Path):
-        recipe.ctx.run(
+        recipe.shell.environment = recipe.shell.environment.derive(overrides={
+            **recipe.ctx.env,
+            "CARGO_HTTP_MULTIPLEXING": "false",
+            "CARGO_REGISTRIES_CRATES_IO_PROTOCOL": "sparse"
+        })
+
+        recipe.shell.run(
             args,
-            cwd=cwd,
-            use_fakeroot=not self.disable_fakeroot,
-            recipe=recipe,
-            env={
-                **recipe.ctx.env,
-                "CARGO_HTTP_MULTIPLEXING": "false",
-                "CARGO_REGISTRIES_CRATES_IO_PROTOCOL": "sparse"
-            }
+            cwd=cwd
         )
 
     def _manifest(self, source_dir: Path) -> Path:

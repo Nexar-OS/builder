@@ -113,11 +113,9 @@ class Meson(BuildSystem):
             
 
         # Invoke setup
-        recipe.ctx.run(
+        recipe.shell.run(
             cmd,
-            cwd=build_dir,
-            use_fakeroot=not self.disable_fakeroot,
-            recipe=recipe
+            cwd=build_dir
         )
         
     def build(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -134,11 +132,9 @@ class Meson(BuildSystem):
         if self.install_target:
             cmd += [ self.install_target ]
 
-        recipe.ctx.run(
+        recipe.shell.run(
             cmd,
-            cwd=build_dir,
-            use_fakeroot=not self.disable_fakeroot,
-            recipe=recipe
+            cwd=build_dir
         )
 
     def install(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -155,22 +151,13 @@ class Meson(BuildSystem):
             dest_dir (Path | None, optional): Destination override. Defaults to None.
         """
         cmd = [ toolchain.ninja ]
-
-        # Destdir must be passed as an environment variable
-        env = dict(recipe.ctx.env)
-        if dest_dir:
-            dest_dir.mkdir(parents=True, exist_ok=True)
-            env["DESTDIR"] = str(dest_dir)
         
         if self.install_args:
             cmd.extend(self.install_args)
         
         cmd += [ "-C", str(build_dir), "install" ]
 
-        recipe.ctx.run(
+        recipe.shell.run(
             cmd,
-            cwd=build_dir,
-            use_fakeroot=not self.disable_fakeroot,
-            env=env,
-            recipe=recipe
+            cwd=build_dir
         )

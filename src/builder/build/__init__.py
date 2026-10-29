@@ -8,3 +8,7 @@ from .machine import (
     detect_parallelism,
     nproc,
 )
+from .environment import (
+    Environment,
+    EnvironmentProfile
+)

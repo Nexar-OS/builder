@@ -13,6 +13,11 @@ if typing.TYPE_CHECKING:
 
 from builder.utils.logger import global_logger
 
+
+def _identity_registry(dir: Path) -> "IdentityRegistry":
+    from builder.recipe.identity import IdentityRegistry
+    return IdentityRegistry(dir)
+
 @dataclass
 class BuildContext:
     """
@@ -61,69 +66,15 @@ class BuildContext:
         """
         return self.toolchain.env or dict()
 
+
     @cached_property
     def build_registry(self) -> "IdentityRegistry":
-        from builder.recipe.identity import IdentityRegistry
-        return IdentityRegistry(self.metadata_dir)
+        return _identity_registry(self.metadata_dir)
 
     @cached_property
     def sysroot_registry(self) -> "IdentityRegistry":
-        from builder.recipe.identity import IdentityRegistry
-        return IdentityRegistry(self.toolchain_sysroot / "packages")
+        return _identity_registry(self.toolchain_sysroot / "packages")
     
     @cached_property
     def host_tools_registry(self) -> "IdentityRegistry":
-        from builder.recipe.identity import IdentityRegistry
-        return IdentityRegistry(self.toolchain_host_tools / "packages")
-
-    def run(self,
-            cmd: list[str],
-            check: bool = True,
-            use_toolchain_env: bool = True,
-            use_fakeroot: bool = True,
-            recipe: "BuildRecipe | None" = None,
-            **kwargs
-            ):
-        """
-        Execute a shell command sandboxed fakeroot and the build contexts environment.
-
-        Args:
-            cmd (list[str]): The command to invoke.
-            check (bool, optional): Check for errors.
-            use_toolchain_env (bool, optional): If set to False, no custom environment will be used.
-            use_fakeroot (bool, optional): If set to False, no fakeroot will be used.
-            recipe (BuildRecipe | None, optional): The build recipe which invoked this call.
-        """
-
-        logger = recipe.logger if recipe else global_logger
-
-        logger.debug(f"> {' '.join(cmd)}")
-
-        if use_toolchain_env:
-            kwargs.setdefault("env", self.env)
-
-        # Prepend fakeroot if enabled
-        if use_fakeroot:
-            cmd = [ "fakeroot" ] + cmd
-
-        result = subprocess.run(
-            cmd,
-            text=True,
-            capture_output=True,
-            **kwargs
-        )
-
-        if check and result.returncode != 0:
-            logger.error(
-                f"Command failed: {' '.join(cmd)}\n\n"
-                f"STDOUT: \n{result.stdout}\n\n\n"
-                f"STDERR: \n{result.stderr}",
-                exc_info=True,
-                stack_info=True
-            )
-            raise RuntimeError(
-                f"Command {' '.join(cmd)} failed:\n"
-                f"{result.stderr}"
-            )
-        
-        return result
+        return _identity_registry(self.toolchain_host_tools / "packages")

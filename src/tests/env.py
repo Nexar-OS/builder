@@ -5,18 +5,12 @@ from builder.build import *
 
 ctx.toolchain = load_or_build_cross_toolchain(ctx)
 
-exec = Shell(
+with Shell(
     environment=Environment.from_context(
         ctx=ctx,
         profile=EnvironmentProfile.TARGET
     ),
     persistent=True
-)
-
-exec.run("export VAR1=hey")
-
-print(
-    exec.run(
-        "echo var value=$VAR1"
-    ).stdout
-)
+) as shell:
+    shell.run("export VAR1=hey")
+    print("Shell output: " + shell.run("echo $VAR1").stdout.strip())

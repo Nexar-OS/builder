@@ -246,3 +246,12 @@ class Shell:
                 )
             
             return result
+    
+    def __enter__(self) -> "Shell":
+        if self._closed:
+            raise RuntimeError("Shell is closed!")
+
+        return self
+    
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.close()

@@ -7,11 +7,15 @@ from abc import ABC
 from dataclasses import dataclass
 from enum import Enum, StrEnum, auto
 
-import json
 from hashlib import sha256
 
 from builder.source.source import Source
 from builder.build.context import BuildContext
+from builder.build import (
+    Shell,
+    Environment,
+    EnvironmentProfile
+)
 
 if TYPE_CHECKING:
     from builder.build.system import BuildSystem
@@ -169,6 +173,50 @@ class BuildRecipe(ABC):
             
             case BuildRole.SYSROOT | BuildRole.TARGET:
                 return self.ctx.target_machine
+
+    @cached_property
+    def shell(self) -> Shell:
+        """
+        Holds a shared shell.
+        """
+        match self.build_role:
+            case BuildRole.TARGET | BuildRole.SYSROOT:
+                profile = EnvironmentProfile.TARGET
+            
+            case BuildRole.HOST:
+                profile = EnvironmentProfile.HOST_TOOLS
+
+            case BuildRole.TOOLCHAIN:
+                profile = EnvironmentProfile.NATIVE
+            
+            case _:
+                raise ValueError(f"No shell available for recipes with {self.build_role.name.upper()}-role")
+
+        # Expose some variables through the shell
+        work_dir = self.work_dir
+        build_dir = work_dir / "build"
+        vars = {
+            "WORK_DIR": str(work_dir),
+            "BUILD": str(build_dir),
+            "SOURCE": (
+                str(work_dir / "sources")
+                if self.build_method != BuildMethod.IN_SOURCE
+                else str(build_dir)
+            ),
+            "DESTDIR": str(self._dest_dir),
+            "ROLE": str(self.build_role.name.upper()),
+            "NAME": str(self.name),
+            "VERSION": str(self.metadata.version)
+        }
+
+        return Shell(
+            Environment.from_context(
+                ctx=self.ctx,
+                profile=profile
+            ).derive(overrides=vars),
+            persistent=True,
+            recipe=self
+        )
 
     @cached_property
     def identity(self) -> BuildIdentity:
@@ -516,7 +564,7 @@ class GenericRecipe(BuildRecipe):
         for patch in self.patches:
             self.logger.info(f"Applying patch '{patch}' to recipe '{self.name}'")
 
-            ctx.run(
+            self.shell.run(
                 [
                     "patch",
                     "-p0",
@@ -525,15 +573,7 @@ class GenericRecipe(BuildRecipe):
                 ],
                 cwd=source_dir,
                 check=True,
-                recipe=self
             )
-
-    @property
-    def env(self) -> dict[str, str]:
-        return {
-            "NAME": self.name,
-            "VERSION": self.metadata.version
-        }
 
     def prepare(self, ctx: BuildContext, source_dir: Path, build_dir: Path) -> None:
         """
@@ -551,18 +591,11 @@ class GenericRecipe(BuildRecipe):
             self.logger.info(f"No prepare install script for {self.name}.")
             return
 
-        ctx.run(
+        self.shell.run(
             [
                 "sh", "-c", self.prepare_script
             ],
             cwd=build_dir,
-            env={
-                **ctx.env,
-                **self.env,
-                "SOURCE": str(source_dir),
-                "BUILD": str(build_dir),
-            },
-            recipe=self
         )
     
     def post_install(self, ctx: BuildContext, dest_dir: Path|None) -> None:
@@ -580,17 +613,11 @@ class GenericRecipe(BuildRecipe):
             self.logger.info(f"No post install script for {self.name}.")
             return
 
-        ctx.run(
+        self.shell.run(
             [
                 "sh", "-c", self.post_install_script
             ],
             cwd=dest_dir,
-            env={
-                **ctx.env,
-                **self.env,
-                "DESTDIR": str(dest_dir)
-            },
-            recipe=self
         )
 
     def __repr__(self) -> str:

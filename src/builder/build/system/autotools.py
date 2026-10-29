@@ -83,10 +83,10 @@ class Autotools(BuildSystem):
 
         # Execute config script
         recipe.shell.run(
-            [
+            " ".join([
                 str(config_script),
                 *args
-            ],
+            ]),
             cwd=build_dir,
         )
         
@@ -103,7 +103,7 @@ class Autotools(BuildSystem):
             return
         
         recipe.shell.run(
-            [toolchain.make, *(self.build_args or []), f"-j{recipe.ctx.num_jobs}"],
+            f"{toolchain.make} {' '.join(self.build_args or [])} -j{recipe.ctx.num_jobs}",
             cwd=build_dir,
         )
 
@@ -130,4 +130,4 @@ class Autotools(BuildSystem):
         
         cmd.append(self.install_target)
 
-        recipe.shell.run(cmd, cwd=build_dir)
+        recipe.shell.run(" ".join(cmd), cwd=build_dir)

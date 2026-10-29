@@ -114,7 +114,7 @@ class Meson(BuildSystem):
 
         # Invoke setup
         recipe.shell.run(
-            cmd,
+            " ".join(cmd),
             cwd=build_dir
         )
         
@@ -133,7 +133,7 @@ class Meson(BuildSystem):
             cmd += [ self.install_target ]
 
         recipe.shell.run(
-            cmd,
+            " ".join(cmd),
             cwd=build_dir
         )
 
@@ -158,6 +158,6 @@ class Meson(BuildSystem):
         cmd += [ "-C", str(build_dir), "install" ]
 
         recipe.shell.run(
-            cmd,
+            " ".join(cmd),
             cwd=build_dir
         )

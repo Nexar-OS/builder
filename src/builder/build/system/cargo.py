@@ -25,7 +25,7 @@ class Cargo(BuildSystem):
         })
 
         recipe.shell.run(
-            args,
+            " ".join(args),
             cwd=cwd
         )
 

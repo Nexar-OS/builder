@@ -1,3 +1,4 @@
+import shlex
 from pathlib import Path
 from .buildsystem import BuildSystem
 from builder.recipe import BuildRecipe, BuildRole
@@ -83,7 +84,7 @@ class Autotools(BuildSystem):
 
         # Execute config script
         recipe.shell.run(
-            " ".join([
+            shlex.join([
                 str(config_script),
                 *args
             ]),
@@ -103,7 +104,7 @@ class Autotools(BuildSystem):
             return
         
         recipe.shell.run(
-            f"{toolchain.make} {' '.join(self.build_args or [])} -j{recipe.ctx.num_jobs}",
+            f"{toolchain.make} {shlex.join(self.build_args or [])} -j{recipe.ctx.num_jobs}",
             cwd=build_dir,
         )
 
@@ -130,4 +131,4 @@ class Autotools(BuildSystem):
         
         cmd.append(self.install_target)
 
-        recipe.shell.run(" ".join(cmd), cwd=build_dir)
+        recipe.shell.run(shlex.join(cmd), cwd=build_dir)

@@ -1,3 +1,4 @@
+import shlex
 from pathlib import Path
 from builder.recipe import (
     BuildRecipe,
@@ -121,7 +122,7 @@ class Meson(BuildSystem):
 
         # Invoke setup
         recipe.shell.run(
-            " ".join(cmd),
+            shlex.join(cmd),
             cwd=build_dir
         )
         
@@ -140,7 +141,7 @@ class Meson(BuildSystem):
             cmd += [ self.install_target ]
 
         recipe.shell.run(
-            " ".join(cmd),
+            shlex.join(cmd),
             cwd=build_dir
         )
 
@@ -165,6 +166,6 @@ class Meson(BuildSystem):
         cmd += [ "-C", str(build_dir), "install" ]
 
         recipe.shell.run(
-            " ".join(cmd),
+            shlex.join(cmd),
             cwd=build_dir
         )

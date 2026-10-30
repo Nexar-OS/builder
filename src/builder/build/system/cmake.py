@@ -1,3 +1,4 @@
+import shlex
 from pathlib import Path
 from builder.recipe import BuildRecipe
 from .buildsystem import BuildSystem
@@ -41,7 +42,7 @@ class CMake(BuildSystem):
         args.extend(self.config_args or [])
         args.extend(config_args or [])
 
-        recipe.shell.run(" ".join(args), cwd=build_dir)
+        recipe.shell.run(shlex.join(args), cwd=build_dir)
         
     def build(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
         """
@@ -53,7 +54,7 @@ class CMake(BuildSystem):
             build_dir (Path): Directory containing the configured build tree.
         """
         recipe.shell.run(
-            f"cmake --build {build_dir} --parallel {recipe.ctx.num_jobs} {' '.join(self.build_args or [])}",
+            f"cmake --build {build_dir} --parallel {recipe.ctx.num_jobs} {shlex.join(self.build_args or [])}",
         )
 
     def install(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -77,4 +78,4 @@ class CMake(BuildSystem):
         cmd.append("--install")
         cmd.append(str(build_dir))
 
-        recipe.shell.run(" ".join(cmd), cwd=build_dir)
+        recipe.shell.run(shlex.join(cmd), cwd=build_dir)

@@ -1,3 +1,4 @@
+import shlex
 from pathlib import Path
 from .buildsystem import BuildSystem
 from builder.recipe import BuildRecipe
@@ -26,7 +27,7 @@ class Cargo(BuildSystem):
         ]
 
         recipe.shell.run(
-            " ".join(command),
+            shlex.join(command),
             cwd=cwd
         )
 

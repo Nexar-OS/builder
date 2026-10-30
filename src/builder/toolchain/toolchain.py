@@ -109,7 +109,8 @@ class Toolchain(ABC):
         return ":".join([
             str(self.sysroot / "usr/lib/pkgconfig"),
             str(self.sysroot / "usr/lib64/pkgconfig"),
-            str(self.sysroot / "usr/share/pkgconfig")
+            str(self.sysroot / "usr/share/pkgconfig"),
+            str(self.sysroot / "usr/lib" / self.target.triple / "pkgconfig"),
         ])
 
     @property

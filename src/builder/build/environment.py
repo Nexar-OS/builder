@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import shutil
+import shlex
 
 from typing import Mapping, TYPE_CHECKING
 from dataclasses import dataclass, field
@@ -67,6 +68,79 @@ def _native_tool(name: str) -> str:
     according to the hosts environment $PATH variable.
     """
     return shutil.which(name) or name
+
+def _pkgconfig_dirs(fsroot: Path) -> list[Path]:
+    return [
+        fsroot / "usr/lib/pkgconfig",
+        fsroot / "usr/lib64/pkgconfig",
+        fsroot / "usr/share/pkgconfig",
+    ]
+
+def _library_dirs(fsroot: Path, triple: str | None = None) -> list[Path]:
+    result = [
+        fsroot / "usr/lib",
+        fsroot / "usr/lib64"
+    ]
+
+    if triple is not None:
+        result.extend([
+            fsroot / "usr/lib" / triple,
+            fsroot / "usr/lib64" / triple,
+        ])
+    
+    return result
+
+def _host_pkg_config(ctx: "BuildContext") -> str:
+    """
+    Return a command for pkg-config in the staged host-tools domain.
+
+    A staged .pc file usually expects PKG_CONFIG_SYSROOT_DIR to match
+    the `ctx.toolchain_host_tools`-directory in order for the -I/-L outputs
+    to point at the `{ctx.toolchain_host_tools}/usr`, not the build-machine's
+    /usr.
+    """
+
+    prefix = ctx.toolchain_host_tools
+    
+    # Host-tools might have its own pkg-config variant
+    # in that case use it.
+    staged_pkg_config = prefix / "usr/bin/pkg-config"
+    use_staged_pkg_config = (
+        staged_pkg_config.is_file() and
+        os.access(staged_pkg_config, os.X_OK)
+    )
+    
+    env = _native_tool("env")
+    pc_path = os.pathsep.join(str(path) for path in _pkgconfig_dirs(prefix))
+    ld_libraries = os.pathsep.join(str(path) for path in _library_dirs(prefix, ctx.build_machine.triple))
+
+    command = [ env ]
+
+    # Unset all package discovery variables that
+    # might otherwise leak from the cross-toolchain.
+    for variable in _PKG_CONFIG_VARIABLES:
+        command.extend([ "-u", variable ])
+    
+    if not use_staged_pkg_config:
+        # Avoid letting the host-tools runtime path override libraries
+        # needed by the systems pkg-config executable.
+        command.extend([ "-u", "LD_LIBRARY_PATH" ])
+
+    # Build pkg-config environment
+    command.extend([
+        f"PKG_CONFIG_SYSROOT_DIR={prefix}",
+        f"PKG_CONFIG_LIBDIR={pc_path}"
+    ])
+    if use_staged_pkg_config:
+        command.append(f"LD_LIBRARY_PATH={ld_libraries}")
+
+    # Append final executable
+    command.extend(
+        str(staged_pkg_config) if use_staged_pkg_config
+        else _native_tool("pkg-config")
+    )
+
+    return shlex.join(command)
 
 @dataclass
 class Environment:
@@ -181,26 +255,32 @@ class Environment:
         host_bin = prefix / "usr" / "bin"
 
         # Add host_bin to PATH.
-        existing_path = variables.get("PATH", "")
-        variables["PATH"] = os.pathsep.join(
-            part for part in (str(host_bin), existing_path) if part
+        variables["PATH"] = os.pathsep.join(part for part in
+            (
+                str(host_bin),
+                variables.get("PATH", "")
+            )
+            if part
         )
 
         # Host-side runtime lookup, when needed, may use staged host
         # libraries.
-        ld_library_path = variables.get("LD_LIBRARY_PATH", "")
         variables["LD_LIBRARY_PATH"] = os.pathsep.join(
-            (
-                *(
-                    str(prefix / "usr" / "lib"),
-                    str(prefix / "usr" / "lib64")
-                ),
-                *(
-                    [ld_library_path] if ld_library_path
-                    else []
-                ),
-            )
+            str(path) for path in
+            _library_dirs(prefix, ctx.build_machine.triple)
         )
+        
+        # CMake find_package/find_library checks the staged host prefix first
+        variables["CMAKE_PREFIX_PATH"] = str(prefix / "usr")
+
+        # host-tools is a DESTDIR-staging root. Its .pc files normally contain a prefix
+        # so pkg-config must rebase those through its staging root.
+        variables["PKG_CONFIG_SYSROOT_DIR"] = str(prefix)
+        variables["PKG_CONFIG_LIBDIR"] = os.pathsep.join(
+            str(path) for path in
+            _pkgconfig_dirs(prefix)
+        )
+        variables.pop("PKG_CONFIG_PATH", None)
 
         return cls(
             profile=EnvironmentProfile.HOST_TOOLS,
@@ -269,20 +349,8 @@ class Environment:
         variables.update(toolchain.env)
 
         if target:
-            sysroot = Path(toolchain.sysroot)
-
-            pkg_config_dirs = (
-                sysroot / "usr" / "lib" / "pkgconfig",
-                sysroot / "usr" / "lib64" / "pkgconfig",
-                sysroot / "usr" / "share" / "pkgconfig",
-                sysroot / "usr" / "lib" / "pkgconfig",
-                sysroot / "usr" / "lib" / toolchain.target.triple / "pkgconfig",
-            )
-
-            variables["PKG_CONFIG_SYSROOT_DIR"] = str(sysroot)
-            variables["PKG_CONFIG_LIBDIR"] = os.pathsep.join(
-                str(path) for path in pkg_config_dirs
-            )
+            variables["PKG_CONFIG_SYSROOT_DIR"] = str(toolchain.sysroot)
+            variables["PKG_CONFIG_LIBDIR"] = toolchain.pkg_config_libdir
             variables["PKG_CONFIG_PATH"] = ""
 
         return cls(
@@ -316,10 +384,35 @@ class Environment:
                 return cls.host_tools(ctx, inherit=inherit)
 
             case EnvironmentProfile.TARGET:
-                return cls.target(
+                environment = cls.target(
                     toolchain=ctx.toolchain,
                     inherit=inherit
                 )
+                host = cls.host_tools(ctx, inherit=inherit)
+
+                # Native build tools may be launched by a target build system
+                # (e.g. KBuild). These are explicit host-sided tools; they do not
+                # change the target compiler setup.
+                return environment.derive(overrides={
+                    "HOSTCC": _native_tool("gcc"),
+                    "HOSTCXX": _native_tool("g++"),
+                    "HOSTAR": _native_tool("ar"),
+                    "HOSTAS": _native_tool("as"),
+                    "HOSTLD": _native_tool("ld"),
+                    "HOSTNM": _native_tool("nm"),
+                    "HOSTRANLIB": _native_tool("ranlib"),
+                    "HOSTSTRIP": _native_tool("strip"),
+                    "HOSTOBJCOPY": _native_tool("objcopy"),
+                    "HOSTOBJDUMP": _native_tool("objdump"),
+                    "HOSTREADELF": _native_tool("readelf"),
+                    "CC_FOR_BUILD": _native_tool("gcc"),
+                    "CXX_FOR_BUILD": _native_tool("g++"),
+                    "HOSTPKG_CONFIG": _host_pkg_config(ctx),
+
+                    # Native host utilities linked against staged host-tools
+                    # libraries need this runtime path.
+                    "LD_LIBRARY_PATH": host.get("LD_LIBRARY_PATH") or ""
+                })
         
             case _:
                 raise ValueError(f"Unsupported environment profile: {profile!r}")

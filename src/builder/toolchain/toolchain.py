@@ -120,8 +120,11 @@ class Toolchain(ABC):
             dict[str, str]: A map of all important environment variables.
         """
         return {
-            **os.environ,
-            "PATH": f"{self.path}:{os.environ.get('PATH', '')}",
+            "PATH": os.pathsep.join(part
+                for part
+                in (self.path, os.environ.get("PATH", "")) 
+                if part
+            ),
             "CC": self.cc,
             "CXX": self.cxx,
             "AR": self.ar,

@@ -565,12 +565,7 @@ class GenericRecipe(BuildRecipe):
             self.logger.info(f"Applying patch '{patch}' to recipe '{self.name}'")
 
             self.shell.run(
-                [
-                    "patch",
-                    "-p0",
-                    "--input",
-                    str(patch)
-                ],
+                f"patch -p0 --input {patch}",
                 cwd=source_dir,
                 check=True,
             )
@@ -591,10 +586,11 @@ class GenericRecipe(BuildRecipe):
             self.logger.info(f"No prepare install script for {self.name}.")
             return
 
+        # Don't wrap these calls in a second shell (`sh -c`)
+        # as this would then void the functionallity of a shared
+        # shell between the different run calls.
         self.shell.run(
-            [
-                "sh", "-c", self.prepare_script
-            ],
+            self.prepare_script,
             cwd=build_dir,
         )
     
@@ -613,10 +609,11 @@ class GenericRecipe(BuildRecipe):
             self.logger.info(f"No post install script for {self.name}.")
             return
 
+        # Don't wrap these calls in a second shell (`sh -c`)
+        # as this would then void the functionallity of a shared
+        # shell between the different run calls.
         self.shell.run(
-            [
-                "sh", "-c", self.post_install_script
-            ],
+            self.post_install_script,
             cwd=dest_dir,
         )
 

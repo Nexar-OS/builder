@@ -41,7 +41,16 @@ build:
     build: |
       make \
         ARCH=${target.kernel_arch} \
-        CROSS_COMPILE=${target.triple}-
+        CROSS_COMPILE=${target.triple}- \
+        HOSTPKG_CONFIG="$HOSTPKG_CONFIG" \
+        HOSTCC="$HOSTCC" \
+        HOSTCXX="$HOSTCXX" \
+        HOSTAR="$HOSTAR" \
+        HOSTAS="$HOSTAS" \
+        HOSTLD="$HOSTLD" \
+        HOSTNM="$HOSTNM" \
+        HOSTRANLIB="$HOSTRANLIB" \
+        HOSTSTRIP="$HOSTSTRIP"
     
     install: |
       cd $BUILD

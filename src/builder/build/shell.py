@@ -185,11 +185,11 @@ class Shell:
             # Create invocation of the main script
             invocation.extend([
                 (
-                    f"fakeroot " if use_fakeroot else ""
-                    f". {shlex.quote(str(script_file))} "
-                    f"</dev/null "
-                    f"> {shlex.quote(str(stdout_file))} "
-                    f"2> {shlex.quote(str(stderr_file))}"
+                    (f"fakeroot " if use_fakeroot else "")
+                    + f". {shlex.quote(str(script_file))} "
+                    + f"</dev/null "
+                    + f"> {shlex.quote(str(stdout_file))} "
+                    + f"2> {shlex.quote(str(stderr_file))}"
                 ),
                 "__runner_status=$?",
             ])

@@ -363,11 +363,18 @@ class BuildRecipe(ABC):
         # BEEN BUILT.
         default = self.ctx.build_registry.is_invalid(self.identity)
 
-        # In addition we need to perform sanity-checks if the recipes are actually installed.
-        # If a sysroot package has not been built, but already exists in sysroot, we do not
-        # need to rebuild it. If however, it doesn't exist in the sysroot, if we need to rebuild
-        # it or not exclusively depends on if it has been built according to the default build registry.
+
+        # This comment stays here to make fun of me:
+        # |  In addition we need to perform sanity-checks if the recipes are actually installed.
+        # |  If a sysroot package has not been built, but already exists in sysroot, we do not
+        # |  need to rebuild it. If however, it doesn't exist in the sysroot, if we need to rebuild
+        # |  it or not exclusively depends on if it has been built according to the default build registry.
         
+        # Additionally, check whether the recipes are actually installed.
+        # If a sysroot package has not been built but already exists in
+        # in the sysroot there is no need to rebuild it.
+        # If it does not exist in the sysroot, whether it needs to be rebuilt depends
+        # on whether it has been built according to the default build registry.
         if self.build_role == BuildRole.SYSROOT:
             installed = self.ctx.sysroot_registry.is_valid(self.identity)
 

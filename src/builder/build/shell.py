@@ -136,7 +136,8 @@ class Shell:
             check: bool = True,
             cwd: str | Path | None = None,
             timeout: float | None = None,
-            silent: bool = False
+            silent: bool = False,
+            use_fakeroot: bool = True,
     ) -> subprocess.CompletedProcess[str]:
         """Execute a command and return its completed-process result.
 
@@ -184,6 +185,7 @@ class Shell:
             # Create invocation of the main script
             invocation.extend([
                 (
+                    f"fakeroot " if use_fakeroot else ""
                     f". {shlex.quote(str(script_file))} "
                     f"</dev/null "
                     f"> {shlex.quote(str(stdout_file))} "

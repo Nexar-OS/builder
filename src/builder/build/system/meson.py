@@ -39,7 +39,7 @@ class Meson(BuildSystem):
                 pkg_config = toolchain.pkg_config
             else:
                 pkg_config = getattr(toolchain, "pkg_config_no_wrapper", toolchain.pkg_config)
-            f.write(f"pkg-config = '{pkg_config!r}'\n")
+            f.write(f"pkg-config = '{pkg_config}'\n")
             if self.additional_binaries:
                 f.write("\n".join(self.additional_binaries) + "\n")
 

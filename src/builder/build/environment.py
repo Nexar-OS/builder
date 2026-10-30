@@ -135,7 +135,7 @@ def _host_pkg_config(ctx: "BuildContext") -> str:
         command.append(f"LD_LIBRARY_PATH={ld_libraries}")
 
     # Append final executable
-    command.extend(
+    command.append(
         str(staged_pkg_config) if use_staged_pkg_config
         else _native_tool("pkg-config")
     )

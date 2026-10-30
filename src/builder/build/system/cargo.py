@@ -28,7 +28,8 @@ class Cargo(BuildSystem):
 
         recipe.shell.run(
             shlex.join(command),
-            cwd=cwd
+            cwd=cwd,
+            use_fakeroot=not self.disable_fakeroot,
         )
 
     def _manifest(self, source_dir: Path) -> Path:

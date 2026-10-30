@@ -29,7 +29,8 @@ class CustomBuildSystem(BuildSystem):
 
         recipe.shell.run(
             script,
-            cwd=dir
+            cwd=dir,
+            use_fakeroot=not self.disable_fakeroot,
         )
 
     def prepare(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None) -> None:

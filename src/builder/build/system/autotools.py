@@ -89,6 +89,7 @@ class Autotools(BuildSystem):
                 *args
             ]),
             cwd=build_dir,
+            use_fakeroot=not self.disable_fakeroot,
         )
         
     def build(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -106,6 +107,7 @@ class Autotools(BuildSystem):
         recipe.shell.run(
             f"{toolchain.make} {shlex.join(self.build_args or [])} -j{recipe.ctx.num_jobs}",
             cwd=build_dir,
+            use_fakeroot=not self.disable_fakeroot,
         )
 
     def install(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -131,4 +133,4 @@ class Autotools(BuildSystem):
         
         cmd.append(self.install_target)
 
-        recipe.shell.run(shlex.join(cmd), cwd=build_dir)
+        recipe.shell.run(shlex.join(cmd), cwd=build_dir, use_fakeroot=not self.disable_fakeroot)

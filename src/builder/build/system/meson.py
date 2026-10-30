@@ -123,7 +123,8 @@ class Meson(BuildSystem):
         # Invoke setup
         recipe.shell.run(
             shlex.join(cmd),
-            cwd=build_dir
+            cwd=build_dir,
+            use_fakeroot=not self.disable_fakeroot,
         )
         
     def build(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -142,7 +143,8 @@ class Meson(BuildSystem):
 
         recipe.shell.run(
             shlex.join(cmd),
-            cwd=build_dir
+            cwd=build_dir,
+            use_fakeroot=not self.disable_fakeroot,
         )
 
     def install(self, recipe: BuildRecipe, toolchain: Toolchain, source_dir: Path, build_dir: Path, dest_dir: Path|None = None):
@@ -167,5 +169,6 @@ class Meson(BuildSystem):
 
         recipe.shell.run(
             shlex.join(cmd),
-            cwd=build_dir
+            cwd=build_dir,
+            use_fakeroot=not self.disable_fakeroot,
         )

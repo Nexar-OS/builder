@@ -6,7 +6,6 @@ from pathlib import Path
 from abc import ABC
 from dataclasses import dataclass
 from enum import Enum, StrEnum, auto
-import datetime
 
 from hashlib import sha256
 
@@ -160,7 +159,7 @@ class BuildRecipe(ABC):
 
     @cached_property
     def logfile(self) -> Path:
-        return self.work_dir / f"build.{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log"
+        return self.work_dir / f"build.{self.build_role.name.lower()}.log"
 
     @property
     def target(self) -> MachineSpec:

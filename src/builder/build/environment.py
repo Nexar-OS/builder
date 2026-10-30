@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import shutil
 
 from typing import Mapping, TYPE_CHECKING
 from dataclasses import dataclass, field
@@ -61,6 +62,13 @@ _BUILD_VARIABLES = (
     "PKG_CONFIG_ALLOW_SYSTEM_CFLAGS",
     "PKG_CONFIG_ALLOW_SYSTEM_LIBS",
 )
+
+def _native_tool(name: str) -> str:
+    """
+    Return the full native filesystem path of an executable
+    according to the hosts environment $PATH variable.
+    """
+    return shutil.which(name) or name
 
 @dataclass
 class Environment:
@@ -135,15 +143,22 @@ class Environment:
             variables.pop(key, None)
 
         # Native tool discovery should use the build machine's $PATH
-        variables["CC"] = "gcc"
-        variables["CXX"] = "g++"
-        variables["AR"] = "ar"
-        variables["AS"] = "as"
-        variables["LD"] = "ld"
-        variables["NM"] = "nm"
-        variables["RANLIB"] = "ranlib"
-        variables["STRIP"] = "strip"
-        variables["PKG_CONFIG"] = "pkg-config"
+        variables.update({
+            # Resolve build-machine tools now. Later, a staged
+            # PATH might be added, so bare names could be shadowed.
+            "CC": _native_tool("gcc"),
+            "CXX": _native_tool("g++"),
+            "AR": _native_tool("ar"),
+            "AS": _native_tool("as"),
+            "LD": _native_tool("ld"),
+            "NM": _native_tool("nm"),
+            "RANLIB": _native_tool("ranlib"),
+            "STRIP": _native_tool("strip"),
+            "OBJCOPY": _native_tool("objcopy"),
+            "OBJDUMP": _native_tool("objdump"),
+            "READELF": _native_tool("readelf"),
+            "PKG_CONFIG": _native_tool("pkg-config"),
+        })
 
         return cls(
             profile=EnvironmentProfile.NATIVE,

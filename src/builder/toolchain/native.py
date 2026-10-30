@@ -2,6 +2,7 @@ from pathlib import Path
 from .toolchain import Toolchain
 from builder.build.machine import detect_machine, nproc
 from builder.utils.logger import info
+from builder.build.environment import _native_tool
 
 _NATIVE_TOOLCHAIN = None
 class NativeToolchain(Toolchain):
@@ -39,32 +40,32 @@ class NativeToolchain(Toolchain):
     
     @property
     def cc(self) -> str:
-        return "gcc"
+        return _native_tool("gcc")
     
     @property
     def cxx(self) -> str:
-        return "g++"
+        return _native_tool("g++")
     
     @property
     def ar(self) -> str:
-        return "ar"
+        return _native_tool("ar")
     
     @property
     def as_(self) -> str:
-        return "as"
+        return _native_tool("as")
     
     @property
     def ld(self) -> str:
-        return "ld"
+        return _native_tool("ld")
     
     @property
     def nm(self) -> str:
-        return "nm"
+        return _native_tool("nm")
     
     @property
     def ranlib(self) -> str:
-        return "ranlib"
+        return _native_tool("ranlib")
     
     @property
     def strip(self) -> str:
-        return "strip"
+        return _native_tool("strip")

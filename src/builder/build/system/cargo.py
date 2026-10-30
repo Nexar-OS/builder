@@ -18,14 +18,15 @@ class Cargo(BuildSystem):
     offline: bool = True
 
     def _run(self, recipe: BuildRecipe, args: list[str], cwd: Path):
-        recipe.shell.environment = recipe.shell.environment.derive(overrides={
-            **recipe.shell.environment.as_dict(),
-            "CARGO_HTTP_MULTIPLEXING": "false",
-            "CARGO_REGISTRIES_CRATES_IO_PROTOCOL": "sparse"
-        })
+        command = [
+            "env",
+            "CARGO_HTTP_MULTIPLEXING=false",
+            "CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse",
+            *args
+        ]
 
         recipe.shell.run(
-            " ".join(args),
+            " ".join(command),
             cwd=cwd
         )
 

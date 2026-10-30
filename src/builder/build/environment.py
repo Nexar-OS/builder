@@ -32,23 +32,19 @@ _PKG_CONFIG_VARIABLES = (
 
 # Compiler variables commonly inherited by build systems.
 _COMPILER_VARIABLES = (
-    "CC",
-    "CXX",
-    "AR",
-    "AS",
-    "LD",
-    "NM",
-    "RANLIB",
-    "STRIP",
-    "CPP",
-    "OBJCOPY",
-    "OBJDUMP",
-    "READELF",
-    "CFLAGS",
-    "CPPFLAGS",
-    "CXXFLAGS",
-    "LDFLAGS",
-    "MAKEFLAGS",
+    "CC", "CPP", "CXX", "AR", "AS", "LD", "NM", "RANLIB", "STRIP",
+    "OBJCOPY", "OBJDUMP", "READELF", "OBJC",
+    "CFLAGS", "CPPFLAGS", "CXXFLAGS", "LDFLAGS", "MAKEFLAGS",
+    "ASFLAGS", "FCFLAGS", "MFLAGS", "GNUMAKEFLAGS", "F77", "F90"
+)
+
+# cross-aware build systems have their own host-compiler variables.
+_HOST_VARIABLES = (
+    "HOSTCC", "HOSTCPP", "HOSTCXX", "HOSTAR", "HOSTAS", "HOSTLD",
+    "HOSTNM", "HOSTRANLIB", "HOSTSTRIP", "HOSTOBJCOPY", "HOSTOBJDUMP",
+    "HOSTREADELF", "OBJC", "HOSTCFLAGS", "HOSTCPPFLAGS", "HOSTCXXFLAGS",
+    "HOSTLDFLAGS", "HOSTLDLIBS", "HOSTPKG_CONFIG", "HOSTRUSTC", "CC_FOR_BUILD",
+    "CXX_FOR_BUILD", "PKG_CONFIG_FOR_BUILD"
 )
 
 # Build-related variables which may otherwise leak from
@@ -59,6 +55,8 @@ _BUILD_VARIABLES = (
     "CMAKE_SYSROOT",
     "CMAKE_PREFIX_PATH",
     "CMAKE_FIND_ROOT_PATH",
+    "CMAKE_INCLUDE_PATH",
+    "CMAKE_FRAMEWORK_PATH"
     "PKG_CONFIG_ALLOW_SYSTEM_CFLAGS",
     "PKG_CONFIG_ALLOW_SYSTEM_LIBS",
 )
@@ -137,7 +135,7 @@ class Environment:
             *_COMPILER_VARIABLES,
             *_PKG_CONFIG_VARIABLES,
             *_BUILD_VARIABLES,
-            *(f"HOST{x}" for x in _COMPILER_VARIABLES),
+            *_HOST_VARIABLES,
             "HOSTPKG_CONFIG"
         ):
             variables.pop(key, None)
@@ -259,6 +257,7 @@ class Environment:
             # Never allow the caller's pkg-config settings to override the
             # package-discovery chosen for this toolchain.
             *_PKG_CONFIG_VARIABLES,
+            *_HOST_VARIABLES,
 
             # Remove build flags inherited from native toolchain.
             *_COMPILER_VARIABLES,

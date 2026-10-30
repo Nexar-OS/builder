@@ -1,5 +1,8 @@
 from pathlib import Path
-from builder.recipe import BuildRecipe
+from builder.recipe import (
+    BuildRecipe,
+    BuildRole
+)
 from .buildsystem import BuildSystem
 from builder.toolchain import Toolchain, NativeToolchain
 from dataclasses import dataclass
@@ -19,7 +22,9 @@ class Meson(BuildSystem):
         Prepare the cross config file for meson.
         """
 
-        if isinstance(toolchain, NativeToolchain):
+        # Host and toolchain recipes run on the build machine and don't need
+        # a cross.ini or native.ini specification.
+        if recipe.build_role in (BuildRole.HOST, BuildRole.TOOLCHAIN) or isinstance(toolchain, NativeToolchain):
             return
 
         self.cross_file = build_dir / "cross.ini"
@@ -29,10 +34,12 @@ class Meson(BuildSystem):
             f.write(f"cpp = '{toolchain.cxx}'\n")
             f.write(f"ar = '{toolchain.ar}'\n")
             f.write(f"strip = '{toolchain.strip}'\n")
+
             if self.use_pkgconf_wrapper:
-                f.write(f"pkg-config = '{toolchain.pkg_config}'\n")
+                pkg_config = toolchain.pkg_config
             else:
-                f.write(f"pkg-config = '{NativeToolchain.get().pkg_config}'\n")
+                pkg_config = getattr(toolchain, "pkg_config_no_wrapper", toolchain.pkg_config)
+            f.write(f"pkg-config = '{pkg_config!r}'\n")
             if self.additional_binaries:
                 f.write("\n".join(self.additional_binaries) + "\n")
 
@@ -100,7 +107,7 @@ class Meson(BuildSystem):
             "--prefer-static",
         ]
 
-        if not isinstance(toolchain, NativeToolchain):
+        if recipe.build_role in (BuildRole.HOST, BuildRole.TOOLCHAIN) or isinstance(toolchain, NativeToolchain):
             assert self.cross_file, "No cross file found!"
             assert self.native_file, "No native file found!"
             cmd += [

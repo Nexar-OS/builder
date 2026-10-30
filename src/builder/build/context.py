@@ -59,14 +59,6 @@ class BuildContext:
 
     verbose_build_logs: bool = False
 
-    @property
-    def env(self) -> dict[str, str]:
-        """
-        Return the toolchains environment.
-        """
-        return self.toolchain.env or dict()
-
-
     @cached_property
     def build_registry(self) -> "IdentityRegistry":
         return _identity_registry(self.metadata_dir)

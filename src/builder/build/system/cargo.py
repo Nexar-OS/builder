@@ -19,7 +19,7 @@ class Cargo(BuildSystem):
 
     def _run(self, recipe: BuildRecipe, args: list[str], cwd: Path):
         recipe.shell.environment = recipe.shell.environment.derive(overrides={
-            **recipe.ctx.env,
+            **recipe.shell.environment.as_dict(),
             "CARGO_HTTP_MULTIPLEXING": "false",
             "CARGO_REGISTRIES_CRATES_IO_PROTOCOL": "sparse"
         })

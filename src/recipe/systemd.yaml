@@ -67,3 +67,8 @@ build:
       - -Dtests=false
       - -Dsysusers=True
       - -Dtmpfiles=true
+  
+  post_install: |
+    mkdir -p "$DESTDIR/usr/lib/systemd/system/getty.target.wants"
+    ln -fs /etc/systemd/system/getty.target.wants/getty@.service \
+        "$DESTDIR/usr/lib/systemd/system/getty.target.wants/getty@tty1.service"

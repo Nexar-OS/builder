@@ -108,7 +108,7 @@ class Meson(BuildSystem):
             "--prefer-static",
         ]
 
-        if recipe.build_role in (BuildRole.HOST, BuildRole.TOOLCHAIN) or isinstance(toolchain, NativeToolchain):
+        if not (recipe.build_role in (BuildRole.HOST, BuildRole.TOOLCHAIN) or isinstance(toolchain, NativeToolchain)):
             assert self.cross_file, "No cross file found!"
             assert self.native_file, "No native file found!"
             cmd += [

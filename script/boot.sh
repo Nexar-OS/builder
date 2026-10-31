@@ -34,16 +34,8 @@ echo ">> Setting up grub..."
 sudo chroot $MOUNT sh -c "grub-install --target=x86_64-efi --efi-directory=\"/boot/efi\" --bootloader-id=\"test\" --removable" &> /dev/null
 echo " | Generating grub.cfg."
 sudo chroot $MOUNT sh -c "grub-mkconfig -o /boot/grub/grub.cfg" &> /dev/null
-
-echo " | Overwriting grub.cfg."
-sudo tee $MOUNT/boot/grub/grub.cfg >/dev/null <<'EOF'
-set timeout=5
-set default=0
-
-menuentry "Linux" {
-    linux /boot/vmlinuz-6.18.42 root=/dev/vda2 rw console=ttyS0,115200
-}
-EOF
+sudo sed -i "s|$EFI_PART|/dev/vda1|g" "$MOUNT/boot/grub/grub.cfg"
+sudo sed -i "s|$ROOT_PART|/dev/vda2|g" "$MOUNT/boot/grub/grub.cfg"
 
 # Delete mount
 sh script/umount.sh
@@ -58,5 +50,4 @@ qemu-system-x86_64 \
     -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2/x64/OVMF_CODE.4m.fd \
     -drive if=pflash,format=raw,file=build/OVMF_VARS.fd \
     -device virtio-vga \
-    -serial mon:stdio \
-    -display none
+    -display gtk

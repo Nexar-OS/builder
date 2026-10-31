@@ -1,0 +1,32 @@
+name: dejavu-fonts
+homepage: https://dejavu-fonts.github.io/
+license:
+  - Bitstream Vera
+  - Public Domain
+description: Dejavu font packet
+
+version: '2.37'
+
+sources:
+  - type: tarball
+    name: dejavu-fonts
+    url: http://sourceforge.net/projects/dejavu/files/dejavu/${version}/dejavu-fonts-ttf-${version}.tar.bz2
+    md5hash: d0efec10b9f110a32e9b8f796e21782c
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: custom
+
+    install: |
+      FONTDIR="$DESTDIR/usr/share/fonts/truetype/dejavu"
+      mkdir -p "$FONTDIR"
+      find "$SOURCE" -type f -name "*.ttf" -exec install -m644 '{}' "$FONTDIR/" \;
+  
+      mkdir -p "$DESTDIR/usr/share/doc/dejavu-fonts"
+      for file in AUTHORS LICENSE README.md; do
+        if [ -f "$SOURCE/$file" ]; then
+          install -m644 "$SOURCE/$file" "$DESTDIR/usr/share/doc/dejavu-fonts/"
+        fi
+      done

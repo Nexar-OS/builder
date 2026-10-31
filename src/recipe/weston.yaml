@@ -25,6 +25,7 @@ dependencies:
     - seatd
     - pipewire
     - pangocairo
+    - dejavu-fonts
 
   build:
     - mesa

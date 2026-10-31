@@ -80,6 +80,7 @@ build:
 
     exec weston --backend=drm --renderer=pixman --log=weston.log
     EOF
+    chmod +x "$DESTDIR/usr/bin/start-weston"
 
 
     mkdir -p "$DESTDIR/etc/xdg/weston"

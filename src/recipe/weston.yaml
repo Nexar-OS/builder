@@ -78,6 +78,8 @@ build:
     mkdir -p "$XDG_RUNTIME_DIR"
     chmod 700 "$XDG_RUNTIME_DIR"
 
+    loadkeys us
+
     exec weston --backend=drm --renderer=pixman --log=weston.log
     EOF
     chmod +x "$DESTDIR/usr/bin/start-weston"

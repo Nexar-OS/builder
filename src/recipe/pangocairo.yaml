@@ -11,6 +11,9 @@ version_source:
   base_url: https://gitlab.gnome.org/
 
 dependencies:
+  runtime:
+    - fontconfig
+
   build:
     - fontconfig
 

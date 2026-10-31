@@ -37,6 +37,21 @@ build:
         ARCH=${target.kernel_arch} \
         CROSS_COMPILE=${target.triple}- \
         defconfig
+      
+      ./scripts/config --enable CONFIG_TTY
+      ./scripts/config --enable CONFIG_VT
+      ./scripts/config --enable CONFIG_VT_CONSOLE
+
+      ./scripts/config --enable CONFIG_DEVTMPFS
+      ./scripts/config --enable CONFIG_DEVTMPFS_MOUNT
+
+      ./scripts/config --enable CONFIG_DRM_FBDEV_EMULATION
+      ./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
+
+      make \
+        ARCH=${target.kernel_arch} \
+        CROSS_COMPILE=${target.triple}- \
+        olddefconfig
     
     build: |
       make \
@@ -50,7 +65,8 @@ build:
         HOSTLD="$HOSTLD" \
         HOSTNM="$HOSTNM" \
         HOSTRANLIB="$HOSTRANLIB" \
-        HOSTSTRIP="$HOSTSTRIP"
+        HOSTSTRIP="$HOSTSTRIP" \
+        -j${num_jobs}
     
     install: |
       cd $BUILD

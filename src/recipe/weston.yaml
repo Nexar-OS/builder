@@ -63,3 +63,11 @@ build:
       - -Dbackend-x11=false
       - -Dxwayland=false
       - -Dshell-lua=false
+  
+  post_install: |
+    echo "#!/bin/sh" > "$DESTDIR/usr/bin/start-weston"
+    echo "seatd &" >> "$DESTDIR/usr/bin/start-weston"
+    echo "export WAYLAND_DISPLAY=wayland-0" >> "$DESTDIR/usr/bin/start-weston"
+    echo "export XDG_RUNTIME_DIR=/run" >> "$DESTDIR/usr/bin/start-weston"
+    echo 'weston --backend=drm --renderer=pixman --log=weston.log' >> "$DESTDIR/usr/bin/start-weston"
+    chmod +x "$DESTDIR/usr/bin/start-weston"

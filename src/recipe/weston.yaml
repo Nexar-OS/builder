@@ -83,7 +83,7 @@ build:
 
 
     mkdir -p "$DESTDIR/etc/xdg/weston"
-    cat > "$DESTDIR/etc/xdg/weston" <<'EOF'
+    cat > "$DESTDIR/etc/xdg/weston/weston.ini" <<'EOF'
     [core]
     xwayland=false
 

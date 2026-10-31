@@ -24,6 +24,7 @@ dependencies:
     - libwebp
     - seatd
     - pipewire
+    - pangocairo
 
   build:
     - mesa

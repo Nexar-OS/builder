@@ -17,7 +17,7 @@ sources:
     md5hash: eb59e0282b51be01279758d452831d37
 
 dependencies:
-  runtime:
+  required:
     - libxml2
     - xkeyboard-config
     - wayland-protocols
@@ -38,6 +38,9 @@ build:
     # The wrapper would remove the sysroot from a variable
     # where it is needed.
     use_pkgconf_wrapper: false
+
+    additional_binaries:
+      - wayland-scanner='${host_tools}/usr/bin/wayland-scanner'
 
     config_args:
       - --prefix=/usr

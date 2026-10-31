@@ -18,6 +18,7 @@ dependencies:
     - wayland-protocols
     - pixman
     - libxkbcommon
+    - xkeyboard-config
     - libinput
     - cairo
     - libjpeg
@@ -66,9 +67,28 @@ build:
       - -Dshell-lua=false
   
   post_install: |
-    echo "#!/bin/sh" > "$DESTDIR/usr/bin/start-weston"
-    echo "seatd &" >> "$DESTDIR/usr/bin/start-weston"
-    echo "export WAYLAND_DISPLAY=wayland-0" >> "$DESTDIR/usr/bin/start-weston"
-    echo "export XDG_RUNTIME_DIR=/run" >> "$DESTDIR/usr/bin/start-weston"
-    echo 'weston --backend=drm --renderer=pixman --log=weston.log' >> "$DESTDIR/usr/bin/start-weston"
-    chmod +x "$DESTDIR/usr/bin/start-weston"
+    cat > "$DESTDIR/usr/bin/start-weston" <<'EOF'
+    #!/bin/bash
+    if ! pgrep -x seatd >/dev/null 2>&1; then
+      seatd &
+    fi
+
+    export WAYLAND_DISPLAY=wayland-0
+    export XDG_RUNTIME_DIR="/run/user/${id -u}"
+    mkdir -p "$XDG_RUNTIME_DIR"
+    chmod 700 "$XDG_RUNTIME_DIR"
+
+    exec weston --backend=drm --renderer=pixman --log=weston.log
+    EOF
+
+
+    mkdir -p "$DESTDIR/etc/xdg/weston"
+    cat > "$DESTDIR/etc/xdg/weston" <<'EOF'
+    [core]
+    xwayland=false
+
+    [keyboard]
+    keymap_rules=evdev
+    keymap_model=pc105
+    keymap_layout=us
+    EOF

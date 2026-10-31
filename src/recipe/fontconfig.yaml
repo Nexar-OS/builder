@@ -4,7 +4,7 @@ license:
   - MIT
 description: Font discovery and configuration system.
 
-version: 2.16.0
+version: 2.18.2
 
 version_source:
   type: web
@@ -25,8 +25,8 @@ dependencies:
 sources:
   - type: tarball
     name: fontconfig
-    url: https://www.freedesktop.org/software/fontconfig/release/fontconfig-${version}.tar.xz
-    md5hash: 20d5466544aa62d18c94106faa169a09
+    url: https://gitlab.freedesktop.org/api/v4/projects/890/packages/generic/fontconfig/${version}/fontconfig-${version}.tar.xz
+    md5hash: 784b516220f93441d8ffc67ee9b3b34a
 
 build:
   method: OUT_OF_SOURCE

@@ -14,4 +14,4 @@ sudo mount --make-rslave build/disk/sys
 sudo mount --rbind /run build/disk/run
 sudo mount --make-rslave build/disk/run
 
-sudo chroot build/disk
+sudo chroot build/disk "$@"

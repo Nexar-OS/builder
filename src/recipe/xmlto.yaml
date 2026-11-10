@@ -1,0 +1,31 @@
+name: xmlto
+homepage: https://pagure.io/xmlto/
+license:
+  - GPL-2.0-or-later
+description: Shell script for converting XML files to various formats
+
+version: 0.0.29
+
+version_source:
+  type: web
+  url: https://codeberg.org/xmlto/xmlto/tags
+  regex: (?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+sources:
+  - type: tarball
+    name: xmlto
+    url: https://codeberg.org/xmlto/xmlto/archive/${version}.tar.gz
+    md5hash: c10ad461f2d417ea3d4f095799e2241a
+
+build:
+  method: OUT_OF_SOURCE
+
+  prepare: |
+    cd $SOURCE
+    autoreconf -fi
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr

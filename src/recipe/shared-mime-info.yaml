@@ -1,0 +1,32 @@
+name: shared-mime-info
+homepage: https://www.freedesktop.org/wiki/Software/shared-mime-info/
+license:
+  - GPL-2.0-or-later
+description: Core database of common mime types
+
+version: 2.5.1
+
+version_source:
+  type: gitlab
+  repo: xdg/shared-mime-info
+  base_url: https://gitlab.freedesktop.org/
+
+dependencies:
+  host:
+    - xmlto
+    - docbook-xsl
+
+sources:
+  - type: tarball
+    name: shared-mime-info
+    url: https://gitlab.freedesktop.org//xdg/shared-mime-info/-/archive/${version}/shared-mime-info-${version}.tar.gz
+    md5hash: 5f8baa7bac254ea9e65782f754a2880b
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr

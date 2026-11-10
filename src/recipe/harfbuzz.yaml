@@ -1,0 +1,42 @@
+name: harfbuzz
+homepage: https://github.com/harfbuzz/harfbuzz/
+license:
+  - MIT
+description: HarfBuzz text shaping engine
+
+version: 15.1.0
+
+version_source:
+  type: github
+  repo: harfbuzz/harfbuzz
+
+dependencies:
+  required:
+    - glib
+    - freetype
+
+  optional:
+    - cairo
+
+  build:
+    - freetype
+    - glib
+
+sources:
+  - type: tarball
+    name: harfbuzz
+    url: https://github.com/harfbuzz/harfbuzz/releases/download/${version}/harfbuzz-${version}.tar.xz
+    md5hash: c07d4f4d61646044844663fcc344045f
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dtests=disabled
+      - -Ddocs=disabled
+      - -Dglib=enabled
+      - -Dfreetype=enabled

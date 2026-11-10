@@ -7,7 +7,7 @@ from builder.version import Version
 from builder.recipe.recipe import GenericRecipe, BuildRole, BuildMethod
 from builder.recipe.loader import load_recipe_from_schema, load_version_source_from_schema
 from builder.utils.download import url_file_to_md5
-from builder.utils.logger import debug
+from builder.utils.logger import debug, warn
 
 def _prepare_vars(string: str) -> str:
     return re.sub(r"\{([^{}]+)\}", r"${\1}", string)
@@ -536,7 +536,10 @@ class RecipeGenerator():
 
             url = self._resolve_vars(source.url)
             debug("Resolving md5hash for '" + url + "'.")
-            source.md5hash = url_file_to_md5(url)
+            try:
+                source.md5hash = url_file_to_md5(url)
+            except:
+                warn("Failed to compute md5hash for '" + url + "'")
 
     def dump(self) -> dict[str, Any]:
         """Create a dump of the recipe schema to serialize.

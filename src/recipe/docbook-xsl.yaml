@@ -1,0 +1,44 @@
+name: docbook-xsl
+homepage: https://github.com/docbook/xslt10-stylesheets/
+license:
+  - MIT
+description: XSL stylesheets for transforming DocBook XML documents
+
+version: release/1.79.2
+
+version_source:
+  type: github
+  repo: docbook/xslt10-stylesheets
+  note_filter: release/
+
+sources:
+  - type: tarball
+    name: docbook-xsl
+    url: https://github.com/docbook/xslt10-stylesheets/releases/download/release%2F${version.major}.${version.minor}.${version.patch}/docbook-xsl-${version.major}.${version.minor}.${version.patch}.tar.bz2
+    md5hash: 4a400f0264a19329c7f95f69e098744a
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: custom
+
+    install: |
+      cd "$BUILD"
+
+      VERSION="${version.major}.${version.minor}.${version.patch}"
+      DIR="$DESTDIR/usr/share/xml/docbook/xsl-stylesheets-$VERSION"
+      DOC="$DESTDIR/usr/share/doc/docbook-xsl-$VERSION"
+
+      install -v -d "$DIR"
+      cp -a VERSION assembly common eclipse epub epub3 extensions fo \
+            highlighting html htmlhelp images javahelp lib manpages \
+            params profiling roundtrip slides template tests tools \
+            webhelp website xhtml xhtml-1_1 xhtml5 \
+            "$DIR/"
+      
+      ln -sv VERSION "$DIR/VERSION.xsl"
+
+      install -v -d "$DOC"
+      install -v -m644 README "$DOC/README.txt"
+      install -v -m644 RELEASE-NOTES* NEWS* "$DOC/"

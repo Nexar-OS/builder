@@ -283,10 +283,18 @@ def recipe_schema_to_yaml(schema: RecipeSchema) -> str:
     result = []
 
     sections = [
+        # Metadata
         "version:", "version_source:", "build:", "sources:", "dependencies:",
+        
+        # Build config
         "  build_system:", "    config_args:", "    build_args:", "    install_args:",
+        
+        # hooks
         "  post_install:", "  prepare:", "  patches:", "    build:", "    configure:",
-        "    install:", "    prepare:"
+        "    install:", "    prepare:",
+        
+        # dependencies
+        "  required:", "  optional:", "  build:", "  host:"
     ]
 
     for line in lines:
@@ -295,4 +303,7 @@ def recipe_schema_to_yaml(schema: RecipeSchema) -> str:
         
         result.append(line)
 
-    return "\n".join(result) + "\n"
+    result = "\n".join(result) + "\n"
+    result = result.replace("dependencies:\n", "dependencies:")
+
+    return result

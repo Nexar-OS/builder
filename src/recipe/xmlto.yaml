@@ -11,6 +11,14 @@ version_source:
   url: https://codeberg.org/xmlto/xmlto/tags
   regex: (?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
 
+dependencies:
+  required:
+    - libxml2
+
+  build:
+    - libxml2
+    - docbook-xsl
+
 sources:
   - type: tarball
     name: xmlto
@@ -24,8 +32,11 @@ build:
     cd $SOURCE
     autoreconf -fi
 
+  post_install: |
+    cd "$SOURCE"
+    autoreconf -fi
+
+    sed -i 's|^prefix=/usr$|prefix="${host_tools}/usr"|' "$DESTDIR/usr/bin/xmlto"
+
   build_system:
     type: autotools
-
-    config_args:
-      - --prefix=/usr

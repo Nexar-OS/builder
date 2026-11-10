@@ -1,0 +1,46 @@
+name: gdk-pixbuf
+homepage: https://docs.gtk.org/gdk-pixbuf/
+license:
+  - LGPL-2.1-or-later
+description: Image loading and pixel buffer library.
+
+version: 2.44.8
+
+version_source:
+  type: github
+  repo: GNOME/gdk-pixbuf
+  identifier: tags
+
+dependencies:
+  required:
+    - libpng
+    - glib
+    - shared-mime-info
+
+  optional:
+    - libjpeg
+    - libwebp
+
+  build:
+    - glib
+    - libpng
+    - shared-mime-info
+
+sources:
+  - type: tarball
+    name: gdk-pixbuf
+    url: https://github.com/GNOME/gdk-pixbuf/archive/refs/tags/${version}.tar.gz
+    md5hash: 6aa8826b7ead6d00782d83448b143dae
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dtests=false
+      - -Dgtk_doc=false
+      - -Dglycin=disabled
+      - -Dman=false

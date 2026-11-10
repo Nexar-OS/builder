@@ -1,0 +1,37 @@
+name: wireplumber
+homepage: https://gitlab.freedesktop.org//pipewire/wireplumber/
+license:
+  - MIT
+description: Session / policy manager implementation for PipeWire
+
+version: 0.5.19
+
+version_source:
+  type: gitlab
+  repo: pipewire/wireplumber
+  base_url: https://gitlab.freedesktop.org/
+
+dependencies:
+  required:
+    - pipewire
+    - glib
+
+  build:
+    - pipewire
+    - glib
+
+sources:
+  - type: tarball
+    name: wireplumber
+    url: https://gitlab.freedesktop.org//pipewire/wireplumber/-/archive/${version}/wireplumber-${version}.tar.gz
+    md5hash: 32b732a5feb6089a3a487eeee9f2f8cc
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dtests=false

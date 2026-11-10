@@ -1,6 +1,13 @@
 from dataclasses import dataclass, asdict
 import re
 
+_VERSION_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9])"
+    r"(?P<version>[vV]?\d+(?:\.\d+){0,2})"
+    r"(?![A-Za-z0-9.]|\.\d)",
+    re.IGNORECASE
+)
+
 @dataclass(frozen=True)
 class Version:
     """
@@ -9,9 +16,45 @@ class Version:
 
     raw: str
     major: int
-    minor: int | None = None
-    patch: int | None = None
+    minor: int
+    patch: int
     note: str | None = None
+
+    @classmethod
+    def parse(cls, value: str) -> "Version | None":
+        """Extract a version from a string.
+
+        Args:
+            value (str): The string to use.
+
+        Returns:
+            Version | None: Returns None if no valid version was found.
+                            Otherwise the parsed version will be returned.
+        """
+        if not isinstance(value, str) or not value.strip():
+            return None
+        
+        value = value.strip().replace("_", ".")
+        match = _VERSION_PATTERN.search(value)
+
+        if not match:
+            return None
+        
+        version = match.group("version").lstrip("vV")
+
+        parts = [ int(part) for part in version.split(".") ]
+        note = (
+            value[:match.start()] + value[match.end():]
+        ).strip(" -_.")
+
+        return cls(
+            raw=value,
+            major=parts[0],
+            minor=parts[1] if len(parts) > 1 else 0,
+            patch=parts[2] if len(parts) > 2 else 0,
+            note=note or None
+        )
+    
 
     @classmethod
     def from_version_string(cls, value: str) -> "Version | None":
@@ -24,30 +67,11 @@ class Version:
         Returns:
             Version: The parsed version. None if invalid format.
         """
-        value = value.replace("_", ".")
-        match = re.search(r"(?<![A-Za-z0-9])(\d+(?:\.\d+){0,2})(?!\d)", value)
-
-        if not match:
-            return None
-        
-        version = match.group(1)
-        parts = [ int(part) for part in version.split(".") ]
-
-        note = value[:match.start()] + value[match.end():]
-        note = note.strip().strip("-")
-        
-        return cls(
-            value,
-            *parts,
-            note=note or None
-        )
+        return cls.parse(value)
     
-    def _key(self):
-        return (
-            self.major,
-            self.minor if self.minor is not None else 0,
-            self.patch if self.patch is not None else 0,
-        )
+    @property
+    def components(self) -> tuple[int, int, int]:
+        return self.major, self.minor, self.patch
 
     def __eq__(self, value: object) -> bool:
         """
@@ -62,7 +86,7 @@ class Version:
         if not isinstance(value, Version):
             return NotImplemented
         
-        return self._key() < value._key()
+        return self.components == value.components
 
     def __lt__(self, other: "Version") -> bool:
         """
@@ -77,7 +101,10 @@ class Version:
         if not isinstance(other, Version):
             return NotImplemented
         
-        return self._key() < other._key()
+        return self.components < other.components
+
+    def __str__(self) -> str:
+        return ".".join(map(str, self.components))
 
     def dict(self) -> dict[str, str]:
         """

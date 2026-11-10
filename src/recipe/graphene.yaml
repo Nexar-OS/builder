@@ -1,0 +1,35 @@
+name: graphene
+homepage: https://ebassi.github.io/graphene/
+license:
+  - MIT
+description: empty
+
+version: 1.10.8
+
+version_source:
+  type: github
+  repo: ebassi/graphene
+
+dependencies:
+  required:
+    - glib
+
+  build:
+    - glib
+
+sources:
+  - type: tarball
+    name: graphene
+    url: https://github.com/ebassi/graphene/archive/refs/tags/${version}.tar.gz
+    md5hash: 32660faa6ab717ee1600566ede027e9d
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dgtk_doc=false
+      - -Dtests=false

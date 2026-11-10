@@ -54,6 +54,12 @@ class Autotools(BuildSystem):
                     f"--build={recipe.ctx.build_machine.triple}"
                 ]
             
+            case BuildRole.HOST:
+                args += [
+                    f"--prefix={recipe.ctx.toolchain_host_tools}",
+                    f"--with-sysroot={recipe.ctx.toolchain_sysroot}"
+                ]
+
             case BuildRole.TOOLCHAIN:
                 args += [
                     f"--build={recipe.ctx.build_machine.triple}",

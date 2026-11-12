@@ -1,0 +1,43 @@
+name: libx11
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: Core X11 client library.
+
+version: 1.8.14
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libX11\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libxcb
+    - libxau
+    - libxdmcp
+    - xtrans
+
+  build:
+    - xorgproto
+    - libxcb
+    - xtrans
+
+sources:
+  - type: tarball
+    name: libx11
+    url: https://xorg.freedesktop.org/archive/individual/lib/libX11-${version}.tar.gz
+    md5hash: a1072c434da25b78dd7263e4456211e3
+
+build:
+  method: OUT_OF_SOURCE
+
+  env:
+    MAGIC: "${host_tools}/usr/share/misc/magic.mgc"
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

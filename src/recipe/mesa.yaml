@@ -24,6 +24,13 @@ dependencies:
     - llvm-spirvlib
     - spirv-tools
     - elfutils
+    - libx11
+    - libxext
+    - libxshmfence
+    - libxfixes
+    - libxcb
+    - libxxf86vm
+    - libxrandr
 
   build:
     - libdrm
@@ -38,6 +45,13 @@ dependencies:
     - llvm
     - systemd
     - elfutils
+    - libx11
+    - libxext
+    - libxshmfence
+    - libxfixes
+    - libxcb
+    - libxxf86vm
+    - libxrandr
 
   host:
     - rust
@@ -69,13 +83,13 @@ build:
       - --prefix=/usr
       - --libdir=lib
 
-      - -Dplatforms=wayland
+      - -Dplatforms=x11,wayland
       - -Dopengl=true
       - -Degl=enabled
       - -Dgbm=enabled
       - -Dgles1=disabled
       - -Dgles2=enabled
-      - -Dglx=disabled
+      - -Dglx=dri
 
       # Select drivers
       - -Dgallium-drivers=auto

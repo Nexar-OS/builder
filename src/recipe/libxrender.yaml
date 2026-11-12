@@ -18,6 +18,9 @@ dependencies:
   build:
     - libx11
     - xorgproto
+  
+  host:
+    - file
 
 sources:
   - type: tarball

@@ -95,6 +95,10 @@ class Toolchain(ABC):
         ]
     
     @property
+    def cppflags(self) -> list[str]:
+        return []
+    
+    @property
     def makeflags(self) -> list[str]:
         return [
             f"-j{self.num_jobs}"
@@ -137,7 +141,7 @@ class Toolchain(ABC):
             "SYSROOT": str(self.sysroot),
             
             "CFLAGS": " ".join(self.cflags),
-            "CPPFLAGS": " ".join(self.cflags),
+            "CPPFLAGS": " ".join(self.cppflags),
             "CXXFLAGS": " ".join(self.cflags),
             "LDFLAGS": " ".join(self.ldflags),
             "MAKEFLAGS": " ".join(self.makeflags),

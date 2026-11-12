@@ -1,0 +1,74 @@
+name: xwayland
+homepage: https://xorg.freedesktop.org/archive/individual/xserver/
+license:
+  - MIT
+  - X11
+description: X11 server running as a Wayland client.
+
+version: 24.1.15
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/xserver/
+  regex: xwayland\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  required:
+    - wayland
+    - wayland-protocols
+    - libdrm
+    - libx11
+    - libxext
+    - libxfixes
+    - libxrender
+    - libxi
+    - libxrandr
+    - libxcursor
+    - libxdamage
+    - libxcomposite
+    - libxcb
+    - libxkbcommon
+    - libxkbfile
+    - libxfont2
+    - libxcvt
+    - libxshmfence
+    - libxdmcp
+    - mesa
+
+  build:
+    - xorgproto
+    - wayland
+    - wayland-protocols
+    - libdrm
+    - libx11
+    - libxcb
+    - libxkbcommon
+    - libxkbfile
+    - libxfont2
+    - libxcvt
+    - libxshmfence
+    - libepoxy
+    - libxdmcp
+    - mesa
+
+sources:
+  - type: tarball
+    name: xwayland
+    url: https://xorg.freedesktop.org/archive/individual/xserver/xwayland-${version}.tar.xz
+    md5hash: 50b935ab2f983f61c71d04874e030c36
+
+build:
+  method: OUT_OF_SOURCE
+
+  prepare: |
+    cd "$SOURCE"
+    meson subprojects download libxcvt
+
+  build_system:
+    type: meson
+    use_pkgconf_wrapper: false
+
+    config_args:
+      - --prefix=/usr
+      - -Dxwayland_ei=auto
+      - -Dsecure-rpc=false

@@ -1,0 +1,37 @@
+name: xcb-proto
+homepage: https://gitlab.freedesktop.org//xorg/proto/xcbproto/
+license:
+  - X11 License (distribution)
+description: XML-XCB protocol descriptions used by libxcb for the X11 protocol & extensions
+
+version: xcb-proto-1.17.0
+
+version_source:
+  type: gitlab
+  repo: xorg/proto/xcbproto
+  base_url: https://gitlab.freedesktop.org/
+  identifier: repository/tags
+
+dependencies:
+  build:
+    - xorgproto
+
+sources:
+  - type: tarball
+    name: xcb-proto
+    url: https://gitlab.freedesktop.org//xorg/proto/xcbproto/-/archive/${version}/xcbproto-xcb-${version}.tar.gz
+    md5hash: 3d7bb8eafed6e5203d072149f6359b52
+
+build:
+  method: OUT_OF_SOURCE
+
+  prepare: |
+    cd $SOURCE
+    autoreconf -fi
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

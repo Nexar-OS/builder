@@ -4,12 +4,12 @@ license:
   - MIT
 description: X11 display configuration extension library.
 
-version: 1.2.99.4
+version: 1.5.5
 
 version_source:
   type: web
   url: https://xorg.freedesktop.org/archive/individual/lib/
-  regex: libXrandr\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+  regex: libXrandr\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
 
 dependencies:
   required:

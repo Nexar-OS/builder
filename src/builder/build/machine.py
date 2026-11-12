@@ -82,6 +82,12 @@ class Target:
         abi=abi,
     )
 
+    RISCV = MachineSpec(
+        arch="RISC-V 64",
+        kernel_arch="riscv",
+        triple=f"riscv64-{triple_suffix}",
+        abi=abi,
+    )
 
 
 def detect_triple() -> str:

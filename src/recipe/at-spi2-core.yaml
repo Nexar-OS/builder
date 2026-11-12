@@ -1,0 +1,41 @@
+name: at-spi2-core
+homepage: https://github.com/GNOME/at-spi2-core/
+license:
+  - LGPL-2.1-or-later
+description: Accessibility infrastructure for GTK desktops.
+
+version: 2.62.1
+
+version_source:
+  type: github
+  repo: GNOME/at-spi2-core
+  identifier: tags
+
+dependencies:
+  required:
+    - glib
+    - dbus
+    - libx11
+    - libxtst
+
+  build:
+    - libxtst
+    - glib
+    - dbus
+    - libx11
+
+sources:
+  - type: tarball
+    name: at-spi2-core
+    url: https://github.com/GNOME/at-spi2-core/archive/refs/tags/${version}.tar.gz
+    md5hash: 8608162ac7ebbe91d1949ce5ed8e6f67
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Ddocs=false

@@ -1,0 +1,43 @@
+name: libepoxy
+homepage: https://download.gnome.org/sources/libepoxy/
+license: MIT
+description: OpenGL function pointer management library.
+
+version: 1.5.10
+
+version_source:
+  type: nested
+
+  parent:
+    type: web
+    url: https://download.gnome.org/sources/libepoxy/
+    regex: (?P<version>[0-9][A-Za-z0-9._+-]*)\/
+
+  child:
+    type: web
+    url: https://download.gnome.org/sources/libepoxy/{version}/
+    regex: libepoxy-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  required:
+    - libx11
+    - libxext
+  
+  optional:
+    - wayland
+  
+sources:
+  - type: tarball
+    name: libepoxy
+    url: https://download.gnome.org/sources/libepoxy/${version.major}.${version.minor}/libepoxy-${version}.tar.xz
+    md5hash: 10c635557904aed5239a4885a7c4efb7
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+      
+    config_args:
+      - --prefix=/usr
+      - -Dtests=false

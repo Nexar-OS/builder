@@ -25,10 +25,32 @@ build:
   method: OUT_OF_SOURCE
 
   build_system:
-    type: autotools
-      
-    config_args:
-      - --prefix=/usr
-      - --disable-nscd
-      - --enable-kernel=5.4
-      - libc_cv_slibdir=/usr/lib
+    type: custom
+
+    configure: |
+      cd "$BUILD"
+
+      export CC="${CC}"
+      export BUILD_CC=gcc
+      export AR="${AR}"
+      export RANLIB="${RANLIB}"
+      export CFLAGS="-O2"
+      export CPPFLAGS=""
+      export libc_cv_slibdir=/usr/lib
+
+      "$SOURCE/configure" \
+        --prefix=/usr \
+        --build=${build.triple} \
+        --target=${target.triple} \
+        --with-headers="$SYSROOT/usr/include" \
+        --enable-kernel=5.4 \
+        --disable-nscd \
+        --disable-werror
+    
+    build: |
+      cd "$BUILD"
+      make -j${num_jobs}
+    
+    install: |
+      cd "$BUILD"
+      make install install_root="$DESTDIR"

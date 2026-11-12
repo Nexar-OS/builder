@@ -1,0 +1,46 @@
+name: libxi
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 input extention client library.
+
+version: 1.7.99.2
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libXi\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libx11
+
+  build:
+    - libx11
+    - xorgproto
+    - xorg-macros
+    - libxext
+    - libxfixes
+  
+  host:
+    - file
+
+sources:
+  - type: tarball
+    name: libxi
+    url: https://xorg.freedesktop.org/archive/individual/lib/libXi-${version}.tar.gz
+    md5hash: 83f0ff3f4f99ae0adb15efc90d5fd7b2
+
+build:
+  method: OUT_OF_SOURCE
+
+  env:
+    MAGIC: "${host_tools}/usr/share/misc/magic.mgc"
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static
+      - --disable-malloc0returnsnull

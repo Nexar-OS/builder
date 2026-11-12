@@ -1,0 +1,47 @@
+name: libxrandr
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 display configuration extension library.
+
+version: 1.2.99.4
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libXrandr\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libx11
+    - libxext
+    - libxrender
+
+  build:
+    - xorgproto
+    - libx11
+    - libxext
+    - libxrender
+  
+  host:
+    - file
+
+sources:
+  - type: tarball
+    name: libxrandr
+    url: https://xorg.freedesktop.org/archive/individual/lib/libXrandr-${version}.tar.gz
+    md5hash: d6840db52bd9449c3489c15eda830905
+
+build:
+  method: OUT_OF_SOURCE
+
+  env:
+    MAGIC: "${host_tools}/usr/share/misc/magic.mgc"
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static
+      - --disable-malloc0returnsnull

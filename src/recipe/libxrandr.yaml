@@ -30,7 +30,7 @@ sources:
   - type: tarball
     name: libxrandr
     url: https://xorg.freedesktop.org/archive/individual/lib/libXrandr-${version}.tar.gz
-    md5hash: d6840db52bd9449c3489c15eda830905
+    md5hash: 63db29d6272b8aa0aec89f1607061aac
 
 build:
   method: OUT_OF_SOURCE

@@ -1,0 +1,35 @@
+name: xcb-util-renderutil
+homepage: https://xcb.freedesktop.org/dist/
+license:
+  - X11
+description: XCB utility libraries
+
+version: 0.3.10
+
+version_source:
+  type: web
+  url: https://xcb.freedesktop.org/dist/
+  regex: xcb\-util\-renderutil\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libxcb
+
+  build:
+    - libxcb
+
+sources:
+  - type: tarball
+    name: xcb-util-renderutil
+    url: https://xcb.freedesktop.org/dist/xcb-util-renderutil-${version}.tar.gz
+    md5hash: 7c6de39307be714b88fd47c230253149
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-shared

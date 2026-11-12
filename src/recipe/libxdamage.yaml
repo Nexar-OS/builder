@@ -1,0 +1,38 @@
+name: libxdamage
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 damaged-region notification library.
+
+version: 1.1.7
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libXdamage\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libx11
+    - libxfixes
+
+  build:
+    - xorgproto
+    - libx11
+    - libxfixes
+
+sources:
+  - type: tarball
+    name: libxdamage
+    url: https://xorg.freedesktop.org/archive/individual/lib/libXdamage-${version}.tar.gz
+    md5hash: 1bcfb78f8295a5359125b62f00936541
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

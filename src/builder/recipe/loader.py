@@ -187,7 +187,8 @@ def load_recipe_from_schema(ctx: BuildContext, role: BuildRole, schema: RecipeSc
         build_system=load_build_system_from_schema(build.build_system) if build else None,
         patches=build.patches if build else [],
         prepare_script=build.prepare if build else None,
-        post_install_script=build.post_install if build else None
+        post_install_script=build.post_install if build else None,
+        env=build.env if build else None
     )
 
 

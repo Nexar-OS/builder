@@ -174,6 +174,27 @@ class BuildRecipe(ABC):
             case BuildRole.SYSROOT | BuildRole.TARGET:
                 return self.ctx.target_machine
 
+    @property
+    def env(self) -> dict[str, str]:
+        """Return a dictionary of common environment variables for this recipe."""
+
+        work_dir = self.work_dir
+        build_dir = work_dir / "build"
+        
+        return {
+            "WORK_DIR": str(work_dir),
+            "BUILD": str(build_dir),
+            "SOURCE": (
+                str(work_dir / "sources")
+                if self.build_method != BuildMethod.IN_SOURCE
+                else str(build_dir)
+            ),
+            "DESTDIR": str(self._dest_dir),
+            "ROLE": str(self.build_role.name.upper()),
+            "NAME": str(self.name),
+            "VERSION": str(self.metadata.version)
+        }
+
     @cached_property
     def shell(self) -> Shell:
         """
@@ -192,28 +213,11 @@ class BuildRecipe(ABC):
             case _:
                 raise ValueError(f"No shell available for recipes with {self.build_role.name.upper()}-role")
 
-        # Expose some variables through the shell
-        work_dir = self.work_dir
-        build_dir = work_dir / "build"
-        vars = {
-            "WORK_DIR": str(work_dir),
-            "BUILD": str(build_dir),
-            "SOURCE": (
-                str(work_dir / "sources")
-                if self.build_method != BuildMethod.IN_SOURCE
-                else str(build_dir)
-            ),
-            "DESTDIR": str(self._dest_dir),
-            "ROLE": str(self.build_role.name.upper()),
-            "NAME": str(self.name),
-            "VERSION": str(self.metadata.version)
-        }
-
         return Shell(
             Environment.from_context(
                 ctx=self.ctx,
                 profile=profile
-            ).derive(overrides=vars),
+            ).derive(overrides=self.env),
             persistent=True,
             recipe=self
         )
@@ -545,6 +549,7 @@ class GenericRecipe(BuildRecipe):
                  patches: list[Path]|None = None,
                  prepare_script: str|None = None,
                  post_install_script: str|None = None,
+                 env: dict[str, str]|None = None,
                 ) -> None:
         
         self.metadata = metadata
@@ -555,8 +560,16 @@ class GenericRecipe(BuildRecipe):
         self.patches = patches or []
         self.prepare_script = prepare_script
         self.post_install_script = post_install_script
+        self._env = env
 
         super().__init__(ctx, role)
+
+    @property
+    def env(self) -> dict[str, str]:
+        return {
+            **super().env,
+            **(self._env or {}),
+        }
 
     def patch(self, ctx: BuildContext, source_dir: Path) -> None:
         """

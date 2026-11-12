@@ -66,6 +66,7 @@ class BuildSchema(Schema):
     patches: list[Path] | None = None
     prepare: str | None = None
     post_install: str | None = None
+    env: dict[str, str] | None = None
 
 class FileSourceSchema(Schema):
     type: Literal["file"]

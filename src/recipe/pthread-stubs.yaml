@@ -1,0 +1,34 @@
+name: pthread-stubs
+homepage: https://gitlab.freedesktop.org//xorg/lib/pthread-stubs/
+license:
+  - MIT
+description: empty
+
+version: libpthread-stubs-0.5
+
+version_source:
+  type: gitlab
+  repo: xorg/lib/pthread-stubs
+  base_url: https://gitlab.freedesktop.org/
+  identifier: repository/tags
+  note_filter: libpthread-stubs
+
+sources:
+  - type: tarball
+    name: pthread-stubs
+    url: https://gitlab.freedesktop.org//xorg/lib/pthread-stubs/-/archive/${version}/pthread-stubs-${version}.tar.gz
+    md5hash: d3efcd9af2a1e2ed2cdbcde35a9495a9
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static
+
+  prepare: |
+    cd $SOURCE
+    autoreconf -fi

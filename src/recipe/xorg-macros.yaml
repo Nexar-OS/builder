@@ -1,0 +1,33 @@
+name: xorg-macros
+homepage: https://gitlab.freedesktop.org//xorg/util/macros/
+license:
+  - MIT
+description: GNU autoconf macros shared across X.Org projects
+
+version: util-macros-1.20.2
+
+version_source:
+  type: gitlab
+  repo: xorg/util/macros
+  base_url: https://gitlab.freedesktop.org/
+  identifier: repository/tags
+  note_filter: util-macros
+
+sources:
+  - type: tarball
+    name: xorg-macros
+    url: https://gitlab.freedesktop.org//xorg/util/macros/-/archive/${version}/macros-util-${version}.tar.gz
+
+build:
+  method: OUT_OF_SOURCE
+
+  prepare: |
+    cd "$SOURCE"
+    autoreconf -fi
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-shared

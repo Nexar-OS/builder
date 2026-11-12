@@ -1,0 +1,35 @@
+name: xcb-util-keysyms
+homepage: https://xcb.freedesktop.org/dist/
+license:
+  - X11
+description: XCB utility libraries
+
+version: 0.4.1
+
+version_source:
+  type: web
+  url: https://xcb.freedesktop.org/dist/
+  regex: xcb\-util\-keysyms\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libxcb
+
+  build:
+    - libxcb
+
+sources:
+  - type: tarball
+    name: xcb-util-keysyms
+    url: https://xcb.freedesktop.org/dist/xcb-util-keysyms-${version}.tar.gz
+    md5hash: 809d7ef0a7a10e7b4199c02d5bf885ee
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-shared

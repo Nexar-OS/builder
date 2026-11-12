@@ -1,0 +1,28 @@
+name: xtrans
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X transport library.
+
+version: 1.6.0
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: xtrans\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+sources:
+  - type: tarball
+    name: xtrans
+    url: https://xorg.freedesktop.org/archive/individual/lib/xtrans-${version}.tar.gz
+    md5hash: 97f0e052756cab3077915279c5736a72
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

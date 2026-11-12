@@ -1,0 +1,38 @@
+name: libxau
+homepage: https://gitlab.freedesktop.org//xorg/lib/libxau/
+license:
+  - MIT
+description: Functions for handling Xauthority files and entries.
+
+version: libXau-1.0.12
+
+version_source:
+  type: gitlab
+  repo: xorg/lib/libxau
+  base_url: https://gitlab.freedesktop.org/
+  identifier: repository/tags
+  note_filter: libXau
+
+dependencies:
+  build:
+    - xorgproto
+
+sources:
+  - type: tarball
+    name: libxau
+    url: https://gitlab.freedesktop.org//xorg/lib/libxau/-/archive/${version}/libxau-${version}.tar.gz
+    md5hash: 41c5786e11b360af4e921d3cfc6fa67b
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static
+
+  prepare: |
+    cd $SOURCE
+    autoreconf -fi

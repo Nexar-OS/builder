@@ -1,0 +1,36 @@
+name: libxfixes
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 region and cursor fixes extension.
+
+version: 6.0.2
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libXfixes\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libx11
+
+  build:
+    - libx11
+    - xorgproto
+
+sources:
+  - type: tarball
+    name: libxfixes
+    url: https://xorg.freedesktop.org/archive/individual/lib/libXfixes-${version}.tar.gz
+    md5hash: a5baf41534755ce95e8fd0b7074088c7
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

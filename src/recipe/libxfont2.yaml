@@ -1,0 +1,40 @@
+name: libxfont2
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 font rasterization shared library.
+
+version: 2.0.9
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libXfont2\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libx11
+    - libxfixes
+    - libfontenc
+
+  build:
+    - xorgproto
+    - libx11
+    - libxfixes
+    - libfontenc
+
+sources:
+  - type: tarball
+    name: libxfont
+    url: https://xorg.freedesktop.org/archive/individual/lib/libXfont2-${version}.tar.gz
+    md5hash: 87f5150b284d27a7525139e4185c8fa1
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

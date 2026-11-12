@@ -37,6 +37,7 @@ build:
     configure: |
       "$SOURCE/Configure" \
         --prefix=/usr \
+        --libdir=lib \
         --openssldir=/etc/ssl \
         shared
       

@@ -1,0 +1,38 @@
+name: libxkbfile
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 client library to read/write keyboard description files.
+
+version: 1.1.3
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libxkbfile\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libx11
+    - libxfixes
+
+  build:
+    - xorgproto
+    - libx11
+    - libxfixes
+
+sources:
+  - type: tarball
+    name: libxkbfile
+    url: https://xorg.freedesktop.org/archive/individual/lib/libxkbfile-${version}.tar.gz
+    md5hash: 4edb4e75578333c70a9eda21f46e56a6
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

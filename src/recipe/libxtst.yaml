@@ -1,0 +1,40 @@
+name: libxtst
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 test library.
+
+version: 1.2.6
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libXtst\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  required:
+    - libx11
+    - libxfixes
+    - libxi
+
+  build:
+    - xorgproto
+    - libx11
+    - libxi
+    - libxfixes
+
+sources:
+  - type: tarball
+    name: libxtst
+    url: https://xorg.freedesktop.org/archive/individual/lib/libXtst-${version}.tar.xz
+    md5hash: 2d483d8c441ae4de26329ca4e0cb414f
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

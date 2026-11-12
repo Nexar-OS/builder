@@ -22,7 +22,7 @@ build:
 
       # Create directory layout
       mkdir -p etc tmp var root home dev proc sys run mnt opt \
-            usr/{bin,include,lib,${target.libdir.name}} \
+            usr/{bin,include,lib} \
             usr/share/{man,info,doc} \
             var/{cache,lib,log,tmp,run,mail} \
             run/{lock,user} \

@@ -29,4 +29,5 @@ build:
 
     config_args:
       - --prefix=/usr
+      - --libdir=/usr/lib
       - --disable-static

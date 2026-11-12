@@ -1,0 +1,38 @@
+name: libxcomposite
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 compositing extension client library.
+
+version: 0.2.2.2
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libXcomposite\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libx11
+    - libxfixes
+
+  build:
+    - xorgproto
+    - libx11
+    - libxfixes
+
+sources:
+  - type: tarball
+    name: libxcomposite
+    url: https://xorg.freedesktop.org/archive/individual/lib/libXcomposite-${version}.tar.gz
+    md5hash: ffed02a64cfd71b766650fc718960bf0
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

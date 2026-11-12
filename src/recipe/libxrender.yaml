@@ -1,0 +1,40 @@
+name: libxrender
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 rendering extension client library.
+
+version: 0.9.13
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libXrender\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libx11
+
+  build:
+    - libx11
+    - xorgproto
+
+sources:
+  - type: tarball
+    name: libxrender
+    url: https://xorg.freedesktop.org/archive/individual/lib/libXrender-${version}.tar.gz
+    md5hash: 1cce77b926b661582bb1a712ff3c86f3
+
+build:
+  method: OUT_OF_SOURCE
+
+  env:
+    MAGIC: "${host_tools}/usr/share/misc/magic.mgc"
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static
+      - --disable-malloc0returnsnull

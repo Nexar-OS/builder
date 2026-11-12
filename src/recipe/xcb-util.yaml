@@ -1,0 +1,35 @@
+name: xcb-util
+homepage: https://xcb.freedesktop.org/dist/
+license:
+  - X11
+description: XCB utility libraries
+
+version: 0.4.1
+
+version_source:
+  type: web
+  url: https://xcb.freedesktop.org/dist/
+  regex: xcb\-util\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libxcb
+
+  build:
+    - libxcb
+
+sources:
+  - type: tarball
+    name: xcb-util
+    url: https://xcb.freedesktop.org/dist/xcb-util-${version}.tar.gz
+    md5hash: 207fb5e14088ed0241721bf9fd571606
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-shared

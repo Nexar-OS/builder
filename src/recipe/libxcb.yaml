@@ -1,0 +1,50 @@
+name: libxcb
+homepage: https://gitlab.freedesktop.org//xorg/lib/libxcb/
+license: MIT
+description: Low-level X11 protocol client library.
+
+version: libxcb-1.17.0
+
+version_source:
+  type: gitlab
+  repo: xorg/lib/libxcb
+  base_url: https://gitlab.freedesktop.org/
+  identifier: repository/tags
+  note_filter: libxcb
+
+dependencies:
+  host:
+    - file
+
+  build:
+    - pthread-stubs
+    - libxau
+    - xcb-proto
+    - xorgproto
+    - file
+    - glibc
+
+sources:
+  - type: tarball
+    name: libxcb
+    url: https://gitlab.freedesktop.org//xorg/lib/libxcb/-/archive/${version}/libxcb-${version}.tar.gz
+    md5hash: 5b3f8f61fa27f18bafee4443191b6271
+
+build:
+  method: OUT_OF_SOURCE
+
+  env:
+    MAGIC: "${host_tools}/usr/share/misc/magic.mgc"
+    ac_cv_c_undeclared_builtin_options: "none needed"
+    PYTHONPATH: "${sysroot}/usr/lib/python3.11/site-packages/"
+
+  prepare: |
+    cd $SOURCE
+    autoreconf -fi
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

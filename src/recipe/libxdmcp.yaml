@@ -1,0 +1,32 @@
+name: libxdmcp
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X Display Manager Control Protocol library.
+
+version: 1.1.5
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libXdmcp\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  build:
+    - xorgproto
+
+sources:
+  - type: tarball
+    name: libxdmcp
+    url: https://xorg.freedesktop.org/archive/individual/lib/libXdmcp-${version}.tar.gz
+    md5hash: 703168de152b5931d0cdd87ac3ce0de3
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

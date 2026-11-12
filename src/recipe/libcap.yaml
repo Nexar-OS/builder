@@ -36,9 +36,7 @@ build:
     build_args:
       - prefix=/usr
       - lib=lib
-  
-  post_install: |
-    lib="${target.libdir.name}"
-    mkdir -p "$DESTDIR/usr/$lib"
-    cp -aR "$DESTDIR/$lib/." "$DESTDIR/usr/$lib/"
-    rm -rf $lib
+    
+    install_args:
+      - prefix=/usr
+      - lib=lib

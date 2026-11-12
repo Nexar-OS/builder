@@ -1,0 +1,39 @@
+name: libfontenc
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 library handling character encoding for legacy bitmap and scalable
+  fonts.
+
+version: 1.1.9
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libfontenc\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.gz
+
+dependencies:
+  required:
+    - libx11
+    - libxfixes
+
+  build:
+    - xorgproto
+    - libx11
+    - libxfixes
+
+sources:
+  - type: tarball
+    name: libfontenc
+    url: https://xorg.freedesktop.org/archive/individual/lib/libfontenc-${version}.tar.gz
+    md5hash: 5c82f232adcd1c3a495284c6a767c346
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

@@ -1,0 +1,28 @@
+name: xorgproto
+homepage: https://gitlab.freedesktop.org//xorg/proto/xorgproto/
+license:
+  - MIT
+description: X11 protocol header definitions.
+
+version: xorgproto-2026.1
+
+version_source:
+  type: gitlab
+  repo: xorg/proto/xorgproto
+  base_url: https://gitlab.freedesktop.org/
+  identifier: repository/tags
+
+sources:
+  - type: tarball
+    name: xorgproto
+    url: https://gitlab.freedesktop.org//xorg/proto/xorgproto/-/archive/${version}/xorgproto-${version}.tar.gz
+    md5hash: 2e0b956fa7bf1cbad7f0d752892e7ad6
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr

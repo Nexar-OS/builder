@@ -16,6 +16,8 @@ dependencies:
     - bzip2
     - glib
     - libx11
+    - libxext
+    - libxrender
 
 sources:
   - type: tarball

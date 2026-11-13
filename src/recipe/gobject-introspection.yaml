@@ -23,6 +23,7 @@ dependencies:
   build:
     - glib
     - libffi
+    - cairo
 
 sources:
   - type: tarball

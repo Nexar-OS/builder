@@ -12,6 +12,9 @@ version_source:
   note_filter: ''
 
 dependencies:
+  required:
+    - vulkan-headers
+
   build:
     - vulkan-headers
     - libx11

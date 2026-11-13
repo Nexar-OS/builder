@@ -1,6 +1,6 @@
 name: vulkan-loader
 homepage: https://github.com/KhronosGroup/Vulkan-Loader/
-license: unknown
+license: Apache-2.0
 description: Vulkan ICD loader.
 
 version: v1.4.368

@@ -1,0 +1,65 @@
+name: gtk4
+homepage: https://gtk.org/
+license:
+  - LGPL-2.1-or-later
+description: Modern cross-platform graphical toolkit for desktop applications.
+
+version: 4.20.4
+
+version_source:
+  type: web
+  url: https://download.gnome.org/sources/gtk/4.20/
+  regex: gtk\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  required:
+    - glib
+    - cairo
+    - pangocairo
+    - gdk-pixbuf
+    - graphene
+    - libepoxy
+    - wayland
+    - wayland-protocols
+    - libxkbcommon
+    - libxcursor
+    - libxdamage
+    - libx11
+    - libxinerama
+    - vulkan
+
+  optional:
+    - cups
+
+  build:
+    - glib
+    - cairo
+    - pangocairo
+    - gdk-pixbuf
+    - graphene
+    - libepoxy
+    - wayland
+    - libxkbcommon
+    - libxcursor
+    - libxdamage
+    - libx11
+    - libxinerama
+    - vulkan
+
+sources:
+  - type: tarball
+    name: gtk4
+    url: https://download.gnome.org/sources/gtk/4.20/gtk-${version}.tar.xz
+    md5hash: 83ad51ed5204640185d9ffc5d88c0539
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+    use_pkgconf_wrapper: false
+
+    config_args:
+      - --prefix=/usr
+      - -Dbuild-tests=false
+      - -Dbuild-examples=false

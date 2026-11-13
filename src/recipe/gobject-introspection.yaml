@@ -1,0 +1,43 @@
+name: gobject-introspection
+homepage: https://github.com/GNOME/gobject-introspection/
+license:
+  - LGPL-2.1-or-later
+description: Introspection metadata generator and runtime for GObject-based libraries.
+
+version: 1.86.0
+
+version_source:
+  type: github
+  repo: GNOME/gobject-introspection
+  identifier: tags
+  note_filter: "" # filter for no notes
+
+dependencies:
+  required:
+    - glib
+    - libffi
+
+  optional:
+    - cairo
+
+  build:
+    - glib
+    - libffi
+
+sources:
+  - type: tarball
+    name: gobject-introspection
+    url: https://github.com/GNOME/gobject-introspection/archive/refs/tags/${version}.tar.gz
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+
+    config_args:
+      - --prefix=/usr
+      - -Dtests=false
+      - -Ddoctool=disabled
+      - -Dcairo=enabled
+      - -Dbuild_introspection_data=false

@@ -1,0 +1,29 @@
+name: vulkan-headers
+homepage: https://github.com/KhronosGroup/vulkan-headers/
+license: unknown
+description: Vulkan API headers and XML registry files.
+
+version: v1.4.368
+
+version_source:
+  type: github
+  repo: KhronosGroup/vulkan-headers
+  identifier: tags
+  note_filter: ''
+
+sources:
+  - type: tarball
+    name: vulkan-headers
+    url: https://github.com/KhronosGroup/vulkan-headers/archive/refs/tags/${version}.tar.gz
+    md5hash: f15cd3d8784fa1ec1a150e9d7e00be52
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cmake
+
+    config_args:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DVULKAN_HEADERS_ENABLE_TEST=OFF
+      - -DVULKAN_HEADERS_ENABLE_MODULE=OFF

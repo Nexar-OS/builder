@@ -1,0 +1,45 @@
+name: vulkan-tools
+homepage: https://github.com/KhronosGroup/Vulkan-Tools/
+license: Apache-2.0
+description: Vulkan Development Tools
+
+version: v1.4.368
+
+version_source:
+  type: github
+  repo: KhronosGroup/Vulkan-Loader
+  identifier: tags
+  note_filter: ''
+
+dependencies:
+  required:
+    - vulkan-loader
+
+  build:
+    - vulkan-headers
+    - vulkan-loader
+  
+  optional:
+    - wayland
+    - libx11
+    - libxcb
+
+sources:
+  - type: tarball
+    name: vulkan-tools
+    url: https://github.com/KhronosGroup/Vulkan-Tools/archive/refs/tags/${version}.tar.gz
+    md5hash: 2336a9da5ad3f33a8d2781abe603ef20
+
+build:
+  method: OUT_OF_SOURCE
+
+  env:
+    PKG_CONFIG: "pkgconf"
+
+  build_system:
+    type: cmake
+
+    config_args:
+      - -DCMAKE_BUILD_TYPE=RELEASE
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DVULKAN_HEADERS_INSTALL_DIR=/usr

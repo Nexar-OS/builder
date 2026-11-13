@@ -1,0 +1,38 @@
+name: libxinerama
+homepage: https://xorg.freedesktop.org/archive/individual/lib/
+license:
+  - MIT
+description: X11 client library for the Xinerama extension.
+
+version: 1.1.6
+
+version_source:
+  type: web
+  url: https://xorg.freedesktop.org/archive/individual/lib/
+  regex: libXinerama\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  required:
+    - libx11
+    - libxfixes
+
+  build:
+    - xorgproto
+    - libx11
+    - libxfixes
+
+sources:
+  - type: tarball
+    name: libxinerama
+    url: https://xorg.freedesktop.org/archive/individual/lib/libXinerama-${version}.tar.xz
+    md5hash: 5f3f5754a40730d1518233a60ba5c48e
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: autotools
+
+    config_args:
+      - --prefix=/usr
+      - --disable-static

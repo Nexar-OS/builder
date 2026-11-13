@@ -1,0 +1,46 @@
+name: duktape
+homepage: https://duktape.org/
+license:
+  - MIT
+description: Duktape is an embeddable Javascript engine, with a focus on portability and compact footprint.
+
+version: 2.7.0
+
+version_source:
+  type: web
+  url: https://duktape.org/download
+  regex: duktape\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+sources:
+  - type: tarball
+    name: duktape
+    url: https://duktape.org/duktape-${version}.tar.xz
+
+build:
+  method: IN_SOURCE
+
+  build_system:
+    type: custom
+
+    build: |
+      cd "$BUILD"
+      make
+      make -f Makefile.cmdline
+
+      ${CC:-cc} ${CFLAGS:--O2} -fPIC -Isrc \
+        -c src/duktape.c -o duktape.o
+      
+      ${AR:-ar} rcs libduktape.a duktape.o
+
+    install: |
+      cd "$BUILD"
+
+      mkdir -p "$DESTDIR/usr/include"
+      mkdir -p "$DESTDIR/usr/lib"
+      mkdir -p "$DESTDIR/usr/bin"
+
+      install -m 664 src/duktape.h "$DESTDIR/usr/include/"
+      install -m 664 src/duk_config.h "$DESTDIR/usr/include/"
+
+      install -m 664 libduktape.a "$DESTDIR/usr/lib/"
+      install -m 755 duk "$DESTDIR/usr/bin/"

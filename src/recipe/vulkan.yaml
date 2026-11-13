@@ -1,0 +1,19 @@
+name: vulkan
+homepage: https://github.com/KhronosGroup/
+license:
+  - Apache-2.0
+  - MIT
+description: Vulkan API headers and XML registry files.
+
+version: "<combined>"
+
+dependencies:
+  runtime:
+    - vulkan-loader
+    - mesa
+
+  build:
+    - vulkan-headers
+    - spirv-headers
+    - spirv-tools
+    - vulkan-tools

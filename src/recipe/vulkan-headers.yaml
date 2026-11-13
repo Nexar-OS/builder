@@ -24,6 +24,5 @@ build:
     type: cmake
 
     config_args:
+      - DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/usr
-      - -DVULKAN_HEADERS_ENABLE_TEST=OFF
-      - -DVULKAN_HEADERS_ENABLE_MODULE=OFF

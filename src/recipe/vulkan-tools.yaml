@@ -7,7 +7,7 @@ version: v1.4.368
 
 version_source:
   type: github
-  repo: KhronosGroup/Vulkan-Loader
+  repo: KhronosGroup/Vulkan-Tools
   identifier: tags
   note_filter: ''
 

@@ -52,7 +52,7 @@ class Version:
             major=parts[0],
             minor=parts[1] if len(parts) > 1 else 0,
             patch=parts[2] if len(parts) > 2 else 0,
-            note=note or None
+            note=note or ""
         )
     
 

@@ -95,7 +95,7 @@ class GithubVersionSource(VersionSource):
             if version in found:
                 continue
 
-            if self.note_filter and version.note != self.note_filter:
+            if self.note_filter != None and version.note != self.note_filter:
                 continue
 
             found.add(version)

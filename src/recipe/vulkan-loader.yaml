@@ -1,0 +1,39 @@
+name: vulkan-loader
+homepage: https://github.com/KhronosGroup/Vulkan-Loader/
+license: unknown
+description: Vulkan ICD loader.
+
+version: v1.4.368
+
+version_source:
+  type: github
+  repo: KhronosGroup/Vulkan-Loader
+  identifier: tags
+  note_filter: ''
+
+dependencies:
+  build:
+    - vulkan-headers
+    - libx11
+    - libxrandr
+    - libxcb
+    - libxkbcommon
+    - wayland
+
+sources:
+  - type: tarball
+    name: vulkan-loader
+    url: https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/${version}.tar.gz
+    md5hash: 017dcbfabccb0c9dfa70b6c2aa2ce58f
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: cmake
+
+    config_args:
+      - -DCMAKE_BUILD_TYPE=RELEASE
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DVULKAN_HEADERS_INSTALL_DIR=/usr
+      - -DBUILD_TESTS=OFF

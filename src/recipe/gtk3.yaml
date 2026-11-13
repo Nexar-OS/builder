@@ -1,0 +1,53 @@
+name: gtk3
+homepage: https://gtk.org/
+license:
+  - LGPL-2.1-or-later
+description: Mature cross-platform graphical toolkit.
+
+version: 3.24.52
+
+version_source:
+  type: web
+  url: https://download.gnome.org/sources/gtk/3.24/
+  regex: gtk\-(?P<version>[0-9][A-Za-z0-9._+-]*)\.tar\.xz
+
+dependencies:
+  required:
+    - glib
+    - cairo
+    - pangocairo
+    - gdk-pixbuf
+    - at-spi2-core
+    - libepoxy
+    - libxkbcommon
+    - wayland
+    - wayland-protocols
+    - fontconfig
+  
+  build:
+    - glib
+    - cairo
+    - pangocairo
+    - gdk-pixbuf
+    - libepoxy
+    - wayland
+    - libxkbcommon
+    - gobject-introspection
+    - at-spi2-core
+
+sources:
+  - type: tarball
+    name: gtk3
+    url: https://download.gnome.org/sources/gtk/3.24/gtk-${version}.tar.xz
+    md5hash: 4dfad1e56bf8ad25dfab58add17e7146
+
+build:
+  method: OUT_OF_SOURCE
+
+  build_system:
+    type: meson
+    use_pkgconf_wrapper: false
+
+    config_args:
+      - --prefix=/usr
+      - -Dgtk_doc=false
